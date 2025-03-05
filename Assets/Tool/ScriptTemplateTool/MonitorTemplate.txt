@@ -1,0 +1,10 @@
+using UnityEngine;
+
+namespace TornApart.Character
+{
+	[System.Serializable]
+	public class #SCRIPTNAME# : CharacterAbility
+	{
+		
+	}
+}

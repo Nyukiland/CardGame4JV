@@ -1,0 +1,10 @@
+using UnityEngine;
+
+namespace TornApart.Mimicry
+{
+	[System.Serializable]
+	public class #SCRIPTNAME# : ProcessorModule
+	{
+		
+	}
+}

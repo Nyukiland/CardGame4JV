@@ -1,0 +1,9 @@
+using UnityEngine;
+
+namespace TornApart.Character
+{
+	public class #SCRIPTNAME# : CharacterControllerState
+	{
+		
+	}
+}
