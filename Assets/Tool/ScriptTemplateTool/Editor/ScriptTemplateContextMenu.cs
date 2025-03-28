@@ -18,42 +18,6 @@ namespace ScriptTemplateTool
 			CreateScriptFromTemplate("EmptyScriptTemplate.txt");
 		}
 
-		[MenuItem("Assets/Create/Script/Ability Script", false, 55)]
-		public static void CreateAbilityScript()
-		{
-			CreateScriptFromTemplate("AbilityTemplate.txt");
-		}
-
-		[MenuItem("Assets/Create/Script/Monitor Script", false, 55)]
-		public static void CreateMonitorScript()
-		{
-			CreateScriptFromTemplate("MonitorTemplate.txt");
-		}
-
-		[MenuItem("Assets/Create/Script/Resource Script", false, 55)]
-		public static void CreateResourceScript()
-		{
-			CreateScriptFromTemplate("ResourceTemplate.txt");
-		}
-
-		[MenuItem("Assets/Create/Script/State Script", false, 55)]
-		public static void CreateStateScript()
-		{
-			CreateScriptFromTemplate("StateTemplate.txt");
-		}
-
-		[MenuItem("Assets/Create/Script/Composite State Script", false, 55)]
-		public static void CreateCompositeStateScript()
-		{
-			CreateScriptFromTemplate("CompositeStateTemplate.txt");
-		}
-
-		[MenuItem("Assets/Create/Script/Processor Module Script", false, 55)]
-		public static void CreateProcessorScript()
-		{
-			CreateScriptFromTemplate("ProcessorModuleTemplate.txt");
-		}
-
 		[MenuItem("Assets/Create/Script/Editor Window Script", false, 55)]
 		public static void CreateEditorWindowScript()
 		{
@@ -70,6 +34,12 @@ namespace ScriptTemplateTool
 		public static void CreateScriptableScript()
 		{
 			CreateScriptFromTemplate("ScriptableObjectTemplate.txt");
+		}
+
+		[MenuItem("Assets/Create/Script/Singleton", false, 55)]
+		public static void CreateSingleton()
+		{
+			CreateScriptFromTemplate("Singleton.txt");
 		}
 
 		private static void CreateScriptFromTemplate(string templateName)
