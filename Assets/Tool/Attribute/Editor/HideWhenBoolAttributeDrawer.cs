@@ -2,8 +2,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-[CustomPropertyDrawer(typeof(ReadOnlyWhenBoolAttribute))]
-public class ReadOnlyWhenBoolAttributeDrawer : PropertyDrawer
+[CustomPropertyDrawer(typeof(HideWhenBoolAttribute))]
+public class HideWhenBoolAttributeDrawer : PropertyDrawer
 {
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 	{
@@ -11,13 +11,11 @@ public class ReadOnlyWhenBoolAttributeDrawer : PropertyDrawer
 		var controllingPropertyPath = $"{GetParentPath(property)}{parameters.PropertyString}";
 		var controllingProperty = property.serializedObject.FindProperty(controllingPropertyPath);
 
-		bool isReadOnly = controllingProperty is { propertyType: SerializedPropertyType.Boolean }
+		bool isVisible = controllingProperty is { propertyType: SerializedPropertyType.Boolean }
 						  && controllingProperty.boolValue == parameters.PropertyBool;
 
-		using (new EditorGUI.DisabledScope(isReadOnly))
-		{
-			EditorGUI.PropertyField(position, property, label, true);
-		}
+		if (isVisible) EditorGUI.PropertyField(position, property, label, true);
+		
 	}
 
 	private string GetParentPath(SerializedProperty property)
