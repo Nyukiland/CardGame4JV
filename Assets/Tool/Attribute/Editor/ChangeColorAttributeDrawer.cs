@@ -8,11 +8,17 @@ public class ChangeColorAttributeDrawer : PropertyDrawer
 	{
 		ChangeColorAttribute param = (ChangeColorAttribute)attribute;
 
-		Color prevColor = GUI.backgroundColor;
+		Color prevColor = GUI.color;
+		Color prevBackgroundColor = GUI.backgroundColor;
 
 		GUI.backgroundColor = param.PropertyColor;
+		GUI.color = param.PropertyColor;
 		EditorGUI.PropertyField(position, property, label);
 
-		if (param.PropertyResetColor) GUI.backgroundColor = prevColor;
+		if (param.PropertyResetColor)
+		{
+			GUI.backgroundColor = prevBackgroundColor;
+			GUI.color = prevColor;
+		}
 	}
 }
