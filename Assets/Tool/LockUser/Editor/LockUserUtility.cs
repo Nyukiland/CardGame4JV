@@ -5,14 +5,15 @@ using UnityEngine;
 
 public class LockUserUtility
 {
-	private static List<string> _userListCache;
+	private static List<string> _userListCache = null;
 
 	public static bool CheckCanEdit()
 	{
 		LockUserWindow[] windows = Resources.FindObjectsOfTypeAll<LockUserWindow>();
 		if (windows.Length > 0 && windows[0].AllowAccess) return true;
 
-		List<string> users = _userListCache ?? ReadLockJsonFile();
+		if (_userListCache.Count == 0) _userListCache = ReadLockJsonFile();
+		List<string> users = _userListCache;
 		if (users.Contains(System.Environment.UserName)) return true;
 
 		return false;
