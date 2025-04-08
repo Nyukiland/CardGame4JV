@@ -15,7 +15,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : Component
 
 	private bool _destroyAwake = false;
 
-	[SerializeField]
+	[SerializeField, LockUser]
 	protected bool _isDestroyOnLoad = true;
 
 	public void ForceInstance() { }

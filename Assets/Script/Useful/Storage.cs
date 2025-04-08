@@ -1,7 +1,5 @@
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class Storage : Singleton<Storage>
 {
@@ -34,7 +32,7 @@ public class Storage : Singleton<Storage>
 			return;
 
 		Type memberType = member.GetType();
-		foreach (var key in new List<Type>(_storage.Keys)) // Iterate over a copy
+		foreach (var key in new List<Type>(_storage.Keys))
 		{
 			if (key.IsAssignableFrom(memberType))
 			{
@@ -43,12 +41,26 @@ public class Storage : Singleton<Storage>
 		}
 	}
 
-	public List<T> GetGroup<T>() where T : class
+	public void ClearStorage()
 	{
-		return GetGroupOfType<T>();
+		_storage.Clear();
 	}
 
-	private List<T> GetGroupOfType<T>() where T : class
+	public void ClearSpecificStorage<T>() where T : class
+	{
+		_storage.Remove(typeof(T));
+	}
+
+	public T GetElement<T>(int index = 0) where T : class
+	{
+		List<T> list = GetGroupOfType<T>();
+
+		if (list.Count >= index) return null;
+
+		return GetGroupOfType<T>()[index];
+	}
+
+	public List<T> GetGroupOfType<T>() where T : class
 	{
 		if (!_storage.TryGetValue(typeof(T), out List<object> group))
 		{
@@ -56,6 +68,6 @@ public class Storage : Singleton<Storage>
 			_storage[typeof(T)] = group;
 		}
 
-		return group.ConvertAll(item => (T)item); // Safe conversion
+		return group.ConvertAll(item => (T)item);
 	}
 }
