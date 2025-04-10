@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LockUserUtility
 {
-	private static List<string> _userListCache = null;
+	private static List<string> _userListCache = new();
 
 	public static bool CheckCanEdit()
 	{

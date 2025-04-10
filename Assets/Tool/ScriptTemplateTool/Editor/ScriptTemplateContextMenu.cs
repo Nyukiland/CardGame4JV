@@ -39,7 +39,31 @@ namespace ScriptTemplateTool
 		[MenuItem("Assets/Create/Script/Singleton", false, 55)]
 		public static void CreateSingleton()
 		{
-			CreateScriptFromTemplate("Singleton.txt");
+			CreateScriptFromTemplate("SingletonTemplate.txt");
+		}
+
+		[MenuItem("Assets/Create/Script/State", false, 55)]
+		public static void CreateState()
+		{
+			CreateScriptFromTemplate("StateTemplate.txt");
+		}
+
+		[MenuItem("Assets/Create/Script/CombinedState", false, 55)]
+		public static void CreateCombinedState()
+		{
+			CreateScriptFromTemplate("CombinedStateTemplate.txt");
+		}
+
+		[MenuItem("Assets/Create/Script/Ability", false, 55)]
+		public static void CreateAbility()
+		{
+			CreateScriptFromTemplate("AbilityTemplate.txt");
+		}
+
+		[MenuItem("Assets/Create/Script/Resource", false, 55)]
+		public static void CreateResource()
+		{
+			CreateScriptFromTemplate("ResourceTemplate.txt");
 		}
 
 		private static void CreateScriptFromTemplate(string templateName)

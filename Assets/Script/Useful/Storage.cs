@@ -1,73 +1,76 @@
 using System;
 using System.Collections.Generic;
 
-public class Storage : Singleton<Storage>
+namespace CardGame.Utility
 {
-	private Dictionary<Type, List<object>> _storage = new();
-
-	public void Register<T>(T member) where T : class
+	public class Storage : Singleton<Storage>
 	{
-		if (member == null)
-			return;
+		private Dictionary<Type, List<object>> _storage = new();
 
-		List<T> group = GetGroupOfType<T>();
-		if (!group.Contains(member))
+		public void Register<T>(T member) where T : class
 		{
-			group.Add(member);
-		}
-	}
+			if (member == null)
+				return;
 
-	public void Delete<T>(T member) where T : class
-	{
-		if (member == null)
-			return;
-
-		List<T> group = GetGroupOfType<T>();
-		group.Remove(member);
-	}
-
-	public void DeleteFromAllGroups(object member)
-	{
-		if (member == null)
-			return;
-
-		Type memberType = member.GetType();
-		foreach (var key in new List<Type>(_storage.Keys))
-		{
-			if (key.IsAssignableFrom(memberType))
+			List<T> group = GetGroupOfType<T>();
+			if (!group.Contains(member))
 			{
-				_storage[key].Remove(member);
+				group.Add(member);
 			}
 		}
-	}
 
-	public void ClearStorage()
-	{
-		_storage.Clear();
-	}
-
-	public void ClearSpecificStorage<T>() where T : class
-	{
-		_storage.Remove(typeof(T));
-	}
-
-	public T GetElement<T>(int index = 0) where T : class
-	{
-		List<T> list = GetGroupOfType<T>();
-
-		if (list.Count >= index) return null;
-
-		return GetGroupOfType<T>()[index];
-	}
-
-	public List<T> GetGroupOfType<T>() where T : class
-	{
-		if (!_storage.TryGetValue(typeof(T), out List<object> group))
+		public void Delete<T>(T member) where T : class
 		{
-			group = new List<object>();
-			_storage[typeof(T)] = group;
+			if (member == null)
+				return;
+
+			List<T> group = GetGroupOfType<T>();
+			group.Remove(member);
 		}
 
-		return group.ConvertAll(item => (T)item);
+		public void DeleteFromAllGroups(object member)
+		{
+			if (member == null)
+				return;
+
+			Type memberType = member.GetType();
+			foreach (var key in new List<Type>(_storage.Keys))
+			{
+				if (key.IsAssignableFrom(memberType))
+				{
+					_storage[key].Remove(member);
+				}
+			}
+		}
+
+		public void ClearStorage()
+		{
+			_storage.Clear();
+		}
+
+		public void ClearSpecificStorage<T>() where T : class
+		{
+			_storage.Remove(typeof(T));
+		}
+
+		public T GetElement<T>(int index = 0) where T : class
+		{
+			List<T> list = GetGroupOfType<T>();
+
+			if (list.Count >= index) return null;
+
+			return GetGroupOfType<T>()[index];
+		}
+
+		public List<T> GetGroupOfType<T>() where T : class
+		{
+			if (!_storage.TryGetValue(typeof(T), out List<object> group))
+			{
+				group = new List<object>();
+				_storage[typeof(T)] = group;
+			}
+
+			return group.ConvertAll(item => (T)item);
+		}
 	}
 }

@@ -1,4 +1,7 @@
-public class Resource : StateComponent
+namespace CardGame.StateMachine
 {
+	public class Resource : StateComponent
+	{
 
+	}
 }

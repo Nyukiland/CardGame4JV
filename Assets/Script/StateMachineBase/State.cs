@@ -1,31 +1,29 @@
-using UnityEngine.InputSystem;
-using UnityEngine;
-
-public abstract class State
+namespace CardGame.StateMachine
 {
-	private Controller _controller;
-	public virtual Controller Controller
+	public abstract class State
 	{
-		get { return _controller; }
-		set { _controller = value; }
+		private Controller _controller;
+		public virtual Controller Controller
+		{
+			get { return _controller; }
+			set { _controller = value; }
+		}
+
+		protected void GetStateComponent<T>(ref T component, bool enable = true) where T : StateComponent
+		{
+			component ??= _controller.GetStateComponent<T>();
+			if (enable)
+				component?.Enable();
+		}
+
+		public virtual void OnEnter() { }
+
+		public virtual void OnExit() { }
+
+		public virtual void OnLateInit() { }
+
+		public virtual void Update(float deltaTime) { }
+
+		public virtual void FixedUpdate(float fixedDeltaTime) { }
 	}
-
-	protected void GetStateComponent<T>(ref T component, bool enable = true) where T : StateComponent
-	{
-		component ??= _controller.GetStateComponent<T>();
-		if (enable)
-			component?.Enable();
-	}
-
-	public virtual void OnEnter() { }
-
-	public virtual void OnExit() { }
-
-	public virtual void OnLateInit() { }
-
-	public virtual void OnActionTriggered(InputAction.CallbackContext context) { }
-
-	public virtual void Update(float deltaTime) { }
-
-	public virtual void FixedUpdate(float fixedDeltaTime) { }
 }
