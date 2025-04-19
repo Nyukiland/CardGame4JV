@@ -1,8 +1,12 @@
+using System;
+using UnityEngine;
+
 namespace CardGame.StateMachine
 {
 	[System.Serializable]
 	public abstract class StateComponent
 	{
+		[HideInInspector]
 		public bool Enabled = false;
 
 		public Controller Owner { get; private set; }
