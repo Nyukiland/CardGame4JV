@@ -1,6 +1,6 @@
 namespace CardGame.StateMachine
 {
-	public class Resource : StateComponent
+	public abstract class Resource : StateComponent
 	{
 		public override void EarlyInit()
 		{

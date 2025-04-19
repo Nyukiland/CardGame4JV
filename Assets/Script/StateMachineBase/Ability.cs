@@ -1,6 +1,6 @@
 namespace CardGame.StateMachine
 {
-	public class Ability : StateComponent
+	public abstract class Ability : StateComponent
 	{
 		public override void OnEnable()
 		{
