@@ -18,18 +18,6 @@ namespace ScriptTemplateTool
 			CreateScriptFromTemplate("EmptyScriptTemplate.txt");
 		}
 
-		[MenuItem("Assets/Create/Script/Editor Window Script", false, 55)]
-		public static void CreateEditorWindowScript()
-		{
-			CreateScriptFromTemplate("EditorWindowTemplate.txt");
-		}
-
-		[MenuItem("Assets/Create/Script/Editor Script", false, 55)]
-		public static void CreateEditorScript()
-		{
-			CreateScriptFromTemplate("EditorTemplate.txt");
-		}
-
 		[MenuItem("Assets/Create/Script/Scriptable Object Script", false, 55)]
 		public static void CreateScriptableScript()
 		{
@@ -42,25 +30,37 @@ namespace ScriptTemplateTool
 			CreateScriptFromTemplate("SingletonTemplate.txt");
 		}
 
-		[MenuItem("Assets/Create/Script/State", false, 55)]
+		[MenuItem("Assets/Create/Script/Editor/Editor Window Script", false, 55)]
+		public static void CreateEditorWindowScript()
+		{
+			CreateScriptFromTemplate("EditorWindowTemplate.txt");
+		}
+
+		[MenuItem("Assets/Create/Script/Editor/Editor Script", false, 55)]
+		public static void CreateEditorScript()
+		{
+			CreateScriptFromTemplate("EditorTemplate.txt");
+		}
+
+		[MenuItem("Assets/Create/Script/StateMachine/State", false, 55)]
 		public static void CreateState()
 		{
 			CreateScriptFromTemplate("StateTemplate.txt");
 		}
 
-		[MenuItem("Assets/Create/Script/CombinedState", false, 55)]
+		[MenuItem("Assets/Create/Script/StateMachine/CombinedState", false, 55)]
 		public static void CreateCombinedState()
 		{
 			CreateScriptFromTemplate("CombinedStateTemplate.txt");
 		}
 
-		[MenuItem("Assets/Create/Script/Ability", false, 55)]
+		[MenuItem("Assets/Create/Script/StateMachine/Ability", false, 55)]
 		public static void CreateAbility()
 		{
 			CreateScriptFromTemplate("AbilityTemplate.txt");
 		}
 
-		[MenuItem("Assets/Create/Script/Resource", false, 55)]
+		[MenuItem("Assets/Create/Script/StateMachine/Resource", false, 55)]
 		public static void CreateResource()
 		{
 			CreateScriptFromTemplate("ResourceTemplate.txt");
