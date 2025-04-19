@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CardGame.StateMachine
 {
-	public class Controller : MonoBehaviour
+	public class Controller : MonoBehaviour, ISelectableInfo
 	{
 		[SerializeField, SerializeReference, SubclassSelector(typeof(StateComponent))]
 		private List<StateComponent> _components = new();
@@ -23,11 +23,6 @@ namespace CardGame.StateMachine
 
 		private void OnEnable()
 		{
-			foreach (StateComponent comp in _components)
-			{
-				EnableComponent(comp);
-			}
-
 			SetDefaultState();
 			Storage.Instance.Register(this);
 		}
@@ -36,7 +31,7 @@ namespace CardGame.StateMachine
 		{
 			foreach (StateComponent comp in _components)
 			{
-				DisableComponent(comp);
+				comp.OnDisable();
 			}
 
 			Storage.Instance.Delete(this);
@@ -80,11 +75,6 @@ namespace CardGame.StateMachine
 				SetState(state: null);
 		}
 
-		public void SetState<T>() where T : State, new()
-		{
-			SetState(new T());
-		}
-
 		public void SetState(Type type)
 		{
 			if (!type.IsSubclassOf(typeof(State)))
@@ -113,7 +103,6 @@ namespace CardGame.StateMachine
 			_state = state;
 			if (_state != null)
 			{
-
 				_state.Controller = this;
 				_state.OnEnter();
 			}
@@ -123,54 +112,12 @@ namespace CardGame.StateMachine
 		{
 			foreach (StateComponent component in _components)
 			{
-				if (component is Ability) component.Disable();
+				if (component is Ability) component.OnDisable();
 			}
 		}
 		#endregion
 
 		#region component
-
-		public void AddComponents(StateComponent[] components)
-		{
-			if (components == null)
-			{
-				UnityEngine.Debug.LogError("Null Component");
-				return;
-			}
-
-			foreach (StateComponent component in components)
-			{
-				_components.Add(component);
-			}
-
-			Array.ForEach(components, comp => comp.EarlyInit());
-			Array.ForEach(components, comp => comp.Init(owner: this));
-			Array.ForEach(components, comp => comp.SetActive(isActiveAndEnabled));
-			Array.ForEach(components, comp => comp.LateInit());
-		}
-
-		public void RemoveComponents(StateComponent[] components)
-		{
-			foreach (StateComponent component in components)
-			{
-				component.Disable();
-				_components.Remove(component);
-			}
-		}
-
-		public void EnableComponent(StateComponent component)
-		{
-			int index = _components.IndexOf(component);
-
-			component.OnEnable();
-		}
-
-		public void DisableComponent(StateComponent component)
-		{
-			int index = _components.IndexOf(component);
-
-			component.OnDisable();
-		}
 
 		public T GetStateComponent<T>() where T : StateComponent
 		{
@@ -186,6 +133,7 @@ namespace CardGame.StateMachine
 		{
 			foreach (StateComponent component in _components)
 			{
+				if (!component.Enabled) continue;
 				component.Update(deltaTime);
 			}
 		}
@@ -194,6 +142,7 @@ namespace CardGame.StateMachine
 		{
 			foreach (StateComponent component in _components)
 			{
+				if (!component.Enabled) continue;
 				component.FixedUpdate(Time.fixedDeltaTime);
 			}
 		}
@@ -216,5 +165,23 @@ namespace CardGame.StateMachine
 			}
 		}
 		#endregion
+
+		string ISelectableInfo.GetInfo()
+		{
+			string text = "Controller: \n" +
+				$"Previous State: {PrevState} \n" + 
+				$"Current State: {CurrentState}";
+
+			foreach (StateComponent component in _components)
+			{
+				string t = component.DisplayInfo();
+				if (!string.IsNullOrEmpty(t))
+				{
+					text += "\n" + t;
+				}
+			}
+
+			return text;
+		}
 	}
 }

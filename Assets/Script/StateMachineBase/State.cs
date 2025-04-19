@@ -13,7 +13,7 @@ namespace CardGame.StateMachine
 		{
 			component ??= _controller.GetStateComponent<T>();
 			if (enable)
-				component?.Enable();
+				component?.OnEnable();
 		}
 
 		public virtual void OnEnter() { }

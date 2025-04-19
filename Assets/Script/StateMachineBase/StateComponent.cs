@@ -2,6 +2,8 @@ namespace CardGame.StateMachine
 {
 	public abstract class StateComponent
 	{
+		public bool Enabled = false;
+
 		public Controller Owner { get; private set; }
 
 		public virtual void EarlyInit() { }
@@ -16,19 +18,9 @@ namespace CardGame.StateMachine
 		public void SetActive(bool value)
 		{
 			if (value)
-				Enable();
+				OnEnable();
 			else
-				Disable();
-		}
-
-		public void Enable()
-		{
-			//Owner.EnableComponent(this);
-		}
-
-		public void Disable()
-		{
-			//Owner.DisableComponent(this);
+				OnDisable();
 		}
 
 		public virtual void OnEnable() { }
@@ -42,5 +34,13 @@ namespace CardGame.StateMachine
 		public virtual void OnValidate() { }
 
 		public virtual void OnDestroy() { }
+
+		public virtual string DisplayInfo()
+		{
+			//copy this in children
+			if (!Enabled) return "";
+
+			return "";
+		}
 	}
 }
