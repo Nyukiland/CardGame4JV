@@ -4,6 +4,7 @@ using UnityEngine;
 public class SelectableDisplayInfoWindow : EditorWindow
 {
 	private string _toDisplay;
+	private Vector2 _scroll;
 
 	[MenuItem("Tools/Selectable Display Info")]
 	public static void ShowWindow()
@@ -15,18 +16,17 @@ public class SelectableDisplayInfoWindow : EditorWindow
 
 	private void OnEnable()
 	{
-		Selection.selectionChanged += UpdateSelection;
 		EditorApplication.update += UpdateEditor;
 	}
 
 	private void OnDisable()
 	{
-		Selection.selectionChanged -= UpdateSelection;
 		EditorApplication.update -= UpdateEditor;
 	}
 
 	private void UpdateEditor()
 	{
+		if (!Application.isPlaying) return;
 		Repaint();
 	}
 
@@ -44,7 +44,17 @@ public class SelectableDisplayInfoWindow : EditorWindow
 
 		GUILayout.Space(20);
 
+		UpdateSelection();
+
+		_scroll = GUILayout.BeginScrollView(_scroll);
+
 		GUILayout.Box(_toDisplay, GUILayout.ExpandWidth(true));
+
+		GUILayout.EndScrollView();
+
+		GUILayout.FlexibleSpace();
+
+		GUILayout.Label("Update when focused exept in playmode");
 	}
 
 	void UpdateSelection()
