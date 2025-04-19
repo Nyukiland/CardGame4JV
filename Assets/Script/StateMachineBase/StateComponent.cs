@@ -1,5 +1,6 @@
 namespace CardGame.StateMachine
 {
+	[System.Serializable]
 	public abstract class StateComponent
 	{
 		public bool Enabled = false;
