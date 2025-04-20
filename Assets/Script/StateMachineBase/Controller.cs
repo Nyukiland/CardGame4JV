@@ -7,6 +7,9 @@ namespace CardGame.StateMachine
 {
 	public class Controller : MonoBehaviour, ISelectableInfo
 	{
+		[SerializeField, TypeSelector(typeof(State))]
+		private string _defaultType;
+
 		[SerializeField, SerializeReference, SubclassSelector(typeof(StateComponent))]
 		private List<StateComponent> _components = new();
 
@@ -54,7 +57,11 @@ namespace CardGame.StateMachine
 		#region state
 		private State _state;
 
-		public Type DefaultStateType { get; set; }
+		public Type DefaultStateType
+		{
+			private get => Type.GetType(_defaultType);
+			set => _defaultType = value.AssemblyQualifiedName;
+		}
 
 		public string PrevState { get; set; }
 
