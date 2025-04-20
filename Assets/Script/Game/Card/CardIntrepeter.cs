@@ -1,10 +1,30 @@
 using UnityEngine;
 using UnityEngine.UI;
+using CardGame.Card;
+using TMPro;
+
+
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CardGame.Card
 {
 	public class CardIntrepeter : MonoBehaviour
 	{
+		[SerializeField]
+		private Image _background;
+		[SerializeField]
+		private Image _image;
+		[SerializeField]
+		private TextMeshProUGUI _title;
+		[SerializeField]
+		private TextMeshProUGUI _description;
+
+		[Space(10)]
+
+		[SerializeField, HideInInspector]
 		private CardScriptable _cardInfo;
 
 		public CardScriptable CardInfo
@@ -20,13 +40,22 @@ namespace CardGame.Card
 		{
 			_cardInfo = cardInfo;
 
+			_image.sprite = _cardInfo.Visual;
+			_background.sprite = _cardInfo.Background;
+			_title.text = _cardInfo.CardName;
+			_description.text = _cardInfo.CardDescritpion;
+
 			_cardInfo.VisualEffect.ForEach(x => x.Init(this));
 			_cardInfo.CardEffects.ForEach(x => x.Init(this));
 		}
 
 		private void Update()
 		{
-			if (!IsAtDestination()) transform.position = Vector3.Lerp(transform.position, GoToPos, Time.deltaTime);
+			if (!IsAtDestination())
+			{
+				Vector3 direction = (GoToPos - transform.position);
+				transform.position += Speed * Time.deltaTime * direction;
+			}
 			else transform.position = GoToPos;
 		}
 
@@ -63,3 +92,55 @@ namespace CardGame.Card
 		#endregion
 	}
 }
+
+#if UNITY_EDITOR
+
+[CustomEditor(typeof(CardIntrepeter))]
+public class CardIntrepeterCustomInspector : Editor
+{
+	private bool _foldout;
+
+	SerializedProperty _cardInfoProperty;
+
+	private void OnEnable()
+	{
+		_cardInfoProperty = serializedObject.FindProperty("_cardInfo");
+	}
+
+	public override void OnInspectorGUI()
+	{
+		serializedObject.Update();
+
+		base.OnInspectorGUI();
+
+		GUI.enabled = false;
+
+		EditorGUILayout.PropertyField(_cardInfoProperty);
+
+		if (_cardInfoProperty.objectReferenceValue == null)
+		{
+			serializedObject.ApplyModifiedProperties();
+			return;
+		}
+
+		GUI.enabled = true;
+
+		_foldout = EditorGUILayout.Foldout(_foldout, "Card Info");
+
+		GUI.enabled = false;
+
+		if (_foldout)
+		{
+			Editor scriptableEditor = CreateEditor(_cardInfoProperty.objectReferenceValue);
+			if (scriptableEditor != null)
+			{
+				EditorGUILayout.Space();
+				scriptableEditor.OnInspectorGUI();
+			}
+		}
+
+		serializedObject.ApplyModifiedProperties();
+	}
+}
+
+#endif

@@ -148,9 +148,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7d0d4a543fd10d409b6d9ed0272d34b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _defaultType: CardGame.StateMachine.DrawCardState
   _components:
   - rid: 86150500373495870
   - rid: 86150500373495871
+  - rid: 86150507476549694
   references:
     version: 2
     RefIds:
@@ -165,6 +167,11 @@ MonoBehaviour:
         Enabled: 0
         _playedCardContainer: {fileID: 462605264}
         _inHandCardContainer: {fileID: 357328094}
+    - rid: 86150507476549694
+      type: {class: AbilityToCreateCard, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+        _prefabCard: {fileID: 726279444194556684, guid: becb44696b83e0b4da10c97bdf2673c1, type: 3}
 --- !u!4 &273669854
 Transform:
   m_ObjectHideFlags: 0
@@ -229,7 +236,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardSpeed: 10
-  _cardSpacing: 3
+  _cardSpacing: 50
   _maxCard: 10
 --- !u!1 &462605262
 GameObject:
@@ -279,9 +286,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5342692545ab84fb984b6005d2de96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cardSpeed: 5
-  _cardSpacing: 2
+  _cardSpeed: 30
+  _cardSpacing: 80
   _maxCard: 3
+--- !u!1 &789198198
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 789198200}
+  - component: {fileID: 789198199}
+  m_Layer: 0
+  m_Name: Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &789198199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 789198198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adbb9e5c11a7a6c408d197e498cd1a70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isDestroyOnLoad: 0
+  _score: 0
+--- !u!4 &789198200
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 789198198}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 565.92194, y: 302.74243, z: -3.267369}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &895828212
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,7 +412,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -570,3 +623,4 @@ SceneRoots:
   - {fileID: 895828216}
   - {fileID: 1338743453}
   - {fileID: 273669854}
+  - {fileID: 789198200}

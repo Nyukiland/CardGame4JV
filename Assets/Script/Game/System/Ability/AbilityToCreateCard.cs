@@ -11,7 +11,7 @@ namespace CardGame.StateMachine
 
 		private CardManagementResource _manager;
 
-		private List<CardIntrepeter> _cards;
+		private List<CardIntrepeter> _cards = new();
 
 		public override void Init(Controller owner)
 		{

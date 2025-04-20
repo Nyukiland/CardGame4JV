@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 namespace CardGame.Card
 {
+	[Serializable]
 	public abstract class CardEffect
 	{
 		protected CardIntrepeter _card;

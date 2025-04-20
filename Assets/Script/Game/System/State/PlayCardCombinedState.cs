@@ -2,7 +2,7 @@ namespace CardGame.StateMachine
 {
 	public class PlayCardCombinedState : CombinedState
 	{
-		PlayCardCombinedState()
+		public PlayCardCombinedState()
 		{
 			AddSubState(new SelectCardSubState());
 		}

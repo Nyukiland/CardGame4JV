@@ -9,13 +9,14 @@ namespace CardGame.Card
 		public string CardName;
 		public string CardDescritpion;
 		public Sprite Visual;
+		public Sprite Background;
 
 		[Space(10)]
 
-		[SubclassSelector(typeof(CardEffect))]
-		public List<CardEffect> CardEffects;
+		[SerializeReference, SubclassSelector(typeof(CardEffect))]
+		public List<CardEffect> CardEffects = new();
 
-		[SubclassSelector(typeof(CardEffect))]
-		public List<CardEffect> VisualEffect;
+		[SerializeReference, SubclassSelector(typeof(CardEffect))]
+		public List<CardEffect> VisualEffect = new();
 	}
 }
