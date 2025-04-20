@@ -162,11 +162,6 @@ namespace CardGame.StateMachine
 		private void OnDestroy()
 		{
 			Storage.Instance.Delete(this);
-
-			for (int i = 0; i < _components.Count; i++)
-			{
-				_components[i].OnDestroy();
-			}
 		}
 
 		private void OnValidate()

@@ -38,8 +38,6 @@ namespace CardGame.StateMachine
 
 		public virtual void OnValidate() { }
 
-		public virtual void OnDestroy() { }
-
 		public virtual string DisplayInfo()
 		{
 			//copy this in children
