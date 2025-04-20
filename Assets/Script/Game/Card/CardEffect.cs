@@ -4,9 +4,9 @@ namespace CardGame.Card
 {
 	public abstract class CardEffect
 	{
-		protected GameObject _card;
+		protected CardIntrepeter _card;
 
-		public void Init(GameObject card)
+		public void Init(CardIntrepeter card)
 		{
 			_card = card;
 		}
@@ -16,9 +16,9 @@ namespace CardGame.Card
 
 		}
 
-		public virtual void OnCardDestroy()
+		public virtual void OnCardRetrieve()
 		{
-			GameObject.Destroy(_card);
+
 		}
 
 		public virtual void BeforeScoring()

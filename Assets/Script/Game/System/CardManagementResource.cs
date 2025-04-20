@@ -6,21 +6,33 @@ namespace CardGame.StateMachine
 	public class CardManagementResource : Resource
 	{
 		[SerializeField]
-		private Transform _playedCardContainer;
+		private CardContainer _playedCardContainer;
 		[SerializeField, Min(0)]
 		private int _maxCardPlayedCard;
 
 		[Space(10)]
 
 		[SerializeField]
-		private Transform _inHandCardContainer;
+		private CardContainer _inHandCardContainer;
 		[SerializeField, Min(0)]
 		private int _maxCardInHand;
+
+		public CardContainer PlayedCardContainer
+		{
+			get => _playedCardContainer;
+			private set => _playedCardContainer = value;
+		}
 
 		public int MaxCardPlayedCard
 		{
 			get => _maxCardPlayedCard;
 			private set => _maxCardPlayedCard = value;
+		}
+
+		public CardContainer InHandCardContainer
+		{
+			get => _inHandCardContainer;
+			private set => _inHandCardContainer = value;
 		}
 
 		public int MaxCardInHand
@@ -35,16 +47,6 @@ namespace CardGame.StateMachine
 		{
 			base.Init(owner);
 			_cards = Resources.LoadAll<CardScriptable>("Cards");
-		}
-
-		public CardInterpeter[] GetCardPlayed()
-		{
-			return _playedCardContainer.GetComponentsInChildren<CardInterpeter>();
-		}
-
-		public CardInterpeter[] GetCardInHand()
-		{
-			return _inHandCardContainer.GetComponentsInChildren<CardInterpeter>();
 		}
 
 		public CardScriptable GetRandomCard()
