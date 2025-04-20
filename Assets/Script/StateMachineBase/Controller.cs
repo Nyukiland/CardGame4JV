@@ -75,6 +75,11 @@ namespace CardGame.StateMachine
 				SetState(state: null);
 		}
 
+		public void SetState<T>() where T : State
+		{
+			SetState(typeof(T));
+		}
+
 		public void SetState(Type type)
 		{
 			if (!type.IsSubclassOf(typeof(State)))
