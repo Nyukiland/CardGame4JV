@@ -9,6 +9,15 @@ public class CardContainer : MonoBehaviour
 	[SerializeField]
 	private float _cardSpacing;
 
+	[SerializeField, Min(0)]
+	private int _maxCard;
+
+	public int MaxCard
+	{
+		get => _maxCard;
+		private set => _maxCard = value;
+	}
+
 	private RectTransform _rect;
 
 	private void Start()
@@ -16,8 +25,9 @@ public class CardContainer : MonoBehaviour
 		_rect = GetComponent<RectTransform>();
 	}
 
-	public bool IsInRect(Vector3 pos)
+	public bool IsInRect(Vector3 pos, bool considerMax = true)
 	{
+		if (considerMax) return _rect.rect.Contains(pos) && GetComponentsInChildren<CardIntrepeter>().Length < MaxCard;
 		return _rect.rect.Contains(pos);
 	}
 

@@ -5,11 +5,6 @@ namespace CardGame.Card
 {
 	public class CardIntrepeter : MonoBehaviour
 	{
-		CardIntrepeter(CardScriptable cardInfo)
-		{
-			_cardInfo = cardInfo;
-		}
-
 		private CardScriptable _cardInfo;
 
 		public CardScriptable CardInfo
@@ -21,15 +16,23 @@ namespace CardGame.Card
 		public Vector3 GoToPos { get; set; }
 		public float Speed { get; set; }
 
-		private void Start()
+		public void SetUp(CardScriptable cardInfo)
 		{
+			_cardInfo = cardInfo;
+
 			_cardInfo.VisualEffect.ForEach(x => x.Init(this));
 			_cardInfo.CardEffects.ForEach(x => x.Init(this));
 		}
 
 		private void Update()
 		{
-			transform.position = Vector3.Lerp(transform.position, GoToPos, Time.deltaTime);
+			if (!IsAtDestination()) transform.position = Vector3.Lerp(transform.position, GoToPos, Time.deltaTime);
+			else transform.position = GoToPos;
+		}
+
+		public bool IsAtDestination()
+		{
+			return Vector3.Distance(transform.position, GoToPos) < 0.1f;
 		}
 
 		#region CardEffect
