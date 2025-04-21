@@ -27,21 +27,23 @@ public class CardContainer : MonoBehaviour
 
 	public bool IsInRect(Vector3 pos, bool considerMax = true)
 	{
-		if (considerMax) return _rect.rect.Contains(pos) && GetComponentsInChildren<CardInfo>().Length < MaxCard;
-		return _rect.rect.Contains(pos);
+		if (considerMax && GetComponentsInChildren<CardInfo>().Length >= MaxCard) return false;
+
+		return RectTransformUtility.RectangleContainsScreenPoint(_rect, pos);
 	}
 
 	public void GiveCardPosition()
 	{
 		CardInfo[] cards = GetComponentsInChildren<CardInfo>();
+		int cardCount = cards.Length;
 
-		Vector3 sideMove = _cardSpacing * (float)cards.Length/2 * Vector3.left;
+		float startOffset = -(cardCount - 1) / 2f;
 
 		for (int i = 0; i < cards.Length; i++)
 		{
 			CardInfo card = cards[i];
-			Vector3 offset = _cardSpacing * i * Vector3.right;
-			card.MoveCard(transform.position + sideMove + offset, _cardSpeed);
+			Vector3 offset = _cardSpacing * (startOffset + i) * Vector3.right;
+			card.MoveCard(transform.position + offset, _cardSpeed);
 		}
 	}
 }

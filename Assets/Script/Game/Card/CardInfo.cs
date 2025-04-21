@@ -80,7 +80,7 @@ namespace CardGame.Card
 
 		public bool ContainsPos(Vector3 pos)
 		{
-			return _background.rectTransform.rect.Contains(pos);
+			return RectTransformUtility.RectangleContainsScreenPoint(_background.rectTransform, pos);
 		}
 
 		public void MoveCard(Vector3 pos, float speed)

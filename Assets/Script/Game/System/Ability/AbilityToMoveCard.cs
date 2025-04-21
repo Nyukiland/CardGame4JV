@@ -2,6 +2,7 @@ using CardGame.Card;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CardGame.StateMachine
 {
@@ -27,6 +28,16 @@ namespace CardGame.StateMachine
 			_cardManager = owner.GetStateComponent<CardManagementResource>();
 		}
 
+		public override void Update(float deltaTime)
+		{
+			base.Update(deltaTime);
+
+			if (Input.touchCount > 0)
+			{
+				Touch touch = Input.GetTouch(0);
+			}
+		}
+
 		public void PickCard(Vector3 pos)
 		{
 			List<CardInfo> cards = new();
@@ -42,8 +53,10 @@ namespace CardGame.StateMachine
 				}
 			}
 
+			if (_card == null) return;
+
 			_prevContainer = _card.GetComponentInParent<CardContainer>();
-			_card.transform.parent = null;
+			_card.transform.parent = _prevContainer.GetComponentInParent<Canvas>().transform;
 			_cardManager.UpdateAllCardContainerPos();
 		}
 

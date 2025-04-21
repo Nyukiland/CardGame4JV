@@ -238,7 +238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardSpeed: 10
-  _cardSpacing: 50
+  _cardSpacing: 200
   _maxCard: 10
 --- !u!1 &462605262
 GameObject:
@@ -289,7 +289,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardSpeed: 30
-  _cardSpacing: 80
+  _cardSpacing: 300
   _maxCard: 3
 --- !u!1 &789198198
 GameObject:
