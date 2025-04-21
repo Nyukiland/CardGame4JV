@@ -11,7 +11,7 @@ namespace CardGame.StateMachine
 
 		private CardManagementResource _manager;
 
-		private List<CardIntrepeter> _cards = new();
+		private List<CardInfo> _cards = new();
 
 		public override void Init(Controller owner)
 		{
@@ -27,7 +27,7 @@ namespace CardGame.StateMachine
 
 			for (int i = 0; i < cardNumber; i++)
 			{
-				CardIntrepeter card = GameObject.Instantiate(_prefabCard).GetComponent<CardIntrepeter>();
+				CardInfo card = GameObject.Instantiate(_prefabCard).GetComponent<CardInfo>();
 				card.SetUp(_manager.GetRandomCard());
 				card.transform.position = new Vector3(-1000, -1000, 0);
 				card.transform.parent = _manager.InHandCardContainer.transform;

@@ -9,20 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 299a1ec520ef62a4cb1f82a5eae48702, type: 3}
-  m_Name: Card1
+  m_Script: {fileID: 11500000, guid: 07130b7d3a3f2504ca2791b8ea94a54e, type: 3}
+  m_Name: AddEffect
   m_EditorClassIdentifier: 
-  CardName: test
-  CardDescritpion: dfsF
-  Visual: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  Background: {fileID: -2219330347702682453, guid: bf3a5a46026ac2249a7597af84604179, type: 3}
-  CardEffects:
-  - rid: 86150507476549695
-  VisualEffect: []
+  Effect:
+    rid: 86150517360951358
   references:
     version: 2
     RefIds:
-    - rid: 86150507476549695
+    - rid: 86150517360951358
       type: {class: AddToScoreEffect, ns: CardGame.Card, asm: Assembly-CSharp}
       data:
-        scoreAdd: 10
+        _card: {fileID: 0}
+        scoreAdd: 0

@@ -25,18 +25,24 @@ namespace CardGame.StateMachine
 			private set => _inHandCardContainer = value;
 		}
 
-		private CardScriptable[] _cards;
+		private CardInfo[] _cards;
 
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
-			_cards = Resources.LoadAll<CardScriptable>("Cards");
+			_cards = Resources.LoadAll<CardInfo>("Cards");
 		}
 
-		public CardScriptable GetRandomCard()
+		public CardInfo GetRandomCard()
 		{
 			int rand = Random.Range(0, _cards.Length);
 			return _cards[rand];
+		}
+
+		public void UpdateAllCardContainerPos()
+		{
+			_inHandCardContainer.GiveCardPosition();
+			_playedCardContainer.GiveCardPosition();
 		}
 	}
 }

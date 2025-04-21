@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6494100161991291526}
-  - component: {fileID: 246038347874905064}
+  - component: {fileID: 2500782815755827952}
   m_Layer: 5
-  m_Name: Card
+  m_Name: test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,7 +40,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 65, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &246038347874905064
+--- !u!114 &2500782815755827952
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49,14 +49,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 726279444194556684}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a6f59da405aa8949b15030e69c403d0, type: 3}
+  m_Script: {fileID: 11500000, guid: d7ababc002d84ab4db0fcedf98bca8ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _background: {fileID: 8043730671723083673}
   _image: {fileID: 3952744299857909435}
   _title: {fileID: 4896409691302244278}
   _description: {fileID: 7399822678906288443}
-  _cardInfo: {fileID: 0}
+  _cardName: test
+  _cardDescritpion: wedf
+  _visual: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  _backgroundImage: {fileID: -2219330347702682453, guid: bf3a5a46026ac2249a7597af84604179, type: 3}
+  CardEffects: []
 --- !u!1 &797684417131156827
 GameObject:
   m_ObjectHideFlags: 0
@@ -122,7 +126,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -197,9 +201,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Title
-
-'
+  m_text: test
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -335,7 +337,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -2219330347702682453, guid: bf3a5a46026ac2249a7597af84604179, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -410,7 +412,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Description
+  m_text: wedf
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

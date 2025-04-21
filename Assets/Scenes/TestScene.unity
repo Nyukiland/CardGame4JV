@@ -160,7 +160,9 @@ MonoBehaviour:
       type: {class: AbilityToMoveCard, ns: CardGame.StateMachine, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        t: 0
+        _speed: 5
+        _card: {fileID: 0}
+        _prevContainer: {fileID: 0}
     - rid: 86150500373495871
       type: {class: CardManagementResource, ns: CardGame.StateMachine, asm: Assembly-CSharp}
       data:

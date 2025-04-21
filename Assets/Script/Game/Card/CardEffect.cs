@@ -6,9 +6,10 @@ namespace CardGame.Card
 	[Serializable]
 	public abstract class CardEffect
 	{
-		protected CardIntrepeter _card;
+		[SerializeField, Disable]
+		protected CardInfo _card;
 
-		public void Init(CardIntrepeter card)
+		public void Init(CardInfo card)
 		{
 			_card = card;
 		}
