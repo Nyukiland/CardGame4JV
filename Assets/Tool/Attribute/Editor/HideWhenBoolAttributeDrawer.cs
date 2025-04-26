@@ -7,7 +7,7 @@ public class HideWhenBoolAttributeDrawer : PropertyDrawer
 {
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 	{
-		var parameters = (ReadOnlyWhenBoolAttribute)attribute;
+		var parameters = (HideWhenBoolAttribute)attribute;
 		var controllingPropertyPath = $"{GetParentPath(property)}{parameters.PropertyString}";
 		var controllingProperty = property.serializedObject.FindProperty(controllingPropertyPath);
 
