@@ -13,11 +13,7 @@ namespace CardGame.StateMachine
 		[SerializeField]
 		private float _speed;
 
-		[Header("Debug")]
-
-		[SerializeField, Disable]
 		private CardInfo _card;
-		[SerializeField, Disable]
 		private CardContainer _prevContainer;
 
 		private CardManagementResource _cardManager;
@@ -26,16 +22,6 @@ namespace CardGame.StateMachine
 		{
 			base.Init(owner);
 			_cardManager = owner.GetStateComponent<CardManagementResource>();
-		}
-
-		public override void Update(float deltaTime)
-		{
-			base.Update(deltaTime);
-
-			if (Input.touchCount > 0)
-			{
-				Touch touch = Input.GetTouch(0);
-			}
 		}
 
 		public void PickCard(Vector3 pos)
