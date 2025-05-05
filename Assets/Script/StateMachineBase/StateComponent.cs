@@ -13,24 +13,54 @@ namespace CardGame.StateMachine
 
 		public virtual void EarlyInit() { }
 
-		public virtual void Init(Controller owner)
+		public void InitController(Controller owner)
 		{
 			Owner = owner;
+
+			//i don't like the cast but i guess should do it
+			if (this is Resource) Enabled = true;
+
+			Init(owner);
 		}
+
+
+		public virtual void Init(Controller owner) {}
 
 		public virtual void LateInit() { }
 
 		public void SetActive(bool value)
 		{
 			if (value)
-				OnEnable();
+				OnEnableController();
 			else
-				OnDisable();
+				OnEnableController();
 		}
 
-		public virtual void OnEnable() { }
+		public virtual void OnEnableController()
+		{
+			//i don't like the cast but i guess should do it
+			if (this is Ability) Enabled = true;
 
-		public virtual void OnDisable() { }
+			OnEnable();
+		}
+
+		public virtual void OnDisableController()
+		{
+			//i don't like the cast but i guess should do it
+			if (this is Ability) Enabled = false;
+
+			OnDisable();
+		}
+
+		public virtual void OnEnable()
+		{
+
+		}
+
+		public virtual void OnDisable()
+		{
+
+		}
 
 		public virtual void Update(float deltaTime) { }
 
@@ -38,10 +68,16 @@ namespace CardGame.StateMachine
 
 		public virtual void OnValidate() { }
 
+		public string DisplayInfoController()
+		{
+			if (!Enabled) return "";
+
+			return $"-----------{Owner.GetType().Name} \n" + DisplayInfo();
+		}
+
 		public virtual string DisplayInfo()
 		{
-			//copy this in children
-			if (!Enabled) return "";
+
 
 			return "";
 		}
