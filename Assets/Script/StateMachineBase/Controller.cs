@@ -16,7 +16,7 @@ namespace CardGame.StateMachine
 		protected virtual void Awake()
 		{
 			_components.ForEach(comp => comp.EarlyInit());
-			_components.ForEach(comp => comp.Init(owner: this));
+			_components.ForEach(comp => comp.InitController(owner: this));
 		}
 
 		protected virtual void Start()
@@ -34,7 +34,7 @@ namespace CardGame.StateMachine
 		{
 			foreach (StateComponent comp in _components)
 			{
-				comp.OnDisable();
+				comp.OnDisableController();
 			}
 
 			Storage.Instance.Delete(this);
@@ -124,7 +124,7 @@ namespace CardGame.StateMachine
 		{
 			foreach (StateComponent component in _components)
 			{
-				if (component is Ability) component.OnDisable();
+				if (component is Ability) component.OnDisableController();
 			}
 		}
 		#endregion
@@ -181,7 +181,7 @@ namespace CardGame.StateMachine
 
 			foreach (StateComponent component in _components)
 			{
-				string t = component.DisplayInfo();
+				string t = component.DisplayInfoController();
 				if (!string.IsNullOrEmpty(t))
 				{
 					text += "\n" + t;
