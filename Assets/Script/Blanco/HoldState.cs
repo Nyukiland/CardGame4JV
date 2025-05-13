@@ -1,23 +1,23 @@
 ﻿using CardGame.StateMachine;
+using UnityEngine;
 
 namespace CardGame.Blanco
 {
     public class HoldState : State
     {
-        private float _elapsedTime;
-        private const float HOLD_DURATION = 2f;
-
+        private TimerAbility _timerAbility;
+        
         public override void OnEnter()
         {
-            _elapsedTime = 0f;
+            GetStateComponent(ref _timerAbility);
         }
 
         public override void Update(float deltaTime)
         {
-            if (_elapsedTime > HOLD_DURATION)
+            if (_timerAbility.ElapsedTime > TimerAbility.HOLD_DURATION)
+            {
                 Controller.SetState(typeof(ClickState));
-            else
-                _elapsedTime += deltaTime;
+            }
         }
     }
 }

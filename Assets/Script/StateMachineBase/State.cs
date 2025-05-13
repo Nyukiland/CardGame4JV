@@ -9,6 +9,9 @@ namespace CardGame.StateMachine
 			set { _controller = value; }
 		}
 
+		// Are u sure it's the correct name ?
+		// I would expect it to return a StateComponent considering the name
+		// Blanco
 		protected void GetStateComponent<T>(ref T component, bool enable = true) where T : StateComponent
 		{
 			component ??= _controller.GetStateComponent<T>();
