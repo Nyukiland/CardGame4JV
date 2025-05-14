@@ -1,15 +1,14 @@
 using CardGame.StateMachine;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace CardGame.StateMachine
 {
-    public class ClickState : State
+    public class ClickSubState : State
     {
         public override void OnEnter()
         {
             base.OnEnter();
-            Debug.Log("Entered ClickState");
+            Debug.Log("Entered ClickSubState");
         }
 
         public override void Update(float deltaTime)
@@ -18,14 +17,14 @@ namespace CardGame.StateMachine
 
             if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
-                Controller.SetState<HoldState>(); //ca passe directement a hold donc il faut ajouter un timer
+                Controller.SetState<HoldCombinedState>();
             }
         }
 
         public override void OnExit()
         {
             base.OnExit();
-            Debug.Log("Exiting ClickState");
+            Debug.Log("Exiting ClickSubState");
         }
     }
 }

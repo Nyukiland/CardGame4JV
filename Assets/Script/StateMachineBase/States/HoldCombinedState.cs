@@ -2,9 +2,14 @@ using CardGame.StateMachine;
 
 namespace CardGame.StateMachine
 {
-    public class HoldState : State
+    public class HoldCombinedState : CombinedState
     {
         private TimerAbility _timer;
+
+        public HoldCombinedState()
+        {
+            AddSubState(new ClickSubState());
+        }
 
         public override void OnEnter()
         {
@@ -18,7 +23,7 @@ namespace CardGame.StateMachine
 
             if (_timer != null && _timer.IsFinished())
             {
-                Controller.SetState<ClickState>();
+                Controller.SetState<ClickSubState>();
             }
         }
     }
