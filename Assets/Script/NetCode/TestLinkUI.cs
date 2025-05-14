@@ -6,87 +6,97 @@ using UnityEngine;
 using System.Net;
 using TMPro;
 
-public class TestLinkUI : MonoBehaviour
+namespace CardGame.Net
 {
-	[SerializeField]
-	private TextMeshProUGUI _netComText;
-
-	[SerializeField]
-	private TMP_InputField _passwordField, _connectCode;
-
-	[SerializeField]
-	private UnityTransport _transport;
-
-	private string _joinPassword;
-	private string _joinCode;
-
-	private void Start()
+	public class TestLinkUI : MonoBehaviour
 	{
-		// Assign event of connection (host only)
-		NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
-	}
+		[SerializeField]
+		private TextMeshProUGUI _netComText;
 
-	private void Update()
-	{
-		if (NetCommunication.OwnedInstance != null)
-			_netComText.text = NetCommunication.OwnedInstance.gameObject.name + " / \n Join Code: " + _joinCode;
-	}
+		[SerializeField]
+		private TMP_InputField _passwordField, _connectCode;
 
-	private void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
-	{
-		var reader = new FastBufferReader(request.Payload, Allocator.None);
-		reader.ReadValueSafe(out FixedString32Bytes receivedPassword);
+		[SerializeField]
+		private UnityTransport _transport;
 
-		if (receivedPassword.ToString() == _joinPassword)
+		private string _joinPassword;
+		private string _joinCode;
+
+		private void Start()
 		{
-			response.Approved = true;
-			response.CreatePlayerObject = true;
-		}
-		else
-		{
-			response.Approved = false;
-			Debug.LogWarning("Client rejected: wrong password");
+			// Assign event of connection (host only)
+			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
 		}
 
-		response.Pending = false;
-	}
-
-	public void StartHost()
-	{
-		_joinPassword =  _passwordField.text;
-
-		string localIP = GetLocalIPv4();
-		ushort port = 7777;
-
-		_joinCode = CodeNetUtility.GetJoinCode(localIP, port);
-
-		_transport.SetConnectionData(localIP, port);
-		NetworkManager.Singleton.StartHost();
-		Debug.Log($"[Host] Started on {localIP}:{port} with password '{_joinPassword}'");
-	}
-
-	public void JoinGame()
-	{
-		string password = _passwordField.text;
-		string joinCode = _connectCode.text;
-
-		CodeNetUtility.DecodeJoinCode(joinCode, out string ip, out ushort port);
-		_transport.SetConnectionData(ip, port);
-
-		var writer = new FastBufferWriter(32, Allocator.Temp);
-		writer.WriteValueSafe(new FixedString32Bytes(password));
-		NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
-
-		NetworkManager.Singleton.StartClient();
-	}
-
-	private string GetLocalIPv4()
-	{
-		foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+		private void Update()
 		{
-			if (ip.AddressFamily == AddressFamily.InterNetwork)
-				return ip.ToString();
+			if (NetCommunication.OwnedInstance != null)
+				_netComText.text = NetCommunication.OwnedInstance.gameObject.name + " / \n Join Code: " + _joinCode;
 		}
-		return "127.0.0.1";
+
+		private void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+		{
+			var reader = new FastBufferReader(request.Payload, Allocator.None);
+			reader.ReadValueSafe(out FixedString32Bytes receivedPassword);
+
+			if (receivedPassword.ToString() == _joinPassword)
+			{
+				response.Approved = true;
+				response.CreatePlayerObject = true;
+			}
+			else
+			{
+				response.Approved = false;
+				Debug.LogWarning("Client rejected: wrong password");
+			}
+
+			response.Pending = false;
+		}
+
+		public void StartHost()
+		{
+			_joinPassword = _passwordField.text;
+
+			string localIP = GetLocalIPv4();
+			ushort port = 7777;
+
+			_joinCode = CodeNetUtility.GetJoinCode(localIP, port);
+
+			_transport.SetConnectionData(localIP, port);
+			NetworkManager.Singleton.StartHost();
+			Debug.Log($"[Host] Started on {localIP}:{port} with password '{_joinPassword}'");
+		}
+
+		public void JoinGame()
+		{
+			string password = _passwordField.text;
+			string joinCode = _connectCode.text;
+
+			CodeNetUtility.DecodeJoinCode(joinCode, out string ip, out ushort port);
+			_transport.SetConnectionData(ip, port);
+
+			var writer = new FastBufferWriter(32, Allocator.Temp);
+			writer.WriteValueSafe(new FixedString32Bytes(password));
+			NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
+
+			NetworkManager.Singleton.StartClient();
+		}
+
+		private string GetLocalIPv4()
+		{
+			foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+			{
+				if (ip.AddressFamily == AddressFamily.InterNetwork)
+					return ip.ToString();
+			}
+			return "127.0.0.1";
+		}
+
+		public void SendInfo()
+		{
+			DataNetcode info = new DataNetcode($"{NetCommunication.OwnedInstance.gameObject.name}");
+
+			NetCommunication.OwnedInstance.SubmitInfoToServerRpc(info);
+		}
 	}
 }
