@@ -11,7 +11,7 @@ namespace CardGame.Net
 	public class TestLinkUI : MonoBehaviour
 	{
 		[SerializeField]
-		private TextMeshProUGUI _netComText;
+		private TextMeshProUGUI _netComText, _receivedInfo;
 
 		[SerializeField]
 		private TMP_InputField _passwordField, _connectCode;
@@ -22,6 +22,8 @@ namespace CardGame.Net
 		private string _joinPassword;
 		private string _joinCode;
 
+		private bool _doOnceOnInstance;
+
 		private void Start()
 		{
 			// Assign event of connection (host only)
@@ -31,7 +33,34 @@ namespace CardGame.Net
 		private void Update()
 		{
 			if (NetCommunication.OwnedInstance != null)
+			{
 				_netComText.text = NetCommunication.OwnedInstance.gameObject.name + " / \n Join Code: " + _joinCode;
+				_receivedInfo.text = NetCommunication.OwnedInstance.DataNetcode.Text;
+
+				if (!_doOnceOnInstance)
+				{
+					_doOnceOnInstance = true;
+					UnityEngine.Debug.Log("suscribe");
+					NetCommunication.OwnedInstance.link = this;
+					NetCommunication.OwnedInstance.ReceiveEvent += NetCommunication_ReceiveEvent;
+				}
+			}
+		}
+
+		private void OnDestroy()
+		{
+			if (NetCommunication.OwnedInstance != null)
+			{
+				UnityEngine.Debug.Log("unsuscribe");
+				NetCommunication.OwnedInstance.ReceiveEvent -= NetCommunication_ReceiveEvent;
+			}
+		}
+
+		private void NetCommunication_ReceiveEvent(DataNetcode data)
+		{
+			
+			UnityEngine.Debug.Log("event");
+			_receivedInfo.text = data.Text;
 		}
 
 		private void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
@@ -64,7 +93,6 @@ namespace CardGame.Net
 
 			_transport.SetConnectionData(localIP, port);
 			NetworkManager.Singleton.StartHost();
-			Debug.Log($"[Host] Started on {localIP}:{port} with password '{_joinPassword}'");
 		}
 
 		public void JoinGame()
@@ -97,6 +125,11 @@ namespace CardGame.Net
 			DataNetcode info = new DataNetcode($"{NetCommunication.OwnedInstance.gameObject.name}");
 
 			NetCommunication.OwnedInstance.SubmitInfoToServerRpc(info);
+		}
+
+		public void Receive(DataNetcode data)
+		{
+			UnityEngine.Debug.Log("HAHAHAHAH /" + data.Text);
 		}
 	}
 }

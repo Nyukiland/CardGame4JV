@@ -753,7 +753,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &611764646
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1615,6 +1615,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _netComText: {fileID: 1760060558}
+  _receivedInfo: {fileID: 611764647}
   _passwordField: {fileID: 287902978}
   _connectCode: {fileID: 1116354625}
   _transport: {fileID: 1664309942}
