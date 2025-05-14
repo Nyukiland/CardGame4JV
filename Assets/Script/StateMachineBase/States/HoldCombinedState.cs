@@ -8,7 +8,7 @@ namespace CardGame.StateMachine
 
         public HoldCombinedState()
         {
-            AddSubState(new ClickSubState());
+            //AddSubState(new ClickSubState());
         }
 
         public override void OnEnter()
@@ -23,7 +23,7 @@ namespace CardGame.StateMachine
 
             if (_timer != null && _timer.IsFinished())
             {
-                Controller.SetState<ClickSubState>();
+                Controller.SetState<ControlCombinedState>();
             }
         }
     }
