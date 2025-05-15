@@ -3,9 +3,14 @@ using UnityEngine;
 
 namespace CardGame.Blanco
 {
-    public class HoldState : State
+    public class HoldCombinedState : CombinedState
     {
         private TimerAbility _timerAbility;
+        
+        public HoldCombinedState()
+        {
+            AddSubState(new ClickSubState());
+        }
         
         public override void OnEnter()
         {
@@ -16,7 +21,7 @@ namespace CardGame.Blanco
         {
             if (_timerAbility.ElapsedTime > TimerAbility.HOLD_DURATION)
             {
-                Controller.SetState(typeof(ClickState));
+                Controller.SetState(typeof(ControlCombinedState));
             }
         }
     }
