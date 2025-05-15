@@ -35,13 +35,11 @@ namespace CardGame.Net
 			if (NetCommunication.OwnedInstance != null)
 			{
 				_netComText.text = NetCommunication.OwnedInstance.gameObject.name + " / \n Join Code: " + _joinCode;
-				_receivedInfo.text = NetCommunication.OwnedInstance.DataNetcode.Text;
 
 				if (!_doOnceOnInstance)
 				{
 					_doOnceOnInstance = true;
 					UnityEngine.Debug.Log("suscribe");
-					NetCommunication.OwnedInstance.link = this;
 					NetCommunication.OwnedInstance.ReceiveEvent += NetCommunication_ReceiveEvent;
 				}
 			}
@@ -58,7 +56,6 @@ namespace CardGame.Net
 
 		private void NetCommunication_ReceiveEvent(DataNetcode data)
 		{
-			
 			UnityEngine.Debug.Log("event");
 			_receivedInfo.text = data.Text;
 		}
@@ -124,12 +121,7 @@ namespace CardGame.Net
 		{
 			DataNetcode info = new DataNetcode($"{NetCommunication.OwnedInstance.gameObject.name}");
 
-			NetCommunication.OwnedInstance.SubmitInfoToServerRpc(info);
-		}
-
-		public void Receive(DataNetcode data)
-		{
-			UnityEngine.Debug.Log("HAHAHAHAH /" + data.Text);
+			NetCommunication.OwnedInstance.SubmitInfo(info);
 		}
 	}
 }

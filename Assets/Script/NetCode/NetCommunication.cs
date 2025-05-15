@@ -1,60 +1,56 @@
-using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace CardGame.Net
 {
-	public delegate void ReceiveEventDelegate(DataNetcode data);
 	public class NetCommunication : NetworkBehaviour
 	{
 		public static NetCommunication OwnedInstance { get; private set; }
 
+		public delegate void ReceiveEventDelegate(DataNetcode data);
 		public event ReceiveEventDelegate ReceiveEvent;
 
-		public DataNetcode DataNetcode { get; private set; } = new();
+		public NetworkVariable<DataNetcode> SyncedData = new(
+			new DataNetcode(),
+			NetworkVariableReadPermission.Everyone,
+			NetworkVariableWritePermission.Server);
 
-		public TestLinkUI link;
-
-		void Start()
+		public override void OnNetworkSpawn()
 		{
-			if (IsOwner)
+			if (IsClient)
 			{
-				gameObject.name = "netcom" + NetworkObjectId;
 				OwnedInstance = this;
+			}
+			SyncedData.OnValueChanged += OnDataChanged;
+		}
+
+		public override void OnNetworkDespawn()
+		{
+			SyncedData.OnValueChanged -= OnDataChanged;
+		}
+
+		private void OnDataChanged(DataNetcode prev, DataNetcode current)
+		{
+			if (!IsServer)
+			{
+				Debug.Log($"[Client] Data changed: {current.Text}");
+				ReceiveEvent?.Invoke(current);
+			}
+		}
+
+		public void SubmitInfo(DataNetcode info)
+		{
+			if (IsOwner && IsClient)
+			{
+				SubmitInfoServerRpc(info);
 			}
 		}
 
 		[ServerRpc(RequireOwnership = false)]
-		public void SubmitInfoToServerRpc(DataNetcode info, ServerRpcParams rpcParams = default)
+		private void SubmitInfoServerRpc(DataNetcode data)
 		{
-			ulong senderId = rpcParams.Receive.SenderClientId;
-			Debug.Log($"[Server] Received from {senderId}: {info.Text}");
-
-			// Find the other client
-			ulong targetClientId = NetworkManager.Singleton.ConnectedClientsIds
-				.FirstOrDefault(id => id != senderId);
-
-			Debug.Log($"[Server] Will send to: {targetClientId}");
-
-			var clientParams = new ClientRpcParams
-			{
-				Send = new ClientRpcSendParams
-				{
-					TargetClientIds = new[] { targetClientId }
-				}
-			};
-
-			SendInfoToClientRpc(info, clientParams);
-		}
-
-		[ClientRpc]
-		public void SendInfoToClientRpc(DataNetcode info, ClientRpcParams rpcParams = default)
-		{
-			Debug.Log($"[Client] Received info: {info.Text}");
-			ReceiveEvent?.Invoke(info);
-			DataNetcode = info;
-
-			link.Receive(info);
+			Debug.Log($"[Server] Received from client: {data.Text}");
+			SyncedData.Value = data;
 		}
 	}
 }
