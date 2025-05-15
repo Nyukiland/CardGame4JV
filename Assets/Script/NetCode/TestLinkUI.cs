@@ -1,4 +1,5 @@
 using Unity.Netcode.Transports.UTP;
+using System.Collections;
 using System.Net.Sockets;
 using Unity.Collections;
 using Unity.Netcode;
@@ -10,6 +11,9 @@ namespace CardGame.Net
 {
 	public class TestLinkUI : MonoBehaviour
 	{
+		[SerializeField, Disable]
+		private NetCommunication _netCommunication;
+
 		[SerializeField]
 		private TextMeshProUGUI _netComText, _receivedInfo;
 
@@ -22,47 +26,32 @@ namespace CardGame.Net
 		private string _joinPassword;
 		private string _joinCode;
 
-		private bool _doOnceOnInstance;
-
-		private void Start()
-		{
-			// Assign event of connection (host only)
-			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
-		}
 
 		private void Update()
 		{
-			if (NetCommunication.OwnedInstance != null)
+			if (_netCommunication != null)
 			{
-				_netComText.text = NetCommunication.OwnedInstance.gameObject.name + " / \n Join Code: " + _joinCode;
-
-				if (!_doOnceOnInstance)
-				{
-					_doOnceOnInstance = true;
-					UnityEngine.Debug.Log("suscribe");
-					NetCommunication.OwnedInstance.ReceiveEvent += NetCommunication_ReceiveEvent;
-				}
+				_netComText.text = _netCommunication.gameObject.name + " / \n Join Code: " + _joinCode;
+				_receivedInfo.text = _netCommunication.SyncedData.Value.Text;
 			}
 		}
 
 		private void OnDestroy()
 		{
-			if (NetCommunication.OwnedInstance != null)
+			if (_netCommunication != null)
 			{
-				UnityEngine.Debug.Log("unsuscribe");
-				NetCommunication.OwnedInstance.ReceiveEvent -= NetCommunication_ReceiveEvent;
+				_netCommunication.ReceiveEvent -= NetCommunication_ReceiveEvent;
 			}
 		}
 
 		private void NetCommunication_ReceiveEvent(DataNetcode data)
 		{
-			UnityEngine.Debug.Log("event");
-			_receivedInfo.text = data.Text;
+			_receivedInfo.text = _netCommunication.SyncedData.Value.Text;
 		}
 
 		private void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 		{
-			var reader = new FastBufferReader(request.Payload, Allocator.None);
+			FastBufferReader reader = new(request.Payload, Allocator.None);
 			reader.ReadValueSafe(out FixedString32Bytes receivedPassword);
 
 			if (receivedPassword.ToString() == _joinPassword)
@@ -73,7 +62,7 @@ namespace CardGame.Net
 			else
 			{
 				response.Approved = false;
-				Debug.LogWarning("Client rejected: wrong password");
+				UnityEngine.Debug.LogWarning($"[{nameof(TestLinkUI)}] Client rejected: wrong password");
 			}
 
 			response.Pending = false;
@@ -81,6 +70,8 @@ namespace CardGame.Net
 
 		public void StartHost()
 		{
+			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
+
 			_joinPassword = _passwordField.text;
 
 			string localIP = GetLocalIPv4();
@@ -90,6 +81,7 @@ namespace CardGame.Net
 
 			_transport.SetConnectionData(localIP, port);
 			NetworkManager.Singleton.StartHost();
+			StartCoroutine(GetNetComForThisClient());
 		}
 
 		public void JoinGame()
@@ -97,19 +89,24 @@ namespace CardGame.Net
 			string password = _passwordField.text;
 			string joinCode = _connectCode.text;
 
+			_joinCode = "joined";
+
+			if (string.IsNullOrEmpty(joinCode)) return;
+
 			CodeNetUtility.DecodeJoinCode(joinCode, out string ip, out ushort port);
 			_transport.SetConnectionData(ip, port);
 
-			var writer = new FastBufferWriter(32, Allocator.Temp);
+			FastBufferWriter writer = new(32, Allocator.Temp);
 			writer.WriteValueSafe(new FixedString32Bytes(password));
 			NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
 
 			NetworkManager.Singleton.StartClient();
+			StartCoroutine(GetNetComForThisClient());
 		}
 
 		private string GetLocalIPv4()
 		{
-			foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+			foreach (IPAddress ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
 			{
 				if (ip.AddressFamily == AddressFamily.InterNetwork)
 					return ip.ToString();
@@ -117,11 +114,23 @@ namespace CardGame.Net
 			return "127.0.0.1";
 		}
 
+		private IEnumerator GetNetComForThisClient()
+		{
+			NetCommunication netCom = null;
+			while(!NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom))
+			{
+				yield return null;
+			}
+
+			_netCommunication = netCom;
+			_netCommunication.ReceiveEvent += NetCommunication_ReceiveEvent;
+		}
+
 		public void SendInfo()
 		{
-			DataNetcode info = new DataNetcode($"{NetCommunication.OwnedInstance.gameObject.name}");
+			DataNetcode info = new DataNetcode(_netCommunication.name + " / \n password: " + _passwordField.text);
 
-			NetCommunication.OwnedInstance.SubmitInfo(info);
+			_netCommunication.SubmitInfo(info);
 		}
 	}
 }

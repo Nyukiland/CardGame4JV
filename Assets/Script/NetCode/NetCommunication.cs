@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -5,7 +6,7 @@ namespace CardGame.Net
 {
 	public class NetCommunication : NetworkBehaviour
 	{
-		public static NetCommunication OwnedInstance { get; private set; }
+		public static Dictionary<ulong, NetCommunication> Instances = new();
 
 		public delegate void ReceiveEventDelegate(DataNetcode data);
 		public event ReceiveEventDelegate ReceiveEvent;
@@ -17,40 +18,50 @@ namespace CardGame.Net
 
 		public override void OnNetworkSpawn()
 		{
-			if (IsClient)
+			if (!Instances.ContainsKey(OwnerClientId))
 			{
-				OwnedInstance = this;
+				Instances.Add(OwnerClientId, this);
 			}
+
+			gameObject.name = "netcom" + NetworkObjectId;
+
 			SyncedData.OnValueChanged += OnDataChanged;
 		}
 
 		public override void OnNetworkDespawn()
 		{
+			Instances.Remove(OwnerClientId);
 			SyncedData.OnValueChanged -= OnDataChanged;
 		}
 
 		private void OnDataChanged(DataNetcode prev, DataNetcode current)
 		{
-			if (!IsServer)
-			{
-				Debug.Log($"[Client] Data changed: {current.Text}");
-				ReceiveEvent?.Invoke(current);
-			}
+			ReceiveEvent?.Invoke(current);
 		}
 
 		public void SubmitInfo(DataNetcode info)
 		{
-			if (IsOwner && IsClient)
+			if (IsServer || IsOwner)
 			{
 				SubmitInfoServerRpc(info);
 			}
 		}
 
 		[ServerRpc(RequireOwnership = false)]
-		private void SubmitInfoServerRpc(DataNetcode data)
+		private void SubmitInfoServerRpc(DataNetcode data, ServerRpcParams rpcParams = default)
 		{
-			Debug.Log($"[Server] Received from client: {data.Text}");
-			SyncedData.Value = data;
+			ulong senderClientId = rpcParams.Receive.SenderClientId;
+
+			foreach (var kvp in Instances)
+			{
+				ulong targetClientId = kvp.Key;
+				var instance = kvp.Value;
+
+				if (targetClientId != senderClientId)
+				{
+					instance.SyncedData.Value = data;
+				}
+			}
 		}
 	}
 }
