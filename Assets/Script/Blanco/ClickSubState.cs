@@ -12,7 +12,7 @@ namespace CardGame.Blanco
                 Touch currentTouch = Input.GetTouch(0);
                 if (currentTouch.phase == TouchPhase.Began)
                 {
-                    Controller.SetState(typeof(HoldCombinedState));
+                    Controller.SetState(typeof(ControlCombinedState));
                 }
             }
         }
