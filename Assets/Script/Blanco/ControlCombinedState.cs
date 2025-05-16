@@ -5,13 +5,12 @@ namespace CardGame.Blanco
 {
     public class ControlCombinedState : CombinedState
     {
-        private MoveCardAbility _moveCardAbility = new();
-        private ObjectManagerResource _objectManagerResource = new();
+        private MoveCardAbility _moveCardAbility;
+        private ObjectManagerResource _objectManagerResource;
         private Touch _currentTouch;
-        
-        public ControlCombinedState()
+
+        public override void OnEnter()
         {
-            Debug.Log($"ControlCombinedState");
             GetStateComponent(ref _moveCardAbility);
             GetStateComponent(ref _objectManagerResource);
         }

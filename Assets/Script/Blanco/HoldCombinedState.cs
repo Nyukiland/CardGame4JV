@@ -7,7 +7,7 @@ namespace CardGame.Blanco
     {
         public HoldCombinedState()
         {
-            Debug.Log($"HoldCombinedState");
+            AddSubState(new ClickSubState());
         }
     }
 }
