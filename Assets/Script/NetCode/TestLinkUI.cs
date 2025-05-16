@@ -1,6 +1,6 @@
 using Unity.Netcode.Transports.UTP;
-using System.Collections;
 using System.Net.Sockets;
+using System.Collections;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -25,7 +25,6 @@ namespace CardGame.Net
 
 		private string _joinPassword;
 		private string _joinCode;
-
 
 		private void Update()
 		{
@@ -131,6 +130,13 @@ namespace CardGame.Net
 			DataNetcode info = new DataNetcode(_netCommunication.name + " / \n password: " + _passwordField.text);
 
 			_netCommunication.SubmitInfo(info);
+		}
+
+		public void CopyJoinCode()
+		{
+			if (string.IsNullOrEmpty(_joinCode)) return;
+
+			CopyHandler.CopyToClipboard(_joinCode);
 		}
 	}
 }
