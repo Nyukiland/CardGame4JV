@@ -88,20 +88,19 @@ namespace CardGame.Net
 			string password = _passwordField.text;
 			string joinCode = _connectCode.text;
 
-			_joinCode = "joined";
-
 			if (string.IsNullOrEmpty(joinCode)) return;
 
 			CodeNetUtility.DecodeJoinCode(joinCode, out string ip, out ushort port);
+
 			_transport.SetConnectionData(ip, port);
 
-			FastBufferWriter writer = new(32, Allocator.Temp);
+			var writer = new FastBufferWriter(32, Allocator.Temp);
 			writer.WriteValueSafe(new FixedString32Bytes(password));
 			NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
 
-			NetworkManager.Singleton.StartClient();
-			StartCoroutine(GetNetComForThisClient());
+			StartCoroutine(SafeConnectRoutine());
 		}
+
 
 		private string GetLocalIPv4()
 		{
@@ -138,5 +137,57 @@ namespace CardGame.Net
 
 			CopyHandler.CopyToClipboard(_joinCode);
 		}
+
+		private IEnumerator SafeConnectRoutine()
+		{
+			bool connectionResultReceived = false;
+			bool connectionSucceeded = false;
+			float elapsed = 0f;
+
+			NetworkManager.Singleton.OnClientConnectedCallback += OnConnected;
+			NetworkManager.Singleton.OnClientDisconnectCallback += OnDisconnected;
+
+			NetworkManager.Singleton.StartClient();
+
+
+			while (!connectionResultReceived && elapsed < 2)
+			{
+				elapsed += Time.deltaTime;
+				yield return null;
+			}
+
+			NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
+			NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
+
+			if (connectionSucceeded)
+			{
+				//Connection success
+				StartCoroutine(GetNetComForThisClient());
+			}
+			else
+			{
+				//Connection fail
+				NetworkManager.Singleton.Shutdown(); // Important to stop retries and Baselib errors
+			}
+
+			void OnConnected(ulong clientId)
+			{
+				if (clientId == NetworkManager.Singleton.LocalClientId)
+				{
+					connectionResultReceived = true;
+					connectionSucceeded = true;
+				}
+			}
+
+			void OnDisconnected(ulong clientId)
+			{
+				if (clientId == NetworkManager.Singleton.LocalClientId)
+				{
+					connectionResultReceived = true;
+					connectionSucceeded = false;
+				}
+			}
+		}
+
 	}
 }
