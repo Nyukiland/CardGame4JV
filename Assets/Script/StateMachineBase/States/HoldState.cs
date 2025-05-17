@@ -4,20 +4,19 @@ namespace CardGame.StateMachine
 {
 	public class HoldState : State
 	{
-        private float _elapsedTime;
+        private TimerAbility _timerAbility;
 
         public override void OnEnter()
         {
             Debug.Log("HoldState");
+            GetStateComponent(ref _timerAbility);
         }
 
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
 
-            _elapsedTime += deltaTime;
-
-            if (_elapsedTime >= 2.0f)
+            if (_timerAbility.GetElapsedTime() >= 2.0f)
                 Controller.SetState<ClickState>();
         }
     }
