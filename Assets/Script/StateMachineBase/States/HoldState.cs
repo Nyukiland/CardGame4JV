@@ -1,27 +1,23 @@
 using UnityEngine;
 
-
 namespace CardGame.StateMachine
 {
 	public class HoldState : State
 	{
-        float elapsedTime;
+        private float _elapsedTime;
 
         public override void OnEnter()
         {
             Debug.Log("HoldState");
         }
 
-
-        
-
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
 
-            elapsedTime += deltaTime;
+            _elapsedTime += deltaTime;
 
-            if (elapsedTime >= 2.0f)
+            if (_elapsedTime >= 2.0f)
                 Controller.SetState<ClickState>();
         }
     }
