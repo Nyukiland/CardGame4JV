@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Unity.Netcode;
-using UnityEngine;
 
 namespace CardGame.Net
 {
@@ -55,7 +54,7 @@ namespace CardGame.Net
 			foreach (var kvp in Instances)
 			{
 				ulong targetClientId = kvp.Key;
-				var instance = kvp.Value;
+				NetCommunication instance = kvp.Value;
 
 				if (targetClientId != senderClientId)
 				{

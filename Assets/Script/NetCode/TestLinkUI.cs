@@ -1,11 +1,15 @@
 using Unity.Netcode.Transports.UTP;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using System.Net.Sockets;
-using System.Collections;
 using Unity.Collections;
+using UnityEngine.UI;
 using Unity.Netcode;
 using UnityEngine;
 using System.Net;
+using System;
 using TMPro;
+using System.Linq;
 
 namespace CardGame.Net
 {
@@ -14,17 +18,35 @@ namespace CardGame.Net
 		[SerializeField, Disable]
 		private NetCommunication _netCommunication;
 
+		[SerializeField, Disable]
+		private LanSearchBeacon _lanSearch;
+
 		[SerializeField]
 		private TextMeshProUGUI _netComText, _receivedInfo;
 
 		[SerializeField]
-		private TMP_InputField _passwordField, _connectCode;
+		private TMP_InputField _passwordField, _connectCode, _gameName;
 
 		[SerializeField]
+		private Toggle _toggleHost;
+
+		[SerializeField]
+		private VerticalLayoutGroup _publicSessionVerticalLayout;
+
+		[SerializeField]
+		private GameObject _displayPublic;
+
 		private UnityTransport _transport;
 
 		private string _joinPassword;
 		private string _joinCode;
+
+		private void Start()
+		{
+			_transport = NetworkManager.Singleton.gameObject.GetComponent<UnityTransport>();
+			_lanSearch = GetComponent<LanSearchBeacon>();
+			_lanSearch.OnHostsUpdated += UpdateConnectionList;
+		}
 
 		private void Update()
 		{
@@ -41,12 +63,27 @@ namespace CardGame.Net
 			{
 				_netCommunication.ReceiveEvent -= NetCommunication_ReceiveEvent;
 			}
+
+			if (_lanSearch != null)
+			{
+				_lanSearch.OnHostsUpdated -= UpdateConnectionList;
+			}
 		}
 
 		private void NetCommunication_ReceiveEvent(DataNetcode data)
 		{
 			_receivedInfo.text = _netCommunication.SyncedData.Value.Text;
 		}
+
+		public void SendInfo()
+		{
+			DataNetcode info = new DataNetcode(_netCommunication.name + " / \n password: " + _passwordField.text);
+
+			_netCommunication.SubmitInfo(info);
+		}
+
+
+		#region Connection
 
 		private void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 		{
@@ -69,36 +106,74 @@ namespace CardGame.Net
 
 		public void StartHost()
 		{
-			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
+			if (string.IsNullOrEmpty(_gameName.text)) return;
 
+			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
 			_joinPassword = _passwordField.text;
 
 			string localIP = GetLocalIPv4();
-			ushort port = 7777;
+			ushort startingPort = 60121;
+			ushort maxPort = 60200;
+			ushort selectedPort = startingPort;
 
-			_joinCode = CodeNetUtility.GetJoinCode(localIP, port);
+			// Find a free port
+			while (selectedPort <= maxPort)
+			{
+				if (IsPortAvailable(localIP, selectedPort))
+					break;
 
-			_transport.SetConnectionData(localIP, port);
+				selectedPort++;
+			}
+
+			if (selectedPort > maxPort)
+			{
+				UnityEngine.Debug.LogError($"[{nameof(TestLinkUI)}] No available ports found in the specified range.", this);
+				return;
+			}
+
+			_joinCode = CodeNetUtility.GetJoinCode(localIP, selectedPort);
+
+			_transport.SetConnectionData(localIP, selectedPort);
 			NetworkManager.Singleton.StartHost();
-			StartCoroutine(GetNetComForThisClient());
+
+			if (_toggleHost.isOn)
+				_lanSearch.StartBroadcast(_gameName.text, selectedPort, _joinCode);
+
+			GetNetComForThisClientAsync().Forget();
 		}
 
-		public void JoinGame()
+		private bool IsPortAvailable(string ip, int port)
+		{
+			try
+			{
+				TcpListener listener = new TcpListener(IPAddress.Parse(ip), port);
+				listener.Start();
+				listener.Stop();
+				return true;
+			}
+			catch (SocketException)
+			{
+				return false;
+			}
+		}
+
+		public void JoinGame(string joinCode = default)
 		{
 			string password = _passwordField.text;
-			string joinCode = _connectCode.text;
+			if (string.IsNullOrEmpty(joinCode)) joinCode = _connectCode.text;
 
+			//if still empty return
 			if (string.IsNullOrEmpty(joinCode)) return;
 
 			CodeNetUtility.DecodeJoinCode(joinCode, out string ip, out ushort port);
 
 			_transport.SetConnectionData(ip, port);
 
-			var writer = new FastBufferWriter(32, Allocator.Temp);
+			FastBufferWriter writer = new(32, Allocator.Temp);
 			writer.WriteValueSafe(new FixedString32Bytes(password));
 			NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
 
-			StartCoroutine(SafeConnectRoutine());
+			SafeConnectAsync().Forget();
 		}
 
 
@@ -112,48 +187,22 @@ namespace CardGame.Net
 			return "127.0.0.1";
 		}
 
-		private IEnumerator GetNetComForThisClient()
-		{
-			NetCommunication netCom = null;
-			while(!NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom))
-			{
-				yield return null;
-			}
-
-			_netCommunication = netCom;
-			_netCommunication.ReceiveEvent += NetCommunication_ReceiveEvent;
-		}
-
-		public void SendInfo()
-		{
-			DataNetcode info = new DataNetcode(_netCommunication.name + " / \n password: " + _passwordField.text);
-
-			_netCommunication.SubmitInfo(info);
-		}
-
-		public void CopyJoinCode()
-		{
-			if (string.IsNullOrEmpty(_joinCode)) return;
-
-			CopyHandler.CopyToClipboard(_joinCode);
-		}
-
-		private IEnumerator SafeConnectRoutine()
+		private async UniTask SafeConnectAsync()
 		{
 			bool connectionResultReceived = false;
 			bool connectionSucceeded = false;
-			float elapsed = 0f;
+			float timeout = 2f;
 
 			NetworkManager.Singleton.OnClientConnectedCallback += OnConnected;
 			NetworkManager.Singleton.OnClientDisconnectCallback += OnDisconnected;
 
 			NetworkManager.Singleton.StartClient();
 
-
-			while (!connectionResultReceived && elapsed < 2)
+			float elapsed = 0f;
+			while (!connectionResultReceived && elapsed < timeout)
 			{
 				elapsed += Time.deltaTime;
-				yield return null;
+				await UniTask.Yield(); // non-blocking
 			}
 
 			NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
@@ -161,13 +210,12 @@ namespace CardGame.Net
 
 			if (connectionSucceeded)
 			{
-				//Connection success
-				StartCoroutine(GetNetComForThisClient());
+				TogglePublicSearch(false);
+				await GetNetComForThisClientAsync();
 			}
 			else
 			{
-				//Connection fail
-				NetworkManager.Singleton.Shutdown(); // Important to stop retries and Baselib errors
+				NetworkManager.Singleton.Shutdown();
 			}
 
 			void OnConnected(ulong clientId)
@@ -189,5 +237,83 @@ namespace CardGame.Net
 			}
 		}
 
+#endregion
+
+		#region public Connection
+
+		private void UpdateConnectionList(List<LanSearchBeacon.BeaconDataWithIP> listData)
+		{
+			List<LanSearchBeacon.BeaconDataWithIP> listToUse = new(listData);
+			List<string> gameNames = listToUse.Select(x => x.gameName).ToList();
+			List<PublicSessionVisu> sessions = _publicSessionVerticalLayout.GetComponentsInChildren<PublicSessionVisu>().ToList();
+			if (sessions.Count != 0)
+			{
+				for (int i = sessions.Count - 1; i >= 0; i--)
+				{
+					PublicSessionVisu visuSession = sessions[i];
+					if (gameNames.Contains(visuSession.GameName))
+					{
+						int index = gameNames.IndexOf(visuSession.GameName);
+						gameNames.RemoveAt(index);
+						listToUse.RemoveAt(index);
+					}
+					else
+					{
+						sessions.RemoveAt(i);
+						Destroy(visuSession.gameObject);
+					}
+				}
+			}
+
+			foreach (LanSearchBeacon.BeaconDataWithIP data in listToUse)
+			{
+				PublicSessionVisu session = Instantiate(_displayPublic, _publicSessionVerticalLayout.transform).GetComponent<PublicSessionVisu>();
+				session.SetUpVisu(data.gameName, data.joinCode, this);
+			}
+		}
+
+		public void TogglePublicSearch(bool isOn)
+		{
+			if (isOn)
+				_lanSearch.StartListening();
+			else
+			{
+				_lanSearch.StopListening();
+				List<PublicSessionVisu> sessions = _publicSessionVerticalLayout.GetComponentsInChildren<PublicSessionVisu>().ToList();
+				if (sessions.Count != 0)
+				{
+					for (int i = sessions.Count - 1; i >= 0; i--)
+					{
+						PublicSessionVisu visuSession = sessions[i];
+
+						sessions.RemoveAt(i);
+						Destroy(visuSession.gameObject);
+					}
+				}
+			}
+		}
+
+		#endregion
+
+		#region Useful
+
+		private async UniTask GetNetComForThisClientAsync()
+		{
+			NetCommunication netCom = null;
+
+			await UniTask.WaitUntil(() =>
+				NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom));
+
+			_netCommunication = netCom;
+			_netCommunication.ReceiveEvent += NetCommunication_ReceiveEvent;
+		}
+		public void CopyJoinCode()
+		{
+			if (string.IsNullOrEmpty(_joinCode)) return;
+
+			CopyHandler.CopyToClipboard(_joinCode);
+		}
+
+		#endregion
 	}
 }
