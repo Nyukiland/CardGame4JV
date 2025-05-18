@@ -72,7 +72,7 @@ namespace CardGame.StateMachine
 		{
 			if (!Enabled) return "";
 
-			return $"-----------{Owner.GetType().Name} \n" + DisplayInfo();
+			return $"--{GetType().Name} \n" + DisplayInfo();
 		}
 
 		public virtual string DisplayInfo()

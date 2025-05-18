@@ -73,5 +73,17 @@ namespace CardGame.StateMachine
 				subState.FixedUpdate(fixedDeltaTime);
 			}
 		}
+
+		public string GetSubstateDisplayInfo()
+		{
+			string t = string.Empty;
+
+			foreach (State subState in _subStates)
+			{
+				t += "\n" + subState.DisplayInfoController();
+			}
+
+			return t;
+		}
 	}
 }

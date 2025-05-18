@@ -179,6 +179,8 @@ namespace CardGame.StateMachine
 				$"Previous State: {PrevState} \n" + 
 				$"Current State: {CurrentState}";
 
+			if (_state != null) text += "\n" + _state.DisplayInfoController();
+
 			foreach (StateComponent component in _components)
 			{
 				string t = component.DisplayInfoController();

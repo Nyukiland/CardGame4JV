@@ -25,5 +25,22 @@ namespace CardGame.StateMachine
 		public virtual void Update(float deltaTime) { }
 
 		public virtual void FixedUpdate(float fixedDeltaTime) { }
+
+		public string DisplayInfoController()
+		{
+			string text = "\n -----" + this.GetType().Name;
+			text += DisplayInfo();
+
+			//still don't like the cast
+			if (this is CombinedState combined)
+				text += combined.GetSubstateDisplayInfo();
+
+			return text;
+		}
+
+		public virtual string DisplayInfo()
+		{
+			return string.Empty;
+		}
 	}
 }
