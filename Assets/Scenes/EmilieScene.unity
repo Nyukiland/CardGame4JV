@@ -285,7 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7d0d4a543fd10d409b6d9ed0272d34b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultState: CardGame.StateMachine.PlaceCardsCombinedState
+  _defaultState: CardGame.StateMachine.SetupGameCombinedState
   _components:
   - rid: 7022399767708172381
   - rid: 7022399767708172382
@@ -294,6 +294,8 @@ MonoBehaviour:
   - rid: 7022399767708172385
   - rid: 7022399767708172386
   - rid: 7022399767708172387
+  - rid: 7022399767708172388
+  - rid: 7022399767708172389
   references:
     version: 2
     RefIds:
@@ -323,6 +325,14 @@ MonoBehaviour:
         Enabled: 0
     - rid: 7022399767708172387
       type: {class: HoldHandResource, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+    - rid: 7022399767708172388
+      type: {class: CalculateHandResource, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+    - rid: 7022399767708172389
+      type: {class: CreateHandAbility, ns: CardGame.StateMachine, asm: Assembly-CSharp}
       data:
         Enabled: 0
 --- !u!4 &1934208546
