@@ -285,12 +285,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7d0d4a543fd10d409b6d9ed0272d34b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultType: CardGame.StateMachine.SelectFightersCombinedState
+  _defaultState: CardGame.StateMachine.PlaceCardsCombinedState
   _components:
   - rid: 7022399767708172381
   - rid: 7022399767708172382
   - rid: 7022399767708172383
   - rid: 7022399767708172384
+  - rid: 7022399767708172385
+  - rid: 7022399767708172386
+  - rid: 7022399767708172387
   references:
     version: 2
     RefIds:
@@ -308,6 +311,18 @@ MonoBehaviour:
         Enabled: 0
     - rid: 7022399767708172384
       type: {class: SelectTargetAbility, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+    - rid: 7022399767708172385
+      type: {class: HandleStatsResource, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+    - rid: 7022399767708172386
+      type: {class: CreateCardAbility, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+    - rid: 7022399767708172387
+      type: {class: HoldHandResource, ns: CardGame.StateMachine, asm: Assembly-CSharp}
       data:
         Enabled: 0
 --- !u!4 &1934208546
