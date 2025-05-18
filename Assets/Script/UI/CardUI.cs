@@ -11,28 +11,29 @@ namespace CardGame.UI
     {
         #region variables
 
-        [Header("Data")] [SerializeField] private TextMeshProUGUI _lifePoints;
+        [Header("Data")] [SerializeField] private TextMeshProUGUI _healthPoints;
         [SerializeField] private TextMeshProUGUI _attackPoints;
         [SerializeField] private TextMeshProUGUI _manaCost;
 
         [Header("Visuals")] [SerializeField] private Transform _visualContainer;
         [SerializeField] private List<Sprite> _spriteList;
 
-        // private CardData _cardData;
+        private CardData _cardData;
 
         #endregion
 
-        public void InitCard()
+        public void InitCard(CardData cardDataRef)
         {
+            _cardData = cardDataRef;
             UpdateTexts();
             UpdateImages();
         }
 
         public void UpdateTexts()
         {
-            // _lifePoints.text = _cardData.LifePoints;
-            // _attackPoints.text = _cardData.AttackPoints;
-            // _manaCost.text = _cardData.ManaCost;
+            _healthPoints.text = _cardData.CurrentHealthPoints.ToString();
+            _attackPoints.text = _cardData.CurrentAttackPoints.ToString();
+            _manaCost.text = _cardData.CurrentManaCost.ToString();
         }
 
         private void UpdateImages()
