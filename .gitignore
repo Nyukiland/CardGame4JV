@@ -65,6 +65,9 @@ sysinfo.txt
 /[Aa]ssets/Plugins/FMOD/Cache.meta
 /[Aa]ssets/Plugins/FMOD/Cache/Editor.meta
 
+# Mac files
+Assets/Plugins/FMOD/platforms/mac/
+
 # Log-files
 fmod.log
 fmod_editor.log
