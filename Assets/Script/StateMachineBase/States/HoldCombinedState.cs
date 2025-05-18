@@ -8,13 +8,13 @@ namespace CardGame.StateMachine
 
         public HoldCombinedState()
         {
-            Debug.Log("HoldCombinedState");
             AddSubState(new ClickSubState());
         }
 
         public override void OnEnter()
         {
             GetStateComponent(ref _timerAbility);
+            Debug.Log("HoldCombinedState");
         }
 
         public override void OnExit()

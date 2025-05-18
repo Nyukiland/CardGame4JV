@@ -4,15 +4,10 @@ namespace CardGame.StateMachine
 {
     public class ClickSubState : State
     {
-
-        public ClickSubState()
-        {
-            Debug.Log("ClickSubState");
-        }
-
         public override void OnEnter()
         {
             base.OnEnter();
+            Debug.Log("ClickSubState");
         }
 
         public override void OnExit()
