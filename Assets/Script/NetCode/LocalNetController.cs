@@ -12,7 +12,7 @@ using TMPro;
 
 namespace CardGame.Net
 {
-	public class TestLinkUI : MonoBehaviour
+	public class LocalNetController : MonoBehaviour
 	{
 		[SerializeField, Disable]
 		private NetCommunication _netCommunication;
@@ -93,7 +93,7 @@ namespace CardGame.Net
 			{
 				response.Approved = false;
 				response.Pending = false;
-				UnityEngine.Debug.LogWarning($"[{nameof(TestLinkUI)}] Connection rejected: game is full.", this);
+				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetController)}] Connection rejected: game is full.", this);
 				return;
 			}
 
@@ -105,7 +105,7 @@ namespace CardGame.Net
 			else
 			{
 				response.Approved = false;
-				UnityEngine.Debug.LogWarning($"[{nameof(TestLinkUI)}] Connection rejected: wrong password", this);
+				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetController)}] Connection rejected: wrong password", this);
 			}
 
 			response.Pending = false;
@@ -135,7 +135,7 @@ namespace CardGame.Net
 
 			if (selectedPort > maxPort)
 			{
-				UnityEngine.Debug.LogWarning($"[{nameof(TestLinkUI)}] No available ports found in the specified range.", this);
+				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetController)}] No available ports found in the specified range.", this);
 				return;
 			}
 
@@ -154,7 +154,7 @@ namespace CardGame.Net
 		{
 			if (clientId == NetworkManager.Singleton.LocalClientId) return;
 
-			UnityEngine.Debug.LogWarning($"[{nameof(TestLinkUI)}] Client {clientId} disconnected.");
+			UnityEngine.Debug.LogWarning($"[{nameof(LocalNetController)}] Client {clientId} disconnected.");
 		}
 
 		private bool IsPortAvailable(string ip, int port)

@@ -11,9 +11,9 @@ namespace CardGame.Net
 		public string GameName { private set; get; }
 		private string _code;
 
-		private TestLinkUI _testLinkUI;
+		private LocalNetController _testLinkUI;
 
-		public void SetUpVisu(string name, string code, TestLinkUI link)
+		public void SetUpVisu(string name, string code, LocalNetController link)
 		{
 			_textName.text = name;
 			_textCode.text = $"({code})";
