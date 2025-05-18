@@ -8,7 +8,7 @@ namespace CardGame.StateMachine
 	public class Controller : MonoBehaviour, ISelectableInfo
 	{
 		[SerializeField, TypeSelector(typeof(State))]
-		private string _defaultType;
+		private string _defaultState;
 
 		[SerializeField, SerializeReference, SubclassSelector(typeof(StateComponent))]
 		private List<StateComponent> _components = new();
@@ -59,8 +59,8 @@ namespace CardGame.StateMachine
 
 		public Type DefaultStateType
 		{
-			private get => Type.GetType(_defaultType);
-			set => _defaultType = value.AssemblyQualifiedName;
+			private get => Type.GetType(_defaultState);
+			set => _defaultState = value.AssemblyQualifiedName;
 		}
 
 		public string PrevState { get; set; }
@@ -138,6 +138,8 @@ namespace CardGame.StateMachine
 				if (component is T tComponent)
 					return tComponent;
 			}
+
+			UnityEngine.Debug.LogError($"[{nameof(Controller)}] No Component found for `{typeof(T).Name}`");
 			return null;
 		}
 
@@ -168,7 +170,7 @@ namespace CardGame.StateMachine
 		{
 			for (int i = 0; i < _components.Count; i++)
 			{
-				_components[i].OnValidate();
+				if (_components[i] != null) _components[i].OnValidate();
 			}
 		}
 		#endregion
