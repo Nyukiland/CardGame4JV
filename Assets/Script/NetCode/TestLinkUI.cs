@@ -5,11 +5,10 @@ using System.Net.Sockets;
 using Unity.Collections;
 using UnityEngine.UI;
 using Unity.Netcode;
+using System.Linq;
 using UnityEngine;
 using System.Net;
-using System;
 using TMPro;
-using System.Linq;
 
 namespace CardGame.Net
 {
@@ -90,6 +89,14 @@ namespace CardGame.Net
 			FastBufferReader reader = new(request.Payload, Allocator.None);
 			reader.ReadValueSafe(out FixedString32Bytes receivedPassword);
 
+			if (NetworkManager.Singleton.ConnectedClients.Count >= 2)
+			{
+				response.Approved = false;
+				response.Pending = false;
+				UnityEngine.Debug.LogWarning($"[{nameof(TestLinkUI)}] Connection rejected: game is full.", this);
+				return;
+			}
+
 			if (receivedPassword.ToString() == _joinPassword)
 			{
 				response.Approved = true;
@@ -98,7 +105,7 @@ namespace CardGame.Net
 			else
 			{
 				response.Approved = false;
-				UnityEngine.Debug.LogWarning($"[{nameof(TestLinkUI)}] Client rejected: wrong password");
+				UnityEngine.Debug.LogWarning($"[{nameof(TestLinkUI)}] Connection rejected: wrong password", this);
 			}
 
 			response.Pending = false;
@@ -109,6 +116,7 @@ namespace CardGame.Net
 			if (string.IsNullOrEmpty(_gameName.text)) return;
 
 			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
+			NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
 			_joinPassword = _passwordField.text;
 
 			string localIP = GetLocalIPv4();
@@ -127,7 +135,7 @@ namespace CardGame.Net
 
 			if (selectedPort > maxPort)
 			{
-				UnityEngine.Debug.LogError($"[{nameof(TestLinkUI)}] No available ports found in the specified range.", this);
+				UnityEngine.Debug.LogWarning($"[{nameof(TestLinkUI)}] No available ports found in the specified range.", this);
 				return;
 			}
 
@@ -140,6 +148,13 @@ namespace CardGame.Net
 				_lanSearch.StartBroadcast(_gameName.text, selectedPort, _joinCode);
 
 			GetNetComForThisClientAsync().Forget();
+		}
+
+		private void OnClientDisconnected(ulong clientId)
+		{
+			if (clientId == NetworkManager.Singleton.LocalClientId) return;
+
+			UnityEngine.Debug.LogWarning($"[{nameof(TestLinkUI)}] Client {clientId} disconnected.");
 		}
 
 		private bool IsPortAvailable(string ip, int port)
@@ -176,6 +191,32 @@ namespace CardGame.Net
 			SafeConnectAsync().Forget();
 		}
 
+		public void StopHosting()
+		{
+			if (_netCommunication == null || !_netCommunication.IsHost) return;
+
+			_lanSearch.StopBroadcast();
+			
+			DisconnectLogic();
+		}
+
+		public void DisconnectFromGame()
+		{
+			if (_netCommunication == null || !_netCommunication.IsClient) return;
+
+			DisconnectLogic();
+		}
+
+		private void DisconnectLogic()
+		{
+			NetworkManager.Singleton.Shutdown();
+
+			_netCommunication = null;
+			_joinCode = null;
+
+			_netComText.text = string.Empty;
+			_receivedInfo.text = string.Empty;
+		}
 
 		private string GetLocalIPv4()
 		{
@@ -237,7 +278,7 @@ namespace CardGame.Net
 			}
 		}
 
-#endregion
+		#endregion
 
 		#region public Connection
 

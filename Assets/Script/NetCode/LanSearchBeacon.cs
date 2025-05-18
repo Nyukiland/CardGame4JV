@@ -71,7 +71,7 @@ namespace CardGame.Net
 			}
 			catch (Exception e)
 			{
-				Debug.LogError($"Broadcast error: {e.Message}");
+				UnityEngine.Debug.LogError($"[{nameof(LanSearchBeacon)}] Broadcast error: {e.Message}", this);
 			}
 		}
 
@@ -145,7 +145,7 @@ namespace CardGame.Net
 				}
 				catch (Exception e)
 				{
-					UnityEngine.Debug.LogWarning("Invalid beacon: " + e.Message);
+					UnityEngine.Debug.LogWarning($"[{nameof(LanSearchBeacon)}]Invalid beacon: {e.Message}");
 				}
 
 				// Resume listening after handling
