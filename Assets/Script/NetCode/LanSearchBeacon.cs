@@ -12,9 +12,9 @@ namespace CardGame.Net
 {
 	public class LanSearchBeacon : MonoBehaviour
 	{
-		[SerializeField]
+		[SerializeField, LockUser]
 		private int _broadcastPort = 60120;
-		[SerializeField]
+		[SerializeField, LockUser]
 		private float _broadcastInterval = 1.5f;
 
 		private UdpClient _hostUdp;
