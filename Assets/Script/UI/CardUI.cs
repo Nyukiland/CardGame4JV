@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardGame.Card;
 using TMPro;
 using UnityEditor;
 using UnityEngine;

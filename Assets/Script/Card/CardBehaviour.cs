@@ -1,16 +1,21 @@
+using System;
 using System.Drawing;
 
-public class CardBehaviour
+namespace CardGame.Card
 {
-    public void OnTurnStart() { }
-    public void OnTurnEnd() { }
+    [Serializable]
+    public abstract class CardBehaviour
+    {
+        public virtual void OnTurnStart() { }
+        public virtual void OnTurnEnd() { }
 
-    public void OnDrawn() { }
-    public void OnPlaced() { }
-    public void OnDispose() { }
+        public virtual void OnDrawn() { }
+        public virtual void OnPlaced() { }
+        public virtual void OnDisposed() { }
 
-    public void OnAttack() { }
-    public void OnDefend() { }
-    public void OnDeath() { }
-  
+        public virtual void OnAttack() { }
+        public virtual void OnDefend() { }
+        public virtual void OnDeath() { }
+
+    }
 }
