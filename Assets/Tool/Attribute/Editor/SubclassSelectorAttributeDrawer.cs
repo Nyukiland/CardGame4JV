@@ -1,8 +1,10 @@
-using System;
-using System.Linq;
+using UnityEditor.IMGUI.Controls;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using System.Collections.Generic;
+using System.Linq;
+using System;
+using Object = UnityEngine.Object;
 
 //based on Mackysoft's work
 //code : https://github.com/mackysoft/Unity-SerializeReferenceExtensions/blob/main/Assets/MackySoft/MackySoft.SerializeReferenceExtensions/Editor/SubclassSelectorDrawer.cs
@@ -10,7 +12,10 @@ using System.Collections.Generic;
 [CustomPropertyDrawer(typeof(SubclassSelectorAttribute))]
 public class SubclassSelectorAttributeDrawer : PropertyDrawer
 {
-	private static readonly Dictionary<Type, Type[]> DerivedTypesCache = new();
+	private readonly Dictionary<string, TypePopupCache> _typePopups = new();
+	private readonly Dictionary<string, GUIContent> _typeNameCache = new();
+
+	private SerializedProperty _targetProperty;
 
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 	{
@@ -18,85 +23,200 @@ public class SubclassSelectorAttributeDrawer : PropertyDrawer
 
 		if (property.propertyType != SerializedPropertyType.ManagedReference)
 		{
-			EditorGUI.LabelField(position, label.text, "Use with [SerializeReference]");
+			EditorGUI.LabelField(position, label, new GUIContent("Use with [SerializeReference]"));
 			EditorGUI.EndProperty();
 			return;
 		}
 
-		var attr = (SubclassSelectorAttribute)attribute;
-		Type baseType = attr.BaseType;
+		// Draw type selection dropdown
+		Rect labelRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
+		Rect popupRect = EditorGUI.PrefixLabel(labelRect, label);
 
-		// Get or cache derived types
-		if (!DerivedTypesCache.TryGetValue(baseType, out Type[] derivedTypes))
+		if (EditorGUI.DropdownButton(popupRect, GetTypeName(property), FocusType.Keyboard))
 		{
-			derivedTypes = AppDomain.CurrentDomain.GetAssemblies()
-				.SelectMany(assembly => assembly.GetTypes())
-				.Where(t => baseType.IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
-				.ToArray();
-
-			DerivedTypesCache[baseType] = derivedTypes;
+			TypePopupCache popup = GetTypePopup(property);
+			_targetProperty = property;
+			popup.TypePopup.Show(popupRect);
 		}
 
-		// Draw foldout
-		Rect foldoutRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
-		property.isExpanded = EditorGUI.Foldout(foldoutRect, property.isExpanded, label, true);
-		position.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-
-		// Draw type selector popup
-		int currentIndex = Array.FindIndex(derivedTypes, t => t == property.managedReferenceValue?.GetType());
-		string[] options = derivedTypes.Select(t => t.FullName).ToArray();
-
-		Rect popupRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
-		int selected = EditorGUI.Popup(popupRect, "Type", currentIndex, options);
-		position.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-
-		if (selected != currentIndex && selected >= 0)
+		// Draw foldout and property content
+		if (!string.IsNullOrEmpty(property.managedReferenceFullTypename))
 		{
-			var newInstance = Activator.CreateInstance(derivedTypes[selected]);
-			property.managedReferenceValue = newInstance;
-			property.isExpanded = true;
-		}
+			position.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
-		// Draw child properties
-		if (property.isExpanded && property.managedReferenceValue != null)
-		{
-			EditorGUI.indentLevel++;
-			SerializedProperty iterator = property.Copy();
-			SerializedProperty end = iterator.GetEndProperty();
+			Rect foldoutRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
+			property.isExpanded = EditorGUI.Foldout(foldoutRect, property.isExpanded, GUIContent.none, true);
 
-			bool enterChildren = true;
-			while (iterator.NextVisible(enterChildren) && !SerializedProperty.EqualContents(iterator, end))
+			if (property.isExpanded)
 			{
-				float childHeight = EditorGUI.GetPropertyHeight(iterator, true);
-				Rect childRect = new Rect(position.x, position.y, position.width, childHeight);
-				EditorGUI.PropertyField(childRect, iterator, true);
-				position.y += childHeight + EditorGUIUtility.standardVerticalSpacing;
-				enterChildren = false;
+				using (new EditorGUI.IndentLevelScope())
+				{
+					Rect childPosition = new Rect(position.x, foldoutRect.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing, position.width, 0);
+					foreach (SerializedProperty childProperty in GetChildProperties(property))
+					{
+						float height = EditorGUI.GetPropertyHeight(childProperty, true);
+						childPosition.height = height;
+						EditorGUI.PropertyField(childPosition, childProperty, true);
+						childPosition.y += height + EditorGUIUtility.standardVerticalSpacing;
+					}
+				}
 			}
-
-			EditorGUI.indentLevel--;
 		}
 
 		EditorGUI.EndProperty();
 	}
 
+	private TypePopupCache GetTypePopup(SerializedProperty property)
+	{
+		string fieldTypename = property.managedReferenceFieldTypename;
+
+		if (!_typePopups.TryGetValue(fieldTypename, out TypePopupCache cache))
+		{
+			AdvancedDropdownState state = new ();
+			Type baseType = GetTypeFromTypename(fieldTypename);
+
+			IOrderedEnumerable<Type> types = AppDomain.CurrentDomain.GetAssemblies()
+				.SelectMany(a => a.GetTypes())
+				.Where(t => baseType.IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
+				.OrderBy(t => t.Name);
+
+			TypePopup popup = new (types, 13, state);
+			popup.OnItemSelected += item => {
+				foreach (Object target in _targetProperty.serializedObject.targetObjects)
+				{
+					SerializedObject obj = new (target);
+					SerializedProperty prop = obj.FindProperty(_targetProperty.propertyPath);
+					object instance = Activator.CreateInstance(item.Type);
+					prop.managedReferenceValue = instance;
+					prop.isExpanded = instance != null;
+					obj.ApplyModifiedProperties();
+					obj.Update();
+				}
+			};
+
+			cache = new TypePopupCache(popup, state);
+			_typePopups.Add(fieldTypename, cache);
+		}
+
+		return cache;
+	}
+
+	private GUIContent GetTypeName(SerializedProperty property)
+	{
+		string fullTypename = property.managedReferenceFullTypename;
+		if (string.IsNullOrEmpty(fullTypename))
+		{
+			return new GUIContent("Null");
+		}
+
+		if (_typeNameCache.TryGetValue(fullTypename, out GUIContent label))
+		{
+			return label;
+		}
+
+		Type type = GetTypeFromTypename(fullTypename);
+		string name = type != null ? ObjectNames.NicifyVariableName(type.Name) : "(Missing)";
+		label = new GUIContent(name);
+		_typeNameCache.Add(fullTypename, label);
+		return label;
+	}
+
+	private static Type GetTypeFromTypename(string typeName)
+	{
+		if (string.IsNullOrEmpty(typeName)) return null;
+
+		string[] split = typeName.Split(' ');
+		if (split.Length != 2) return null;
+
+		return Type.GetType($"{split[1]}, {split[0]}");
+	}
+
 	public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 	{
-		float height = EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing * 2;
-
-		if (property.isExpanded && property.managedReferenceValue != null)
+		if (!property.isExpanded || property.managedReferenceValue == null)
 		{
-			SerializedProperty iterator = property.Copy();
-			SerializedProperty end = iterator.GetEndProperty();
+			return EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing;
+		}
 
-			bool enterChildren = true;
-			while (iterator.NextVisible(enterChildren) && !SerializedProperty.EqualContents(iterator, end))
-			{
-				height += EditorGUI.GetPropertyHeight(iterator, true) + EditorGUIUtility.standardVerticalSpacing;
-				enterChildren = false;
-			}
+		float height = EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing;
+
+		foreach (SerializedProperty child in GetChildProperties(property))
+		{
+			height += EditorGUI.GetPropertyHeight(child, true) + EditorGUIUtility.standardVerticalSpacing;
 		}
 
 		return height;
 	}
+
+	private IEnumerable<SerializedProperty> GetChildProperties(SerializedProperty property)
+	{
+		SerializedProperty copy = property.Copy();
+		SerializedProperty end = copy.GetEndProperty();
+
+		copy.NextVisible(true);
+		while (!SerializedProperty.EqualContents(copy, end))
+		{
+			yield return copy;
+			if (!copy.NextVisible(false)) break;
+		}
+	}
+
+
+	//---------------------------------
+
+	private class TypeDropDownSelector : AdvancedDropdownItem
+	{
+		public Type Type { get; }
+
+		public TypeDropDownSelector(Type type, string name) : base(name)
+		{
+			Type = type;
+		}
+	}
+
+	private class TypePopup : AdvancedDropdown
+	{
+		private readonly List<Type> _types;
+		public event Action<TypeDropDownSelector> OnItemSelected;
+
+		public TypePopup(IEnumerable<Type> types, int maxLineCount, AdvancedDropdownState state)
+			: base(state)
+		{
+			_types = types.ToList();
+			minimumSize = new Vector2(300, EditorGUIUtility.singleLineHeight * maxLineCount);
+		}
+
+		protected override AdvancedDropdownItem BuildRoot()
+		{
+			AdvancedDropdownItem root = new("Select Type");
+			foreach (Type type in _types)
+			{
+				string displayName = ObjectNames.NicifyVariableName(type.Name);
+				TypeDropDownSelector item = new(type, displayName);
+				root.AddChild(item);
+			}
+			return root;
+		}
+
+		protected override void ItemSelected(AdvancedDropdownItem item)
+		{
+			if (item is TypeDropDownSelector typeItem)
+			{
+				OnItemSelected?.Invoke(typeItem);
+			}
+		}
+	}
+
+	private struct TypePopupCache
+	{
+		public TypePopup TypePopup { get; }
+		public AdvancedDropdownState State { get; }
+
+		public TypePopupCache(TypePopup popup, AdvancedDropdownState state)
+		{
+			TypePopup = popup;
+			State = state;
+		}
+	}
+
 }
