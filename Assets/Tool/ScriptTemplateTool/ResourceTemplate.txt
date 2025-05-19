@@ -1,4 +1,7 @@
-namespace CardGame.StateMachine
+using CardGame.StateMachine;
+using UnityEngine;
+
+namespace CardGame.Turns
 {
 	public class #SCRIPTNAME# : Resource
 	{
