@@ -19,7 +19,7 @@ namespace CardGame.UI
         [Header("Visuals")] [SerializeField] private Transform _visualContainer;
         [SerializeField] private List<Sprite> _spriteList;
 
-        private CardData _cardData;
+        public CardData _cardData;
 
         #endregion
 
@@ -90,7 +90,10 @@ namespace CardGame.UI
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            UpdateImages();
+            // UpdateImages();
+            if (_cardData == null) return;
+            _cardData.InitData();
+            InitCard(_cardData);
         }
 #endif
     }
