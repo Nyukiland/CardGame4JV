@@ -1,4 +1,6 @@
-namespace CardGame.StateMachine
+using CardGame.StateMachine;
+
+namespace CardGame.Turns
 {
 	public class CalculateHandResource : Resource
 	{

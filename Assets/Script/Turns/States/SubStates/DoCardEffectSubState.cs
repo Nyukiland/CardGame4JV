@@ -1,6 +1,6 @@
-using UnityEngine;
+using CardGame.StateMachine;
 
-namespace CardGame.StateMachine
+namespace CardGame.Turns
 {
     public class DoCardEffectSubState : State
     {

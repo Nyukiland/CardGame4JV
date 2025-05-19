@@ -1,7 +1,6 @@
-using System.Buffers;
-using UnityEngine;
+using CardGame.StateMachine;
 
-namespace CardGame.StateMachine
+namespace CardGame.Turns
 {
     public class UpdateGaugeSubState : State
     {
