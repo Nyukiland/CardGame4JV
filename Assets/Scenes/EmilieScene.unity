@@ -285,54 +285,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7d0d4a543fd10d409b6d9ed0272d34b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultState: CardGame.StateMachine.SetupGameCombinedState
+  _defaultState: CardGame.Turns.FightCombinedState
   _components:
-  - rid: 7022399767708172381
-  - rid: 7022399767708172382
-  - rid: 7022399767708172383
-  - rid: 7022399767708172384
-  - rid: 7022399767708172385
-  - rid: 7022399767708172386
-  - rid: 7022399767708172387
-  - rid: 7022399767708172388
-  - rid: 7022399767708172389
+  - rid: 4134850263988305920
+  - rid: 4134850263988305921
+  - rid: 4134850263988305922
+  - rid: 4134850263988305923
+  - rid: 4134850263988305924
+  - rid: 4134850263988305925
+  - rid: 4134850263988305926
+  - rid: 4134850263988305927
+  - rid: 4134850263988305928
   references:
     version: 2
     RefIds:
-    - rid: 7022399767708172381
-      type: {class: HandleGaugeResource, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+    - rid: 4134850263988305920
+      type: {class: CreateCardAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-    - rid: 7022399767708172382
-      type: {class: DoEffectAbility, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+    - rid: 4134850263988305921
+      type: {class: CreateHandAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-    - rid: 7022399767708172383
-      type: {class: MoveCardAbility, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+    - rid: 4134850263988305922
+      type: {class: DoEffectAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-    - rid: 7022399767708172384
-      type: {class: SelectTargetAbility, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+    - rid: 4134850263988305923
+      type: {class: MoveCardAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-    - rid: 7022399767708172385
-      type: {class: HandleStatsResource, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+    - rid: 4134850263988305924
+      type: {class: SelectTargetAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-    - rid: 7022399767708172386
-      type: {class: CreateCardAbility, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+    - rid: 4134850263988305925
+      type: {class: CalculateHandResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-    - rid: 7022399767708172387
-      type: {class: HoldHandResource, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+    - rid: 4134850263988305926
+      type: {class: HandleGaugeResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-    - rid: 7022399767708172388
-      type: {class: CalculateHandResource, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+    - rid: 4134850263988305927
+      type: {class: HandleStatsResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-    - rid: 7022399767708172389
-      type: {class: CreateHandAbility, ns: CardGame.StateMachine, asm: Assembly-CSharp}
+    - rid: 4134850263988305928
+      type: {class: HoldHandResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
 --- !u!4 &1934208546
