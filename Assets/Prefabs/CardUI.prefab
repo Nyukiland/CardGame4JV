@@ -587,9 +587,11 @@ MonoBehaviour:
   _healthPoints: {fileID: 2497399079959372445}
   _attackPoints: {fileID: 3559193696802671482}
   _manaCost: {fileID: 5490708330827700566}
+  _cardRectTransform: {fileID: 4116147630510867932}
   _visualContainer: {fileID: 7102831016346116373}
   _spriteList:
   - {fileID: 0}
+  _cardData: {fileID: 0}
 --- !u!1 &7027478411964526167
 GameObject:
   m_ObjectHideFlags: 0

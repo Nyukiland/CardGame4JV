@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using CardGame.Card;
 using TMPro;
@@ -12,32 +11,84 @@ namespace CardGame.UI
     {
         #region variables
 
-        [Header("Data")] [SerializeField] private TextMeshProUGUI _healthPoints;
+        [Header("Data")]
+        [SerializeField] private TextMeshProUGUI _healthPoints;
         [SerializeField] private TextMeshProUGUI _attackPoints;
         [SerializeField] private TextMeshProUGUI _manaCost;
 
-        [Header("Visuals")] [SerializeField] private Transform _visualContainer;
+        [Header("Visuals")]
+        [SerializeField] private RectTransform _cardRectTransform;
+        public RectTransform CardRectTransform => _cardRectTransform;
+        [SerializeField] private Transform _visualContainer;
         [SerializeField] private List<Sprite> _spriteList;
 
-        public CardData _cardData;
+        public CardData CardData { get; set; }
 
         #endregion
 
         public void InitCard(CardData cardDataRef)
         {
-            _cardData = cardDataRef;
+            CardData = cardDataRef;
             UpdateTexts();
             UpdateImages();
         }
 
+        public void ChangeParent(Transform parent)
+        {
+            gameObject.transform.SetParent(parent);
+        }
+
         public void UpdateTexts()
         {
-            _healthPoints.text = _cardData.CurrentHealthPoints.ToString();
-            _attackPoints.text = _cardData.CurrentAttackPoints.ToString();
-            _manaCost.text = _cardData.CurrentManaCost.ToString();
+            _healthPoints.text = CardData.CurrentHealthPoints.ToString();
+            _attackPoints.text = CardData.CurrentAttackPoints.ToString();
+            _manaCost.text = CardData.CurrentManaCost.ToString();
         }
 
         private void UpdateImages()
+        {
+            Transform container = _visualContainer;
+
+            if (this == null || container == null || container == null)
+                return;
+
+            // destroy previous sprites
+            for (int i = container.transform.childCount - 1; i >= 0; i--)
+            {
+                Transform child = container.transform.GetChild(i);
+
+                if (child != null)
+                    Destroy(child.gameObject);
+            }
+            
+            // create new sprites
+            foreach (Sprite sprite in _spriteList)
+            {
+                GameObject newGameObject = new("Image");
+                newGameObject.transform.SetParent(container, false);
+
+                Image newImage = newGameObject.AddComponent<Image>();
+                newImage.sprite = sprite;
+                newImage.type = Image.Type.Sliced;
+
+                RectTransform rt = newGameObject.GetComponent<RectTransform>();
+                rt.anchorMin = Vector2.zero;
+                rt.anchorMax = Vector2.one;
+                rt.offsetMin = Vector2.zero;
+                rt.offsetMax = Vector2.zero;
+                rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.localPosition = Vector3.zero;
+                rt.localScale = Vector3.one;
+            }
+        }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            UpdateImagesEditor();
+        }
+
+        private void UpdateImagesEditor()
         {
             // returns if the gameObject is part of a PrefabAsset and not a scene
             if (PrefabUtility.IsPartOfPrefabAsset(this))
@@ -50,25 +101,19 @@ namespace CardGame.UI
                 if (this == null || container == null || container == null)
                     return;
 
+                // destroy previous sprites
                 for (int i = container.transform.childCount - 1; i >= 0; i--)
                 {
                     Transform child = container.transform.GetChild(i);
 
-                    if (Application.isPlaying)
-                    {
-                        if (child != null)
-                            Destroy(child.gameObject);
-                    }
-                    else
-                    {
-                        if (child != null)
-                            DestroyImmediate(child.gameObject);
-                    }
+                    if (child != null)
+                        DestroyImmediate(child.gameObject);
                 }
 
+                // create new sprites
                 foreach (Sprite sprite in _spriteList)
                 {
-                    GameObject newGameObject = new GameObject("Image");
+                    GameObject newGameObject = new("Image");
                     newGameObject.transform.SetParent(container, false);
 
                     Image newImage = newGameObject.AddComponent<Image>();
@@ -85,15 +130,6 @@ namespace CardGame.UI
                     rt.localScale = Vector3.one;
                 }
             };
-        }
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            // UpdateImages();
-            if (_cardData == null) return;
-            _cardData.InitData();
-            InitCard(_cardData);
         }
 #endif
     }
