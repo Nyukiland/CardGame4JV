@@ -25,7 +25,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : Component
 	private static T SetUP()
 	{
 		T instance = FindFirstObjectByType<T>();
-		instance ??= new GameObject(nameof(T)).AddComponent<T>();
+		instance ??= new GameObject(typeof(T).Name).AddComponent<T>();
 		return instance;
 	}
 

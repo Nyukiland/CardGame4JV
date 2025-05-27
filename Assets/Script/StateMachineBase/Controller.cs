@@ -37,7 +37,7 @@ namespace CardGame.StateMachine
 				comp.OnDisableController();
 			}
 
-			Storage.Instance.Delete(this);
+			if (Storage.CheckInstance()) Storage.Instance.Delete(this);
 		}
 
 		public void Update()
@@ -159,11 +159,6 @@ namespace CardGame.StateMachine
 				if (!component.Enabled) continue;
 				component.FixedUpdate(Time.fixedDeltaTime);
 			}
-		}
-
-		private void OnDestroy()
-		{
-			Storage.Instance.Delete(this);
 		}
 
 		private void OnValidate()
