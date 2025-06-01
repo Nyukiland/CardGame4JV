@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardGame.Card;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 
 namespace CardGame.UI
@@ -27,9 +28,6 @@ namespace CardGame.UI
 		{
 			cardData = null;
 
-			if (_cards.Count >= _maxCard)
-				return false;
-			
 			foreach (CardUI currentCardUI in _cards)
 			{
 				if (currentCardUI == null)
@@ -44,14 +42,62 @@ namespace CardGame.UI
 			return false;
 		}
 
-		public void RemoveCard(CardData cardData)
+		public int RemoveCard(CardData cardData)
 		{
+			int index = _cards.IndexOf(cardData.CardUI);
 			_cards.Remove(cardData.CardUI);
+			return index;
 		}
 
-		public void AddCard(CardData cardData)
+		public void AddCard(CardData cardData, int index)
 		{
-			_cards.Add(cardData.CardUI);
+			_cards.Insert(index, cardData.CardUI);
+		}
+		
+		public bool GetMouseBetweenIndexes(Vector2 mousePosition, Canvas mainCanvas, out int listIndex)
+		{
+			listIndex = 0;
+
+			if (_cards.Count >= _maxCard)
+				return false;
+			
+			if (_cards.Count <= 0)
+				return true;
+			
+			RectTransformUtility.ScreenPointToLocalPointInRectangle(
+				mainCanvas.transform as RectTransform, mousePosition, mainCanvas.worldCamera, out Vector2 localPoint);
+			
+			List<float> positionsX = new();
+			foreach (CardUI cardUI in _cards)
+			{
+				positionsX.Add(cardUI.CardRectTransform.localPosition.x);
+			}
+
+			// Left of all cards
+			if (localPoint.x < positionsX[0])
+			{
+				listIndex = 0;
+				return true;
+			}
+
+			// Right of all cards
+			if (localPoint.x > positionsX[^1])
+			{
+				listIndex = positionsX.Count;
+				return true;
+			}
+
+			// Between two cards
+			for (int i = 0; i < positionsX.Count - 1; i++)
+			{
+				if (!(localPoint.x >= positionsX[i]) || !(localPoint.x <= positionsX[i + 1]))
+					continue;
+				
+				listIndex = i + 1;
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

@@ -250,7 +250,7 @@ MonoBehaviour:
       type: {class: ZoneHolderResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        _mainCanvas: {fileID: 305678897}
+        _mainCanvas: {fileID: 305678896}
         _zonesCardContainers:
         - {fileID: 2056788636}
         - {fileID: 1589646931}
@@ -625,7 +625,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71384bd7f1ef27d4e92ab1b7649212e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxCard: 5
+  _maxCard: 1
   _tempCardData: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

@@ -7,8 +7,8 @@ namespace CardGame.Turns
 {
     public class ZoneHolderResource : Resource
     {
-        [SerializeField] private Transform _mainCanvas;
-        public Transform MainCanvas => _mainCanvas;
+        [SerializeField] private Canvas _mainCanvas;
+        public Canvas MainCanvas => _mainCanvas;
         [SerializeField] private List<CardContainer> _zonesCardContainers;
         private readonly Dictionary<RectTransform, CardContainer> _cardZones = new();
 
