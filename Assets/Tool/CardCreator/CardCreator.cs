@@ -196,8 +196,26 @@ public class CardCreator : EditorWindow
             GUILayout.Space(5);
             line = EditorGUILayout.GetControlRect(false, 2);
             EditorGUI.DrawRect(line, Color.white);
-        }
 
+        } // End of the for loop
+
+        GUILayout.Space(10);
+
+        if (GUILayout.Button("Open Card Data Folder"))
+        {
+            string folderPath = "Assets/Script/Data/Trash"; //On vise trash car sinon ca n'ouvre pas Data
+            Object folder = AssetDatabase.LoadAssetAtPath<Object>(folderPath);
+
+            if (folder != null)
+            {
+                Selection.activeObject = folder;
+                EditorGUIUtility.PingObject(folder);
+            }
+            else
+            {
+                Debug.LogWarning("Folder not found: " + folderPath);
+            }
+        }
 
         GUILayout.EndScrollView();
     }
