@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c445cec05d1a07744b5c5dd201f7a2e2, type: 3}
-  m_Name: CardTest1
+  m_Name: Ohno
   m_EditorClassIdentifier: 
-  _cardUIPrefab: {fileID: 5958024384898385175, guid: 4ba6c92221bc6704e8a030aa66793bc4, type: 3}
-  _baseManaCost: 3
-  _baseHealthPoints: 3
-  _baseAttackPoints: 1
+  _cardUIPrefab: {fileID: 0}
+  _baseManaCost: 5
+  _baseHealthPoints: 5
+  _baseAttackPoints: 5
   _cardEffect: []
   _cardFeedback: []
   references:

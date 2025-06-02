@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c445cec05d1a07744b5c5dd201f7a2e2, type: 3}
-  m_Name: CardTest3
+  m_Name: rename3
   m_EditorClassIdentifier: 
   _cardUIPrefab: {fileID: 5958024384898385175, guid: 4ba6c92221bc6704e8a030aa66793bc4, type: 3}
-  _baseManaCost: 3
-  _baseHealthPoints: 3
-  _baseAttackPoints: 3
+  _baseManaCost: 1
+  _baseHealthPoints: 1
+  _baseAttackPoints: 2
   _cardEffect:
-  - rid: 6713218198213492814
+  - rid: 8034276658197299308
   _cardFeedback:
   - rid: 6713218198213492812
   references:
@@ -26,6 +26,6 @@ MonoBehaviour:
     - rid: 6713218198213492812
       type: {class: FeedbackNone, ns: CardGame.Card, asm: Assembly-CSharp}
       data: 
-    - rid: 6713218198213492814
+    - rid: 8034276658197299308
       type: {class: EffectNone, ns: CardGame.Card, asm: Assembly-CSharp}
       data: 
