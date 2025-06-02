@@ -1,3 +1,5 @@
+using UnityEngine.InputSystem;
+
 namespace CardGame.StateMachine
 {
 	public abstract class State
@@ -25,6 +27,8 @@ namespace CardGame.StateMachine
 		public virtual void Update(float deltaTime) { }
 
 		public virtual void FixedUpdate(float fixedDeltaTime) { }
+
+		public virtual void OnActionTriggered(InputAction.CallbackContext context) { }
 
 		public string DisplayInfoController()
 		{

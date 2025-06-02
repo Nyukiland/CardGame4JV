@@ -1,39 +1,52 @@
+using UnityEngine.InputSystem;
 using CardGame.StateMachine;
 using UnityEngine;
 
 namespace CardGame.Turns
 {
-    public class MoveCardSubState : State
-    {
-        private MoveCardAbility _moveCardAbility;
-        private ZoneHolderResource _zoneHolderResource;
+	public class MoveCardSubState : State
+	{
+		private MoveCardAbility _moveCardAbility;
 
-        public override void OnEnter()
-        {
-            base.OnEnter();
-            GetStateComponent(ref _moveCardAbility);
-        }
-        
-        public override void Update(float deltaTime)
-        {
-            base.Update(deltaTime);
+		private bool _touch;
+		private Vector3 _touchPos;
 
-            if (Input.touchCount <= 0) return;
+		public override void OnEnter()
+		{
+			base.OnEnter();
+			GetStateComponent(ref _moveCardAbility);
+		}
 
-            Touch touch = Input.GetTouch(0);
+		public override void OnActionTriggered(InputAction.CallbackContext context)
+		{
+			base.OnActionTriggered(context);
 
-            switch (touch.phase)
-            {
-                case TouchPhase.Began:
-                    _moveCardAbility.PickCard(touch.position);
-                    break;
-                case TouchPhase.Moved:
-                    _moveCardAbility.MoveCard(touch.position);
-                    break;
-                case TouchPhase.Ended:
-                    _moveCardAbility.ReleaseCard(touch.position);
-                    break;
-            }
-        }
-    }
+			if (context.action.name == "Touch")
+			{
+				if (context.phase == InputActionPhase.Performed)
+				{
+					_touchPos = Controller.GetActionValue<Vector2>("TouchPos");
+					_moveCardAbility.PickCard(_touchPos);
+					_touch = true;
+				}
+				else if (context.phase == InputActionPhase.Canceled)
+				{
+					_moveCardAbility.ReleaseCard(_touchPos);
+					_touchPos = Vector2.zero;
+					_touch = false;
+				}
+			}
+		}
+
+		public override void Update(float deltaTime)
+		{
+			base.Update(deltaTime);
+
+			if (!_touch)
+				return;
+
+			_touchPos = Controller.GetActionValue<Vector2>("TouchPos");
+			_moveCardAbility.MoveCard(_touchPos);
+		}
+	}
 }

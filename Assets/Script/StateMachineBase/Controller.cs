@@ -1,7 +1,8 @@
-using CardGame.Utility;
-using System;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
+using CardGame.Utility;
 using UnityEngine;
+using System;
 
 namespace CardGame.StateMachine
 {
@@ -27,6 +28,8 @@ namespace CardGame.StateMachine
 		private void OnEnable()
 		{
 			SetDefaultState();
+			InputSystem.actions.FindActionMap("Player").Enable();
+			InputSystem.actions.FindActionMap("Player").actionTriggered += OnActionTriggered;
 			Storage.Instance.Register(this);
 		}
 
@@ -36,6 +39,9 @@ namespace CardGame.StateMachine
 			{
 				comp.OnDisableController();
 			}
+
+			InputSystem.actions.FindActionMap("Player").Disable();
+			InputSystem.actions.FindActionMap("Player").actionTriggered -= OnActionTriggered;
 
 			if (Storage.CheckInstance()) Storage.Instance.Delete(this);
 		}
@@ -98,6 +104,17 @@ namespace CardGame.StateMachine
 			}
 
 			SetState((State)Activator.CreateInstance(type));
+		}
+
+		public T GetActionValue<T>(string actionName) where T : struct
+		{
+			InputAction action = InputSystem.actions.FindAction(actionName);
+			return action != null ? action.ReadValue<T>() : default;
+		}
+
+		private void OnActionTriggered(InputAction.CallbackContext context)
+		{
+			_state?.OnActionTriggered(context);
 		}
 
 		public void LateInitState()
