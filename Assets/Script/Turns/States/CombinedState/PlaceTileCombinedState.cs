@@ -2,12 +2,12 @@ using CardGame.StateMachine;
 
 namespace CardGame.Turns
 {
-	public class FightCombinedState : CombinedState
+	public class PlaceTileCombinedState : CombinedState
 	{
-        public FightCombinedState()
-        {
-            AddSubState(new UpdateGaugeSubState());
-            AddSubState(new DoCardEffectSubState());
+		public PlaceTileCombinedState()
+		{
+            AddSubState(new MoveTileSubState());
+            AddSubState(new RotateTileSubState());
         }
 
         public override void OnEnter()

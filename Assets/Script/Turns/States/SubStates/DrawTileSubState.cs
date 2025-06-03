@@ -2,10 +2,10 @@ using CardGame.StateMachine;
 
 namespace CardGame.Turns
 {
-	public class DrawCardSubState : State
+	public class DrawTileSubState : State
 	{
         private HoldHandResource _holdHandResource;
-        private CreateCardAbility _createCardAbility;
+        private CreateTileAbility _createCardAbility;
 
         public override void OnEnter()
         {

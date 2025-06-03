@@ -2,9 +2,9 @@ using CardGame.StateMachine;
 
 namespace CardGame.Turns
 {
-    public class DoCardEffectSubState : State
+    public class DoTerrainEffectSubState : State
     {
-        private DoEffectAbility _doEffectAbility;
+        private DoTerrainEffectAbility _doEffectAbility;
 
         public override void OnEnter()
         {

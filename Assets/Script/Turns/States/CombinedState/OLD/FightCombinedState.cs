@@ -2,13 +2,12 @@ using CardGame.StateMachine;
 
 namespace CardGame.Turns
 {
-	public class NextPlayerCombinedState : CombinedState
+	public class FightCombinedState : CombinedState
 	{
-        public NextPlayerCombinedState()
+        public FightCombinedState()
         {
+            AddSubState(new UpdateGaugeSubState());
             AddSubState(new DoTerrainEffectSubState());
-            AddSubState(new CheckVictorySubState());
-            AddSubState(new DrawTileSubState());
         }
 
         public override void OnEnter()

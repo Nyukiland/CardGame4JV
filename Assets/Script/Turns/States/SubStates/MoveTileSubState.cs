@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace CardGame.Turns
 {
-	public class MoveCardSubState : State
+	public class MoveTileSubState : State
 	{
-		private MoveCardAbility _moveCardAbility;
+		private MoveTileAbility _moveCardAbility;
 
 		private bool _touch;
 		private Vector3 _touchPos;

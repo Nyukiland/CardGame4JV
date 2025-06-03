@@ -1,16 +1,10 @@
 using CardGame.StateMachine;
+using UnityEngine;
 
 namespace CardGame.Turns
 {
-	public class PlaceCardsCombinedState : CombinedState
+	public class RotateTileSubState : State
 	{
-		public PlaceCardsCombinedState()
-		{
-            AddSubState(new UpdateGaugeSubState());
-            AddSubState(new DoCardEffectSubState());
-            AddSubState(new MoveCardSubState());
-        }
-
         public override void OnEnter()
         {
             base.OnEnter();
