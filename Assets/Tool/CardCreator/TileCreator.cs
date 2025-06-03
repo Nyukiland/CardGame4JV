@@ -4,28 +4,28 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 
-public class CardCreator : EditorWindow
+public class TileCreator : EditorWindow
 {
     private Vector2 _scroll;
     private Dictionary<TileSettings, bool> _foldouts = new(); // Pour save les menus pliés et dépliés
     private Dictionary<TileSettings, string> _renameBuffer = new(); // Pour save le nom qu'on est en train de mettre
 
 
-    [MenuItem("Tools/CardCreator")]
+    [MenuItem("Tools/Tile Creator")]
     public static void ShowWindow()
     {
-        CardCreator window = GetWindow<CardCreator>();
-        window.titleContent = new GUIContent("Card Creator");
+        TileCreator window = GetWindow<TileCreator>();
+        window.titleContent = new GUIContent("Tile Creator");
         window.Show();
     }
 
-    private List<TileSettings> _cardDataList = new();
+    private List<TileSettings> _tileDataList = new();
 
-    private void RefreshCardDataList()
+    private void RefreshTileDataList()
     {
-        _cardDataList.Clear();
+        _tileDataList.Clear();
 
-        string[] guids = AssetDatabase.FindAssets("t:CardData", new[] { "Assets/Script/Data" }); // Dossier qui contient les cartes
+        string[] guids = AssetDatabase.FindAssets("t:TileData", new[] { "Assets/Script/Data" }); // Dossier qui contient les cartes
 
         foreach (string guid in guids)
         {
@@ -34,17 +34,17 @@ public class CardCreator : EditorWindow
             if (path.Contains("/Trash")) // - la corbeille
                 continue;
 
-            TileSettings cardData = AssetDatabase.LoadAssetAtPath<TileSettings>(path);
+            TileSettings tileData = AssetDatabase.LoadAssetAtPath<TileSettings>(path);
 
-            if (cardData != null)
-                _cardDataList.Add(cardData);
+            if (tileData != null)
+                _tileDataList.Add(tileData);
         }
     }
 
-    private void CreateNewCard()
+    private void CreateNewTile()
     {
         string folderPath = "Assets/Script/Data";
-        string baseName = "NewCard_";
+        string baseName = "NewTile_";
         int index = 1;
         string path;
 
@@ -55,18 +55,18 @@ public class CardCreator : EditorWindow
         }
         while (File.Exists(path)); // On tente un nom et modifie l'index jusqu'a avoir un nom dispo
 
-        TileSettings newCard = ScriptableObject.CreateInstance<TileSettings>();
-        AssetDatabase.CreateAsset(newCard, path);
+        TileSettings newTile = ScriptableObject.CreateInstance<TileSettings>();
+        AssetDatabase.CreateAsset(newTile, path);
         AssetDatabase.SaveAssets();
 
-        RefreshCardDataList();
-        EditorGUIUtility.PingObject(newCard);
-        Selection.activeObject = newCard;
+        RefreshTileDataList();
+        EditorGUIUtility.PingObject(newTile);
+        Selection.activeObject = newTile;
     }
 
-    private void MoveCardToTrash(TileSettings card) // On deplace la carte dans un sous dossier Trash
+    private void MoveTileToTrash(TileSettings tile) // On deplace la carte dans un sous dossier Trash
     {
-        string originalPath = AssetDatabase.GetAssetPath(card);
+        string originalPath = AssetDatabase.GetAssetPath(tile);
         string trashPath = "Assets/Script/Data/Trash";
 
         if (!AssetDatabase.IsValidFolder(trashPath))
@@ -77,12 +77,12 @@ public class CardCreator : EditorWindow
 
         AssetDatabase.MoveAsset(originalPath, newPath);
         AssetDatabase.SaveAssets();
-        RefreshCardDataList();
+        RefreshTileDataList();
     }
 
     private void OnEnable()
     {
-        RefreshCardDataList();
+        RefreshTileDataList();
     }
 
     private void OnDisable()
@@ -100,20 +100,20 @@ public class CardCreator : EditorWindow
             fontStyle = FontStyle.Bold
         };
 
-        GUILayout.Label("Card List", headerStyle);
+        GUILayout.Label("Tile List", headerStyle);
         GUILayout.Space(5);
 
         if (GUILayout.Button("Refresh"))
         {
-            RefreshCardDataList();
+            RefreshTileDataList();
         }
         GUILayout.Space(5);
 
         Color originalColor = GUI.backgroundColor;
         GUI.backgroundColor = Color.cyan;
-        if (GUILayout.Button("Create New Card"))
+        if (GUILayout.Button("Create New Tile"))
         {
-            CreateNewCard();
+            CreateNewTile();
         }
         GUI.backgroundColor = originalColor;
         GUILayout.Space(5);
@@ -123,14 +123,14 @@ public class CardCreator : EditorWindow
         Rect line = EditorGUILayout.GetControlRect(false, 2); // Rectangle blanc plutot qu'une ligne
         EditorGUI.DrawRect(line, Color.white);
 
-        for (int i = _cardDataList.Count - 1; i >= 0; i--) // Comme un for each, mais permet de del / add sans risque
+        for (int i = _tileDataList.Count - 1; i >= 0; i--) // Comme un for each, mais permet de del / add sans risque
         {
-            var card = _cardDataList[i];
+            var tile = _tileDataList[i];
 
             GUILayout.Space(5);
 
-            if (!_foldouts.ContainsKey(card))
-                _foldouts[card] = false;
+            if (!_foldouts.ContainsKey(tile))
+                _foldouts[tile] = false;
 
             GUIStyle foldoutStyle = new(EditorStyles.foldout)
             {
@@ -140,9 +140,9 @@ public class CardCreator : EditorWindow
                 onNormal = { textColor = Color.green }
             };
 
-            _foldouts[card] = EditorGUILayout.Foldout(_foldouts[card], card.name, true, foldoutStyle);
+            _foldouts[tile] = EditorGUILayout.Foldout(_foldouts[tile], tile.name, true, foldoutStyle);
 
-            if (_foldouts[card])
+            if (_foldouts[tile])
             {
                 GUILayout.Space(3);
 
@@ -150,27 +150,27 @@ public class CardCreator : EditorWindow
                 EditorGUILayout.BeginVertical("HelpBox");
                 GUI.backgroundColor = originalColor;
 
-                Editor editor = Editor.CreateEditor(card);
+                Editor editor = Editor.CreateEditor(tile);
                 editor.OnInspectorGUI();
 
                 GUILayout.Space(10);
 
                 ///////////////
                 // RENAME FIELD
-                if (!_renameBuffer.ContainsKey(card))
-                    _renameBuffer[card] = card.name;
+                if (!_renameBuffer.ContainsKey(tile))
+                    _renameBuffer[tile] = tile.name;
 
                 EditorGUILayout.BeginHorizontal();
-                _renameBuffer[card] = EditorGUILayout.TextField("Card Name : ", _renameBuffer[card]);
+                _renameBuffer[tile] = EditorGUILayout.TextField("Tile Name : ", _renameBuffer[tile]);
 
                 GUI.backgroundColor = Color.yellow;
                 if (GUILayout.Button("Rename", GUILayout.Width(80))) // Bouton rename
                 {
-                    string path = AssetDatabase.GetAssetPath(card);
-                    AssetDatabase.RenameAsset(path, _renameBuffer[card]);
+                    string path = AssetDatabase.GetAssetPath(tile);
+                    AssetDatabase.RenameAsset(path, _renameBuffer[tile]);
                     AssetDatabase.SaveAssets();
 
-                    EditorApplication.delayCall += RefreshCardDataList;
+                    EditorApplication.delayCall += RefreshTileDataList;
                 }
                 GUI.backgroundColor = originalColor;
                 EditorGUILayout.EndHorizontal();
@@ -180,10 +180,10 @@ public class CardCreator : EditorWindow
                 ///////////////
                 // DELETE FIELD
                 GUI.backgroundColor = Color.red;
-                if (GUILayout.Button("Move card to trash"))
+                if (GUILayout.Button("Move tile to trash"))
                 {
-                    MoveCardToTrash(card);
-                    EditorApplication.delayCall += RefreshCardDataList;
+                    MoveTileToTrash(tile);
+                    EditorApplication.delayCall += RefreshTileDataList;
                 }
 
                 GUI.backgroundColor = originalColor;
@@ -201,7 +201,7 @@ public class CardCreator : EditorWindow
 
         GUILayout.Space(10);
 
-        if (GUILayout.Button("Open Card Data Folder"))
+        if (GUILayout.Button("Open Tile Data Folder"))
         {
             string folderPath = "Assets/Script/Data/Trash"; //On vise trash car sinon ca n'ouvre pas Data
             Object folder = AssetDatabase.LoadAssetAtPath<Object>(folderPath);

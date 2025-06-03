@@ -10,7 +10,7 @@ namespace CardGame.Card
     {
         # region Variables
 
-        [SerializeField] private TileUI _cardUIPrefab;
+        [SerializeField] private TileUI _tileUIPrefab;
         private TileUI _tileUI;
         public TileUI TileUI => _tileUI;
 
@@ -37,13 +37,13 @@ namespace CardGame.Card
 
         public TileUI CreateTileUI(Transform parent)
         {
-            if (_cardUIPrefab == null)
+            if (_tileUIPrefab == null)
             {
                 Debug.LogWarning($"cardUIPrefab is null, card will not be created");
                 return null;
             }
             
-            _tileUI = Instantiate(_cardUIPrefab, parent);
+            _tileUI = Instantiate(_tileUIPrefab, parent);
             InitData();
             _tileUI.InitTile(this);
             
