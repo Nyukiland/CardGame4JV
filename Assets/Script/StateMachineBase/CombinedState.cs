@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 namespace CardGame.StateMachine
 {
@@ -71,6 +72,15 @@ namespace CardGame.StateMachine
 			foreach (State subState in _subStates)
 			{
 				subState.FixedUpdate(fixedDeltaTime);
+			}
+		}
+
+		public override void OnActionTriggered(InputAction.CallbackContext context)
+		{
+			base.OnActionTriggered(context);
+			foreach (State subState in _subStates)
+			{
+				subState.OnActionTriggered(context);
 			}
 		}
 
