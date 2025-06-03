@@ -7,8 +7,8 @@ using System.IO;
 public class CardCreator : EditorWindow
 {
     private Vector2 _scroll;
-    private Dictionary<CardData, bool> _foldouts = new(); // Pour save les menus pliés et dépliés
-    private Dictionary<CardData, string> _renameBuffer = new(); // Pour save le nom qu'on est en train de mettre
+    private Dictionary<TileSettings, bool> _foldouts = new(); // Pour save les menus pliés et dépliés
+    private Dictionary<TileSettings, string> _renameBuffer = new(); // Pour save le nom qu'on est en train de mettre
 
 
     [MenuItem("Tools/CardCreator")]
@@ -19,7 +19,7 @@ public class CardCreator : EditorWindow
         window.Show();
     }
 
-    private List<CardData> _cardDataList = new();
+    private List<TileSettings> _cardDataList = new();
 
     private void RefreshCardDataList()
     {
@@ -34,7 +34,7 @@ public class CardCreator : EditorWindow
             if (path.Contains("/Trash")) // - la corbeille
                 continue;
 
-            CardData cardData = AssetDatabase.LoadAssetAtPath<CardData>(path);
+            TileSettings cardData = AssetDatabase.LoadAssetAtPath<TileSettings>(path);
 
             if (cardData != null)
                 _cardDataList.Add(cardData);
@@ -55,7 +55,7 @@ public class CardCreator : EditorWindow
         }
         while (File.Exists(path)); // On tente un nom et modifie l'index jusqu'a avoir un nom dispo
 
-        CardData newCard = ScriptableObject.CreateInstance<CardData>();
+        TileSettings newCard = ScriptableObject.CreateInstance<TileSettings>();
         AssetDatabase.CreateAsset(newCard, path);
         AssetDatabase.SaveAssets();
 
@@ -64,7 +64,7 @@ public class CardCreator : EditorWindow
         Selection.activeObject = newCard;
     }
 
-    private void MoveCardToTrash(CardData card) // On deplace la carte dans un sous dossier Trash
+    private void MoveCardToTrash(TileSettings card) // On deplace la carte dans un sous dossier Trash
     {
         string originalPath = AssetDatabase.GetAssetPath(card);
         string trashPath = "Assets/Script/Data/Trash";

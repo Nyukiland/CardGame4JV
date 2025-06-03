@@ -9,18 +9,18 @@ namespace CardGame.Turns
     {
         [SerializeField] private Canvas _mainCanvas;
         public Canvas MainCanvas => _mainCanvas;
-        [SerializeField] private List<CardContainer> _zonesCardContainers;
-        private readonly Dictionary<RectTransform, CardContainer> _cardZones = new();
+        [SerializeField] private List<TileContainer> _zonesCardContainers;
+        private readonly Dictionary<RectTransform, TileContainer> _cardZones = new();
 
         public override void LateInit()
         {
-            foreach (CardContainer container in _zonesCardContainers)
+            foreach (TileContainer container in _zonesCardContainers)
             {
                 _cardZones.TryAdd(container.RectTransform, container);
             }
         }
 
-        public bool ContainsContainer(Vector2 position, out CardContainer container)
+        public bool ContainsContainer(Vector2 position, out TileContainer container)
         {
             foreach (RectTransform cardZone in _cardZones.Keys)
             {

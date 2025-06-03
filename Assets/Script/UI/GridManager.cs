@@ -42,8 +42,8 @@ namespace CardGame.UI
                     float offsetY = totalHeight / 2f - _tileSize.y / 2f;
                     float posX = offsetX + x * (_tileSize.x + _spacing.x);
                     float posY = offsetY - y * (_tileSize.y + _spacing.y);
-                    instantiatedTile.RectTransform.anchoredPosition = new Vector2(posX, posY);
-                    instantiatedTile.RectTransform.sizeDelta = _tileSize;
+                    instantiatedTile.TileRectTransform.anchoredPosition = new Vector2(posX, posY);
+                    instantiatedTile.TileRectTransform.sizeDelta = _tileSize;
 
                     bool isOffset = (x % 2 == 0 && y % 2 != 0) || (x % 2 != 0 && y % 2 == 0);
                     instantiatedTile.Image.color = isOffset ? _offsetColor : _baseColor;
@@ -57,10 +57,10 @@ namespace CardGame.UI
             return _grid[x, y];
         }
 
-        public void SetTile(TileUI cardUI, int x, int y)
+        public void SetTile(TileUI tileUI, int x, int y)
         {
             // À terme on attribuera plutôt la data que l'UI
-            _grid[x, y] = cardUI;
+            _grid[x, y] = tileUI;
         }
     }
 }
