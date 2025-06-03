@@ -1,7 +1,6 @@
 using CardGame.Card;
 using CardGame.StateMachine;
 using CardGame.UI;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace CardGame.Turns
