@@ -10,11 +10,6 @@ namespace CardGame.Net
 		public delegate void ReceiveEventDelegate(DataNetcode data);
 		public event ReceiveEventDelegate ReceiveEvent;
 
-		public NetworkVariable<DataNetcode> SyncedData = new(
-			new DataNetcode(),
-			NetworkVariableReadPermission.Everyone,
-			NetworkVariableWritePermission.Server);
-
 		public override void OnNetworkSpawn()
 		{
 			if (!Instances.ContainsKey(OwnerClientId))
@@ -23,24 +18,16 @@ namespace CardGame.Net
 			}
 
 			gameObject.name = "netcom" + NetworkObjectId;
-
-			SyncedData.OnValueChanged += OnDataChanged;
 		}
 
 		public override void OnNetworkDespawn()
 		{
 			Instances.Remove(OwnerClientId);
-			SyncedData.OnValueChanged -= OnDataChanged;
-		}
-
-		private void OnDataChanged(DataNetcode prev, DataNetcode current)
-		{
-			ReceiveEvent?.Invoke(current);
 		}
 
 		public void SubmitInfo(DataNetcode info)
 		{
-			if (IsServer || IsOwner)
+			if (IsLocalPlayer)
 			{
 				SubmitInfoServerRpc(info);
 			}
@@ -58,9 +45,15 @@ namespace CardGame.Net
 
 				if (targetClientId != senderClientId)
 				{
-					instance.SyncedData.Value = data;
+					instance.OnDataChangedClientRpc(data);
 				}
 			}
+		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void OnDataChangedClientRpc(DataNetcode current)
+		{
+			ReceiveEvent?.Invoke(current);
 		}
 	}
 }

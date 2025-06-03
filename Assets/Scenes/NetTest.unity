@@ -2732,7 +2732,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _broadcastPort: 60120
-  _broadcastInterval: 1.5
+  _broadcastInterval: 0.25
 --- !u!1 &1369387020
 GameObject:
   m_ObjectHideFlags: 0

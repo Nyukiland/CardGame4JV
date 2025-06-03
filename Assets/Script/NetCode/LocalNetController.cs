@@ -52,7 +52,6 @@ namespace CardGame.Net
 			if (_netCommunication != null)
 			{
 				_netComText.text = _netCommunication.gameObject.name + " / \n Join Code: " + _joinCode;
-				_receivedInfo.text = _netCommunication.SyncedData.Value.Text;
 			}
 		}
 
@@ -71,7 +70,7 @@ namespace CardGame.Net
 
 		private void NetCommunication_ReceiveEvent(DataNetcode data)
 		{
-			_receivedInfo.text = _netCommunication.SyncedData.Value.Text;
+			_receivedInfo.text = data.Text;
 		}
 
 		public void SendInfo()

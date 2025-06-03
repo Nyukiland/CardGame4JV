@@ -15,7 +15,7 @@ namespace CardGame.Net
 		[SerializeField, LockUser]
 		private int _broadcastPort = 60120;
 		[SerializeField, LockUser]
-		private float _broadcastInterval = 1.5f;
+		private float _broadcastInterval = 0.5f;
 
 		private UdpClient _hostUdp;
 		private IPEndPoint _hostEndPoint;
