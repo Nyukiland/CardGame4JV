@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CardGame.Card;
 using System;
 
@@ -68,26 +69,33 @@ namespace CardGame.Net
 			return result;
 		}
 
+		public static TileData FromDataToTile(DataToSend data, List<TileSettings> allTileSettings)
+		{
+			// Find TileSettings by IdCode
+			TileSettings matchingSettings = allTileSettings.Find(ts => ts.IdCode == data.TileSettingsId);
+			if (matchingSettings == null)
+			{
+				UnityEngine.Debug.LogError($"[{nameof(NetCommunication)}] No TileSettings found with IdCode {data.TileSettingsId}");
+				return null;
+			}
 
-		//public static TileData FromDataToSend(DataToSend data, TileSettingsDatabase db)
-		//{
-		//	var settings = db.GetTileSettingsById(data.TileSettingsId);
-		//	if (settings == null)
-		//	{
-		//		Debug.LogError($"TileSettings ID {data.TileSettingsId} not found.");
-		//		return null;
-		//	}
+			// Create and initialize TileData
+			TileData tile = new TileData();
+			tile.InitTile(matchingSettings);
 
-		//	TileData tile = new TileData();
-		//	tile.InitTile(settings);
+			// Rotate to match received rotation count
+			for (int i = 0; i < data.TileRotationCount; i++)
+			{
+				tile.RotateTile();
+			}
 
-		//	for (int i = 0; i < data.TileRotationCount; i++)
-		//		tile.RotateTile();
+			// Override zones in case of changes during gameplay
+			for (int i = 0; i < 4; i++)
+			{
+				tile.Zones[i] = data.Zones[i];
+			}
 
-		//	for (int i = 0; i < 4; i++)
-		//		tile.Zones[i] = data.Zones[i];
-
-		//	return tile;
-		//}
+			return tile;
+		}
 	}
 }

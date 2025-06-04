@@ -1,7 +1,7 @@
+using CardGame.Card;
 using Unity.Netcode;
 using UnityEngine;
 using System;
-using CardGame.Card;
 
 namespace CardGame.Net
 {
@@ -9,7 +9,7 @@ namespace CardGame.Net
 	public class DataToSend : INetworkSerializable, IEquatable<DataToSend>
 	{
 		// === DONNÉES POSITION ===
-		public Vector2 Position { get; private set; }
+		public Vector2Int Position { get; private set; }
 
 		// === DONNÉES TILE ===
 		public int TileSettingsId { get; private set; }
@@ -17,7 +17,7 @@ namespace CardGame.Net
 		public ZoneData[] Zones { get; private set; } = new ZoneData[4];
 
 		// === CONSTRUCTEUR PRINCIPAL (construit à partir de TileData classique) ===
-		public DataToSend(Vector2 position, TileData tileData)
+		public DataToSend(TileData tileData, Vector2Int position)
 		{
 			Position = position;
 			TileSettingsId = tileData.TileSettings.IdCode;
@@ -35,12 +35,12 @@ namespace CardGame.Net
 		// === SÉRIALISATION POUR UNITY NETCODE ===
 		public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
 		{
-			float x = Position.x;
-			float y = Position.y;
+			int x = Position.x;
+			int y = Position.y;
 			serializer.SerializeValue(ref x);
 			serializer.SerializeValue(ref y);
 			if (serializer.IsReader)
-				Position = new Vector2(x, y);
+				Position = new Vector2Int(x, y);
 
 			int id = TileSettingsId;
 			serializer.SerializeValue(ref id);

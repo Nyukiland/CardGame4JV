@@ -59,7 +59,7 @@ namespace CardGame.Net
 		{
 			if (_netCommunication != null)
 			{
-				_netCommunication.ReceiveEvent -= NetCommunication_ReceiveEvent;
+				_netCommunication.ReceiveEventTest -= NetCommunication_ReceiveEvent;
 			}
 
 			if (_lanSearch != null)
@@ -343,7 +343,7 @@ namespace CardGame.Net
 				NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom));
 
 			_netCommunication = netCom;
-			_netCommunication.ReceiveEvent += NetCommunication_ReceiveEvent;
+			_netCommunication.ReceiveEventTest += NetCommunication_ReceiveEvent;
 		}
 
 		public void CopyJoinCode()
