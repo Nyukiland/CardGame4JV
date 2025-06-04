@@ -8,7 +8,7 @@ namespace CardGame.Turns
 	public class MoveTileAbility : Ability
 	{
 		private ZoneHolderResource _cardManager;
-		private TileSettings _currentTileSettings;
+		private TileUI _currentTile;
 		private TileContainer _previousCardContainer;
 		private int _previousCardIndex;
 		
@@ -23,26 +23,26 @@ namespace CardGame.Turns
 			if (!_cardManager.ContainsContainer(position, out TileContainer container))
 				return;
 			
-			if (!container.ContainsTile(position, out TileSettings tileSettings))
+			if (!container.ContainsTile(position, out TileUI tile))
 				return;
 
-            _currentTileSettings = tileSettings;
+            _currentTile = tile;
 			_previousCardContainer = container;
-			_previousCardIndex = container.RemoveTile(_currentTileSettings);
-            _currentTileSettings.TileUI.ChangeParent(_cardManager.MainCanvas.transform);
+			_previousCardIndex = container.RemoveTile(_currentTile);
+            _currentTile.ChangeParent(_cardManager.MainCanvas.transform);
 		}
 		
 		public void MoveCard(Vector2 position)
 		{
-			if (_currentTileSettings == null)
+			if (_currentTile == null)
 				return;
 
-            _currentTileSettings.TileUI.transform.position = position;
+            _currentTile.transform.position = position;
 		}
 
 		public void ReleaseCard(Vector2 position)
 		{
-			if (_currentTileSettings == null)
+			if (_currentTile == null)
 				return;
 
 			if (!_cardManager.ContainsContainer(position, out TileContainer container))
@@ -57,21 +57,21 @@ namespace CardGame.Turns
 				return;
 			}
 
-			container.AddTile(_currentTileSettings, listIndex);
-            _currentTileSettings.TileUI.ChangeParent(container.transform);
-            _currentTileSettings.TileUI.transform.SetSiblingIndex(listIndex);
+			container.AddTile(_currentTile, listIndex);
+            _currentTile.ChangeParent(container.transform);
+            _currentTile.transform.SetSiblingIndex(listIndex);
 			_previousCardContainer = null;
-            _currentTileSettings = null;
+            _currentTile = null;
 		}
 
 		private void SendCardBack()
 		{
-			_previousCardContainer.AddTile(_currentTileSettings, _previousCardIndex);
-            _currentTileSettings.TileUI.ChangeParent(_previousCardContainer.transform);
-            _currentTileSettings.TileUI.transform.SetSiblingIndex(_previousCardIndex);
+			_previousCardContainer.AddTile(_currentTile, _previousCardIndex);
+            _currentTile.ChangeParent(_previousCardContainer.transform);
+            _currentTile.transform.SetSiblingIndex(_previousCardIndex);
 			_previousCardContainer = null;
 			_previousCardIndex = -1;
-            _currentTileSettings = null;
+            _currentTile = null;
 		}
 	}
 }

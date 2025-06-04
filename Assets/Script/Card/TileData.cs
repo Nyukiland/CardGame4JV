@@ -41,7 +41,4 @@ namespace CardGame.Card
 
         }
     }
-
-
-
 }

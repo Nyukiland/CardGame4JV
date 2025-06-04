@@ -8,12 +8,6 @@ namespace CardGame.Card
 
     public class TileSettings: ScriptableObject
     {
-        # region Variables
-
-        [SerializeField] private TileUI _tileUIPrefab;
-        private TileUI _tileUI;
-        public TileUI TileUI => _tileUI;
-
         [Header("Zone Data")]
         [SerializeField] private ZoneData _northZone;
         [SerializeField] private ZoneData _eastZone;
@@ -32,28 +26,6 @@ namespace CardGame.Card
 
         [SerializeField, SerializeReference, SubclassSelector(typeof(CardFeedback))]
         private List<CardFeedback> _cardFeedback = new();
-
-        #endregion
-
-        public TileUI CreateTileUI(Transform parent)
-        {
-            if (_tileUIPrefab == null)
-            {
-                Debug.LogWarning($"cardUIPrefab is null, card will not be created");
-                return null;
-            }
-            
-            _tileUI = Instantiate(_tileUIPrefab, parent);
-            InitData();
-            _tileUI.InitTile(this);
-            
-            return _tileUI;
-        }
-        
-        private void InitData()
-        {
-
-        }
     }
 
     public enum ENVIRONEMENT_TYPE

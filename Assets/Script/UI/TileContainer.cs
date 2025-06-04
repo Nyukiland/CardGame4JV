@@ -7,6 +7,10 @@ namespace CardGame.UI
 	public class TileContainer : MonoBehaviour
 	{
 		[SerializeField, Min(0)] private int _maxTiles;
+
+		[SerializeField]
+		private GameObject _tileUIPrefab;
+
 		public int MaxTiles => _maxTiles;
 
 		private List<TileUI> _tiles = new();
@@ -19,13 +23,27 @@ namespace CardGame.UI
 			
 			foreach (TileSettings tileSettings in _tempTileSettings)
 			{
-				_tiles.Add(tileSettings.CreateTileUI(transform));
+				_tiles.Add(CreateTileUI(tileSettings));
 			}
 		}
 
-		public bool ContainsTile(Vector3 position, out TileSettings tileSettings)
+		public TileUI CreateTileUI(TileSettings settings)
 		{
-            tileSettings = null;
+			if (_tileUIPrefab == null)
+			{
+				Debug.LogWarning($"[{nameof(TileContainer)}] cardUIPrefab is null, card will not be created");
+				return null;
+			}
+
+			TileUI tileUI = Instantiate(_tileUIPrefab, transform).GetComponent<TileUI>();
+			tileUI.InitTile(settings);
+
+			return tileUI;
+		}
+
+		public bool ContainsTile(Vector3 position, out TileUI tile)
+		{
+            tile = null;
 
 			foreach (TileUI currentTileUI in _tiles)
 			{
@@ -35,22 +53,22 @@ namespace CardGame.UI
 				if (!RectTransformUtility.RectangleContainsScreenPoint(currentTileUI.TileRectTransform, position))
 					continue;
 
-                tileSettings = currentTileUI.TileSettings;
+                tile = currentTileUI;
 				return true;
 			}
 			return false;
 		}
 
-		public int RemoveTile(TileSettings tileSettings)
+		public int RemoveTile(TileUI tile)
 		{
-			int index = _tiles.IndexOf(tileSettings.TileUI);
-			_tiles.Remove(tileSettings.TileUI);
+			int index = _tiles.IndexOf(tile);
+			_tiles.Remove(tile);
 			return index;
 		}
 
-		public void AddTile(TileSettings tileSettings, int index)
+		public void AddTile(TileUI tile, int index)
 		{
-			_tiles.Insert(index, tileSettings.TileUI);
+			_tiles.Insert(index, tile);
 		}
 		
 		public bool GetMouseBetweenIndexes(Vector2 mousePosition, Canvas mainCanvas, out int listIndex)
