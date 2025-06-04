@@ -149,7 +149,7 @@ public class TileCreator : EditorWindow
         GameObject prefabGO = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Tile.prefab");
         if (prefabGO != null)
         {
-            TileUI tileUI = prefabGO.GetComponent<TileUI>();
+            TileVisu tileUI = prefabGO.GetComponent<TileVisu>();
             if (tileUI != null)
             {
                 SerializedObject serializedTile = new SerializedObject(newTile);

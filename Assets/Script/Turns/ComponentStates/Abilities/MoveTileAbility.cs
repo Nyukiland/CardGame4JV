@@ -7,7 +7,7 @@ namespace CardGame.Turns
 	public class MoveTileAbility : Ability
 	{
 		private ZoneHolderResource _cardManager;
-		private TileUI _currentTile;
+		private TileVisu _currentTile;
 		private TileContainer _previousCardContainer;
 		private int _previousCardIndex;
 		
@@ -22,7 +22,7 @@ namespace CardGame.Turns
 			if (!_cardManager.ContainsContainer(position, out TileContainer container))
 				return;
 			
-			if (!container.ContainsTile(position, out TileUI tile))
+			if (!container.ContainsTile(position, out TileVisu tile))
 				return;
 
             _currentTile = tile;
