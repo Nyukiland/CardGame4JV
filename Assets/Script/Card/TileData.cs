@@ -39,7 +39,6 @@ namespace CardGame.Card
             }
             Zones[3] = copiedZone;
 
-
         }
     }
 

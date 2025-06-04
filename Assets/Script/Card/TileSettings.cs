@@ -60,10 +60,9 @@ namespace CardGame.Card
     {
         None,
         Forest,
-        Fields,
-        Mountain,
+        Snow,
+        Lava,
         River,
-        City,
     }
 
     [System.Serializable]
