@@ -15,7 +15,7 @@ namespace CardGame.Turns
 		public NetCommunication NetCom { get; private set; }
 
 		[SerializeField]
-		private DrawPile _pioche;
+		private DrawPile _drawPile;
 
 		[SerializeField]
 		private GridManager _grid;
@@ -44,8 +44,9 @@ namespace CardGame.Turns
 			if (NetCom != null)
 			{
 				NetCom.TileMoved += UpdateTileInMovement;
-				NetCom.TilePlaced += UpdateGridPlacement;
+				NetCom.TilePlaced += UpdateGridPlaced;
 				NetCom.GridUpdated += UpdateGrid;
+				NetCom.TileForHand += UpdateHand;
 			}
 		}
 
@@ -56,28 +57,42 @@ namespace CardGame.Turns
 			if (NetCom != null)
 			{
 				NetCom.TileMoved -= UpdateTileInMovement;
-				NetCom.TilePlaced -= UpdateGridPlacement;
+				NetCom.TilePlaced -= UpdateGridPlaced;
 				NetCom.GridUpdated -= UpdateGrid;
 			}
 		}
 
 		private void UpdateTileInMovement(DataToSend data)
 		{
-			TileData tileReceived = NetUtility.FromDataToTile(data, _pioche.AllTileSettings);
+			TileData tileReceived = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
 		}
 
-		private void UpdateGridPlacement(DataToSend data)
+		private void UpdateGridPlaced(DataToSend data)
 		{
-			TileData tileReceived = NetUtility.FromDataToTile(data, _pioche.AllTileSettings);
+			TileData tileReceived = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
 
 			//_grid.SetTile(tileReceived, data.Position.x, data.Position.y);
+		}
+
+		private void UpdateHand(int ID)
+		{
+			TileSettings tileSettings = null;
+
+			foreach (TileSettings setting in _drawPile.AllTileSettings)
+			{
+				if (setting.IdCode == ID)
+				{
+					tileSettings = setting;
+					break;
+				}
+			}
 		}
 
 		private void UpdateGrid(DataToSendList dataList)
 		{
 			foreach (DataToSend data in dataList.DataList)
 			{
-				TileData tile = NetUtility.FromDataToTile(data, _pioche.AllTileSettings);
+				TileData tile = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
 
 				//if (_grid.GetTile(data.Position.x, data.Position.y) == tile)
 				//	continue;

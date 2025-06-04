@@ -1,9 +1,9 @@
 using System.Collections.Generic;
+using CardGame.Utility;
 using Unity.Netcode;
 using CardGame.Card;
-using System;
-using CardGame.Utility;
 using CardGame.UI;
+using System;
 
 namespace CardGame.Net
 {
@@ -17,6 +17,9 @@ namespace CardGame.Net
 
 		public delegate void SendGridEvent(DataToSendList data);
 		public event SendGridEvent GridUpdated;
+
+		public delegate void SendTileForHandEvent(int tileId);
+		public event SendTileForHandEvent TileForHand;
 
 		public override void OnNetworkSpawn()
 		{
@@ -67,13 +70,24 @@ namespace CardGame.Net
 
 			ulong senderClientId = rpcParams.Receive.SenderClientId;
 
+			int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
+
 			ForEachOtherClient(senderClientId, x => x.DistributeTilePlacedClientRPC(data));
+
+			Instances.TryGetValue(senderClientId, out NetCommunication instance);
+			instance.GiveNewTileInHandClientRPC(tileId);
 		}
 
 		[ClientRpc(RequireOwnership = false)]
 		public void DistributeTilePlacedClientRPC(DataToSend data)
 		{
 			TilePlaced?.Invoke(data);
+		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void GiveNewTileInHandClientRPC(int ID)
+		{
+			TileForHand?.Invoke(ID);
 		}
 
 		public void SendGrid(DataToSendList dataList)
@@ -87,7 +101,27 @@ namespace CardGame.Net
 		{
 			ulong senderClientId = rpcParams.Receive.SenderClientId;
 
-			ForEachOtherClient(senderClientId, x => x.DistributeGridClientRPC(dataList));
+			GridManager grid = Storage.Instance.GetElement<GridManager>();
+			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
+
+			bool isDifferent = false;
+
+			foreach (DataToSend data in dataList.DataList)
+			{
+				TileData tile = NetUtility.FromDataToTile(data, drawPile.AllTileSettings);
+
+				//if (grid.GetTile(data.Position.x, data.Position.y) != tile)
+				//{
+				//	isDifferent = true;
+				//	break;
+				//}
+			}
+
+			if (isDifferent)
+			{
+				Instances.TryGetValue(senderClientId, out NetCommunication instance);
+				instance.DistributeGridClientRPC(dataList);
+			}
 		}
 
 		[ClientRpc(RequireOwnership = false)]

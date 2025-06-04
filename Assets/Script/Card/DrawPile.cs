@@ -29,13 +29,13 @@ namespace CardGame
 			Storage.Instance.Delete(this);
 		}
 
-		public TileSettings GetTileFrom()
+		public int GetTileIDFromDrawPile()
 		{
 			int index = Random.Range(0, _tileInDrawPile.Count - 1);
 			TileSettings settings = _tileInDrawPile[index];
 			_tileInDrawPile.RemoveAt(index);
 
-			return settings;
+			return settings.IdCode;
 		}	
     }
 }
