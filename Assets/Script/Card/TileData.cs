@@ -1,8 +1,3 @@
-using CardGame.UI;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.InputSystem;
-
 namespace CardGame.Card
 {
     public class TileData

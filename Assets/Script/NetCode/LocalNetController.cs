@@ -68,16 +68,14 @@ namespace CardGame.Net
 			}
 		}
 
-		private void NetCommunication_ReceiveEvent(DataNetcode data)
+		private void NetCommunication_ReceiveEvent(string data)
 		{
-			_receivedInfo.text = data.Text;
+			_receivedInfo.text = data;
 		}
 
 		public void SendInfo()
 		{
-			DataNetcode info = new DataNetcode(_netCommunication.name + " / \n password: " + _passwordField.text);
-
-			_netCommunication.SubmitInfo(info);
+			_netCommunication.SubmitInfoTest(_netCommunication.name + " / \n password: " + _passwordField.text);
 		}
 
 
@@ -138,7 +136,7 @@ namespace CardGame.Net
 				return;
 			}
 
-			_joinCode = CodeNetUtility.GetJoinCode(localIP, selectedPort);
+			_joinCode = NetUtility.GetJoinCode(localIP, selectedPort);
 
 			_transport.SetConnectionData(localIP, selectedPort);
 			NetworkManager.Singleton.StartHost();
@@ -179,7 +177,7 @@ namespace CardGame.Net
 			//if still empty return
 			if (string.IsNullOrEmpty(joinCode)) return;
 
-			CodeNetUtility.DecodeJoinCode(joinCode, out string ip, out ushort port);
+			NetUtility.DecodeJoinCode(joinCode, out string ip, out ushort port);
 
 			_transport.SetConnectionData(ip, port);
 
@@ -347,6 +345,7 @@ namespace CardGame.Net
 			_netCommunication = netCom;
 			_netCommunication.ReceiveEvent += NetCommunication_ReceiveEvent;
 		}
+
 		public void CopyJoinCode()
 		{
 			if (string.IsNullOrEmpty(_joinCode)) return;

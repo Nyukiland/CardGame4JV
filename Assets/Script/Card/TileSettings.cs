@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using CardGame.UI;
 using UnityEngine;
+using System;
 
 namespace CardGame.Card
 {
@@ -8,6 +8,9 @@ namespace CardGame.Card
 
     public class TileSettings: ScriptableObject
     {
+		[Disable]
+		public int IdCode => GetHashedCode();
+
         [Header("Zone Data")]
         [SerializeField] private ZoneData _northZone;
         [SerializeField] private ZoneData _eastZone;
@@ -26,6 +29,11 @@ namespace CardGame.Card
 
         [SerializeField, SerializeReference, SubclassSelector(typeof(CardFeedback))]
         private List<CardFeedback> _cardFeedback = new();
+
+		private int GetHashedCode()
+		{
+			return HashCode.Combine(_northZone, _eastZone, _southZone, _westZone);
+		}
     }
 
     public enum ENVIRONEMENT_TYPE

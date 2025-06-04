@@ -1,8 +1,9 @@
+using CardGame.Card;
 using System;
 
 namespace CardGame.Net
 {
-	public static class CodeNetUtility
+	public static class NetUtility
 	{
 		private const string Digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -67,5 +68,26 @@ namespace CardGame.Net
 			return result;
 		}
 
+
+		//public static TileData FromDataToSend(DataToSend data, TileSettingsDatabase db)
+		//{
+		//	var settings = db.GetTileSettingsById(data.TileSettingsId);
+		//	if (settings == null)
+		//	{
+		//		Debug.LogError($"TileSettings ID {data.TileSettingsId} not found.");
+		//		return null;
+		//	}
+
+		//	TileData tile = new TileData();
+		//	tile.InitTile(settings);
+
+		//	for (int i = 0; i < data.TileRotationCount; i++)
+		//		tile.RotateTile();
+
+		//	for (int i = 0; i < 4; i++)
+		//		tile.Zones[i] = data.Zones[i];
+
+		//	return tile;
+		//}
 	}
 }

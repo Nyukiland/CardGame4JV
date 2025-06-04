@@ -7,7 +7,7 @@ namespace CardGame.Net
 	{
 		public static Dictionary<ulong, NetCommunication> Instances = new();
 
-		public delegate void ReceiveEventDelegate(DataNetcode data);
+		public delegate void ReceiveEventDelegate(string data);
 		public event ReceiveEventDelegate ReceiveEvent;
 
 		public override void OnNetworkSpawn()
@@ -25,16 +25,36 @@ namespace CardGame.Net
 			Instances.Remove(OwnerClientId);
 		}
 
-		public void SubmitInfo(DataNetcode info)
+		public void SendPlacementTile(DataToSend data)
+		{
+			if (IsLocalPlayer)
+				DistributePlacementTileClientRPC(data);
+
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		public void DistributePlacementTileServerRPC(DataToSend data)
+		{
+
+		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void DistributePlacementTileClientRPC(DataToSend data)
+		{
+
+		}
+
+		#region Test
+		public void SubmitInfoTest(string info)
 		{
 			if (IsLocalPlayer)
 			{
-				SubmitInfoServerRpc(info);
+				SubmitInfoTestServerRpc(info);
 			}
 		}
 
 		[ServerRpc(RequireOwnership = false)]
-		private void SubmitInfoServerRpc(DataNetcode data, ServerRpcParams rpcParams = default)
+		private void SubmitInfoTestServerRpc(string data, ServerRpcParams rpcParams = default)
 		{
 			ulong senderClientId = rpcParams.Receive.SenderClientId;
 
@@ -45,15 +65,16 @@ namespace CardGame.Net
 
 				if (targetClientId != senderClientId)
 				{
-					instance.OnDataChangedClientRpc(data);
+					instance.OnDataChangedTestClientRpc(data);
 				}
 			}
 		}
 
 		[ClientRpc(RequireOwnership = false)]
-		public void OnDataChangedClientRpc(DataNetcode current)
+		public void OnDataChangedTestClientRpc(string current)
 		{
 			ReceiveEvent?.Invoke(current);
 		}
+		#endregion
 	}
 }

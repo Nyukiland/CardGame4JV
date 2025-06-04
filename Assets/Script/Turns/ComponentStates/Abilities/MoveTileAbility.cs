@@ -1,4 +1,3 @@
-using CardGame.Card;
 using CardGame.StateMachine;
 using CardGame.UI;
 using UnityEngine;
