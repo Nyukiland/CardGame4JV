@@ -14,6 +14,8 @@ namespace CardGame.Turns
 	{
 		public NetCommunication NetCom { get; private set; }
 
+		private CreateHandAbility _createHand;
+
 		[SerializeField]
 		private DrawPile _drawPile;
 
@@ -86,6 +88,8 @@ namespace CardGame.Turns
 					break;
 				}
 			}
+
+			_createHand.CreateTile(tileSettings);
 		}
 
 		private void UpdateGrid(DataToSendList dataList)

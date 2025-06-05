@@ -6,37 +6,41 @@ namespace CardGame.Turns
 {
 	public class MoveTileAbility : Ability
 	{
-		private ZoneHolderResource _cardManager;
+		[SerializeField]
+		private GridManager _gridManager;
+
+		private ZoneHolderResource _handResource;
+
 		private TileVisu _currentTile;
-		private TileContainer _previousCardContainer;
-		private int _previousCardIndex;
-		
+
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
-			_cardManager = owner.GetStateComponent<ZoneHolderResource>();
+			_handResource = owner.GetStateComponent<ZoneHolderResource>();
 		}
-		
+
 		public void PickCard(Vector2 position)
 		{
-			if (!_cardManager.ContainsContainer(position, out TileContainer container))
-				return;
-			
-			if (!container.ContainsTile(position, out TileVisu tile))
-				return;
-
-            _currentTile = tile;
-			_previousCardContainer = container;
-			_previousCardIndex = container.RemoveTile(_currentTile);
-            _currentTile.ChangeParent(_cardManager.MainCanvas.transform);
+			if (Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100))
+			{
+				if (hit.collider.GetComponentInParent<TileVisu>() is TileVisu visu)
+				{
+					_handResource.RemoveTileFromHand(visu.gameObject);
+					_currentTile = visu;
+				}
+			}
 		}
-		
+
 		public void MoveCard(Vector2 position)
 		{
 			if (_currentTile == null)
 				return;
 
-            _currentTile.transform.position = position;
+			Vector3 pos = Camera.main.ScreenToWorldPoint(position);
+			pos = Vector3Int.FloorToInt(pos);
+			pos += Camera.main.transform.forward * 2;
+
+			_currentTile.transform.position = pos;
 		}
 
 		public void ReleaseCard(Vector2 position)
@@ -44,33 +48,22 @@ namespace CardGame.Turns
 			if (_currentTile == null)
 				return;
 
-			if (!_cardManager.ContainsContainer(position, out TileContainer container))
+			if (_handResource.IsInHand(position))
 			{
-				SendCardBack();
+				_handResource.GiveTileToHand(_currentTile.gameObject);
 				return;
 			}
 
-			if (!container.GetMouseBetweenIndexes(position, _cardManager.MainCanvas, out int listIndex))
+			Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
+
+			if (_gridManager.GetTile(pos).TileData == null)
 			{
-				SendCardBack();
-				return;
+				_gridManager.SetTile(_currentTile.TileData, pos);
+				GameObject.Destroy(_currentTile.gameObject);
 			}
+			else 
+				_handResource.GiveTileToHand(_currentTile.gameObject);
 
-			container.AddTile(_currentTile, listIndex);
-            _currentTile.ChangeParent(container.transform);
-            _currentTile.transform.SetSiblingIndex(listIndex);
-			_previousCardContainer = null;
-            _currentTile = null;
-		}
-
-		private void SendCardBack()
-		{
-			_previousCardContainer.AddTile(_currentTile, _previousCardIndex);
-            _currentTile.ChangeParent(_previousCardContainer.transform);
-            _currentTile.transform.SetSiblingIndex(_previousCardIndex);
-			_previousCardContainer = null;
-			_previousCardIndex = -1;
-            _currentTile = null;
 		}
 	}
 }

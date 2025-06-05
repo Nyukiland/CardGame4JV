@@ -22,6 +22,9 @@ namespace CardGame.Turns
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
+
+			//in the update so it has a delay
+			Controller.SetState<PlaceTileCombinedState>();
         }
     }
 }
