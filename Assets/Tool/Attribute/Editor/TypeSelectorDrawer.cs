@@ -30,25 +30,30 @@ public class TypeSelectorDrawer : PropertyDrawer
 				.ToList();
 
 			dropdown = new TypeDropdown(types, state);
-			dropdown.OnTypeSelected += selectedType =>
-			{
-				property.stringValue = selectedType?.FullName ?? string.Empty;
-				property.serializedObject.ApplyModifiedProperties();
-			};
-
 			_dropdowns[baseType] = dropdown;
 		}
 
-		// Draw button with current selected type name
+		var serializedObjectCopy = property.serializedObject;
+		var propertyPath = property.propertyPath;
+
+		dropdown.OnTypeSelected = selectedType =>
+		{
+			var targetProperty = serializedObjectCopy.FindProperty(propertyPath);
+			if (targetProperty != null)
+			{
+				targetProperty.stringValue = selectedType?.FullName ?? string.Empty;
+				serializedObjectCopy.ApplyModifiedProperties();
+			}
+		};
+
 		string buttonText = string.IsNullOrEmpty(currentTypeName)
 			? "(None)"
 			: ObjectNames.NicifyVariableName(currentTypeName.Split('.').Last());
 
 		float widthSplit = position.width / 4;
-
 		EditorGUI.LabelField(new Rect(position.position.x, position.y, widthSplit, position.height), label.text);
 
-		Rect dropDownRect = new (position.position.x + widthSplit, position.y, widthSplit * 3, position.height);
+		Rect dropDownRect = new(position.position.x + widthSplit, position.y, widthSplit * 3, position.height);
 		if (EditorGUI.DropdownButton(dropDownRect, new GUIContent(buttonText), FocusType.Keyboard))
 		{
 			dropdown.Show(dropDownRect);
@@ -58,7 +63,7 @@ public class TypeSelectorDrawer : PropertyDrawer
 	public class TypeDropdown : AdvancedDropdown
 	{
 		private readonly List<Type> _types;
-		public event Action<Type> OnTypeSelected;
+		public Action<Type> OnTypeSelected;
 
 		public TypeDropdown(List<Type> types, AdvancedDropdownState state) : base(state)
 		{
@@ -68,12 +73,10 @@ public class TypeSelectorDrawer : PropertyDrawer
 		protected override AdvancedDropdownItem BuildRoot()
 		{
 			var root = new AdvancedDropdownItem("Select Type");
-
 			foreach (var type in _types.OrderBy(t => t.FullName))
 			{
 				root.AddChild(new TypeDropdownItem(type));
 			}
-
 			return root;
 		}
 
