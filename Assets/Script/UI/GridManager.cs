@@ -1,6 +1,5 @@
 using CardGame.Card;
 using CardGame.Utility;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 
 namespace CardGame.UI
@@ -23,7 +22,7 @@ namespace CardGame.UI
         private void Start()
         {
             _grid = new TileVisu[_width, _height];
-            
+
             GenerateGrid();
         }
         private void OnEnable()
@@ -56,24 +55,37 @@ namespace CardGame.UI
 
         public TileVisu GetTile(int x, int y)
         {
+            if (x > _width - 1 || x < 0 || y > _height - 1 || y < 0) return null;
             return _grid[x, y];
         }
 
         public TileVisu GetTile(Vector2Int arrayCoordinates)
         {
+            if (arrayCoordinates.x > _width-1 || arrayCoordinates.x < 0 || arrayCoordinates.y > _height - 1 || arrayCoordinates.y < 0) return null;
             return _grid[arrayCoordinates.x, arrayCoordinates.y];
         }
 
-        public void SetTile(TileData tile, int x, int y)
+        public bool SetTile(TileData tile, int x, int y)
         {
-            // On va passer le 
-            _grid[x, y].UpdateTile(tile);
+            if (x > _width - 1 || x < 0 || y > _height - 1 || y < 0) return false;
+            TileVisu tileVisu = _grid[x, y];
+            return SetTile(tileVisu, tile);
         }
 
-        public void SetTile(TileData tile, Vector2Int arrayCoordinates)
+        public bool SetTile(TileData tile, Vector2Int arrayCoordinates)
         {
-            // On va passer le 
-            _grid[arrayCoordinates.x, arrayCoordinates.y].UpdateTile(tile);
+            if (arrayCoordinates.x > _width-1 || arrayCoordinates.x < 0 || arrayCoordinates.y > _height - 1 || arrayCoordinates.y < 0) return false;
+            TileVisu tileVisu = _grid[arrayCoordinates.x, arrayCoordinates.y];
+            return SetTile(tileVisu, tile);
+
+        }
+
+        private bool SetTile(TileVisu tileVisu, TileData tile) {
+            // On va passer les données de la tuile, désactiver le collider et rendre le GameObject visible
+            tileVisu.UpdateTile(tile);
+            tileVisu.gameObject.GetComponent<BoxCollider>().enabled = false;
+            tileVisu.gameObject.SetActive(true);
+            return true;
         }
 
 
@@ -83,5 +95,5 @@ namespace CardGame.UI
         }
     }
 
-    
+
 }
