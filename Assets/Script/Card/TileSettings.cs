@@ -1,6 +1,8 @@
+using System.Security.Cryptography;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Text;
 
 namespace CardGame.Card
 {
@@ -9,7 +11,7 @@ namespace CardGame.Card
     public class TileSettings: ScriptableObject
     {
 		[Disable]
-		public int IdCode => GetHashedCode();
+		public int IdCode => GetStableId();
 
         [Header("Zone Data")]
         [SerializeField] private ZoneData _northZone;
@@ -30,11 +32,23 @@ namespace CardGame.Card
         [SerializeField, SerializeReference, SubclassSelector(typeof(CardFeedback))]
         private List<CardFeedback> _cardFeedback = new();
 
-		private int GetHashedCode()
+		private int GetStableId()
 		{
-			return HashCode.Combine(_northZone, _eastZone, _southZone, _westZone);
+			//get a text
+			string input = $"{_northZone.environment}-{_northZone.isOpen}-" +
+						$"{_eastZone.environment}-{_eastZone.isOpen}-" +
+						$"{_southZone.environment}-{_southZone.isOpen}-" +
+						$"{_westZone.environment}-{_westZone.isOpen}";
+
+			//using to auto dispose the var
+			using SHA256 sha = SHA256.Create();
+			//fun encryption again
+			byte[] hash = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+			// Take the first 4 bytes 
+			return BitConverter.ToInt32(hash, 0);
 		}
-    }
+	}
 
     public enum ENVIRONEMENT_TYPE
     {

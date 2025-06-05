@@ -51,6 +51,8 @@ namespace CardGame.StateMachine
 			float deltaTime = Time.deltaTime;
 			_state?.Update(deltaTime);
 			ComponentUpdate(deltaTime);
+
+			UnityEngine.Debug.Log(CurrentState);
 		}
 
 		public void FixedUpdate()

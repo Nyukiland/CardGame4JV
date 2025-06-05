@@ -1,6 +1,5 @@
-using CardGame.StateMachine;
-using CardGame.Utility;
 using Cysharp.Threading.Tasks;
+using CardGame.StateMachine;
 
 namespace CardGame.Turns
 {
@@ -29,12 +28,13 @@ namespace CardGame.Turns
 
 		private async UniTask WaitStart()
 		{
-			await UniTask.Delay(500);
+			await UniTask.Delay(200);
 
 			if (_net.IsNetActive())
 			{
-				_sender.AskForSetUp();
 				Controller.SetState<NextPlayerCombinedState>();
+				await UniTask.Delay(100);
+				_sender.AskForSetUp();
 			}
 			else
 			{

@@ -8,8 +8,8 @@ namespace CardGame.Turns
 
         public NextPlayerCombinedState()
         {
-			AddSubState(new RotateTileSubState());
-			AddSubState(new MoveTileSubState());
+			//AddSubState(new RotateTileSubState());
+			//AddSubState(new MoveTileSubState());
         }
 
         public override void OnEnter()
@@ -19,16 +19,6 @@ namespace CardGame.Turns
 
 			if (!_net.IsNetActive())
 				Controller.SetState<PlaceTileCombinedState>();
-        }
-
-        public override void OnExit()
-        {
-            base.OnExit();
-        }
-
-        public override void Update(float deltaTime)
-        {
-            base.Update(deltaTime);
         }
     }
 }

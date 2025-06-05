@@ -110,6 +110,7 @@ namespace CardGame.Turns
 
 		private void GoMyTurn()
 		{
+			UnityEngine.Debug.Log("changeState");
 			Owner.SetState<PlaceTileCombinedState>();
 		}
 	}

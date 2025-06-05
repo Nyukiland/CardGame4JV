@@ -31,7 +31,8 @@ namespace CardGame.Net
 
 		private int _playerTurn = 0;
 
-		private List<ulong> _playersID = new();
+		[Disable]
+		public List<ulong> PlayersID = new();
 
 		public override void OnNetworkSpawn()
 		{
@@ -98,8 +99,9 @@ namespace CardGame.Net
 		[ServerRpc(RequireOwnership = false)]
 		public void SendTilePlacedServerRPC(DataToSend data, ServerRpcParams rpcParams = default)
 		{
-			if (Storage.Instance.GetElement<GridManager>().GetTile(data.Position.x, data.Position.y) != null)
-				return;
+			//not working for some reason
+			//if (Storage.Instance.GetElement<GridManager>().GetTile(data.Position.x, data.Position.y).TileData != null)
+			//	return;
 
 			ulong senderClientId = rpcParams.Receive.SenderClientId;
 
@@ -143,31 +145,39 @@ namespace CardGame.Net
 		public void TurnCompletedServerRPC()
 		{
 			_playerTurn++;
-			if (_playerTurn >= Instances.Count) _playerTurn = 0;
+			if (_playerTurn >= PlayersID.Count) _playerTurn = 0;
 
-			Instances[_playersID[_playerTurn]].SendYourTurn?.Invoke();
+			Instances[PlayersID[_playerTurn]].CallTurnClientRPC();
 		}
 
 		[ServerRpc(RequireOwnership = false)]
 		public void SetUpGameServerRPC()
 		{
-			_playersID.Add(OwnerClientId);
+			PlayersID.Add(OwnerClientId);
 
+			//fill the list
 			foreach (var instance in Instances)
 			{
+				if (instance.Key == OwnerClientId)
+					continue;
+
+				PlayersID.Add(instance.Key);
+			}
+
+			//for each client give tile and give the list of player
+			//sync temp then use networkvar i think
+			foreach (var instance in Instances)
+			{
+				instance.Value.PlayersID = new(PlayersID);
+
 				//ugly 4 times but ok
 				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
 				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
 				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
 				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
-
-				if (instance.Key == OwnerClientId)
-					continue;
-
-				_playersID.Add(instance.Key);
 			}
-
-			Instances[_playersID[_playerTurn]].SendYourTurn?.Invoke();
+			
+			Instances[PlayersID[_playerTurn]].CallTurnClientRPC();
 		}
 
 		[ServerRpc(RequireOwnership = false)]

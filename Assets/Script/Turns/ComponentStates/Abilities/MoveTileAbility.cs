@@ -65,9 +65,9 @@ namespace CardGame.Turns
 				_sender.SendInfoTilePlaced(_currentTile.TileData, pos);
 				_sender.SendTurnFinished();
 
-				GameObject.Destroy(_currentTile.gameObject);
-
 				Owner.SetState<NextPlayerCombinedState>();
+
+				GameObject.Destroy(_currentTile.gameObject);
 			}
 			else 
 				_handResource.GiveTileToHand(_currentTile.gameObject);
