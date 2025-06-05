@@ -31,7 +31,7 @@ namespace CardGame.UI
 
 		public TileData TileData { get; set; }
 
-		public void InitTile(TileData data)
+		public void UpdateTile(TileData data)
 		{
 			TileData = data;
 			UpdateVisu();
@@ -48,19 +48,19 @@ namespace CardGame.UI
 
 			ZoneData zone = TileData.TileSettings.NorthZone;
 			zones.Add(zone);
-			_visuNorth.material = GetMatrialForType(zone.environment);
+			_visuNorth.material = GetMaterialForType(zone.environment);
 
 			zone = TileData.TileSettings.SouthZone;
 			zones.Add(zone);
-			_visuSouth.material = GetMatrialForType(zone.environment);
+			_visuSouth.material = GetMaterialForType(zone.environment);
 
 			zone = TileData.TileSettings.EastZone;
 			zones.Add(zone);
-			_visuEast.material = GetMatrialForType(zone.environment);
+			_visuEast.material = GetMaterialForType(zone.environment);
 
 			zone = TileData.TileSettings.WestZone;
 			zones.Add(zone);
-			_visuWest.material = GetMatrialForType(zone.environment);
+			_visuWest.material = GetMaterialForType(zone.environment);
 
 			//temp
 			_visuCenter.enabled = false;
@@ -78,14 +78,14 @@ namespace CardGame.UI
 					if (zones[i].environment == zones[j].environment)
 					{
 						_visuCenter.enabled = true;
-						_visuCenter.material = GetMatrialForType(zones[i].environment);
+						_visuCenter.material = GetMaterialForType(zones[i].environment);
 						return;
 					}
 				}
 			}
 		}
 
-		private Material GetMatrialForType(ENVIRONEMENT_TYPE type)
+		private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
 		{
 			switch (type)
 			{

@@ -1,3 +1,4 @@
+using CardGame.Card;
 using CardGame.Utility;
 using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
@@ -17,11 +18,11 @@ namespace CardGame.UI
         [SerializeField] private Color _baseColor;
         [SerializeField] private Color _offsetColor;
 
-        private GameObject[,] _grid;
+        private TileVisu[,] _grid;
 
         private void Start()
         {
-            _grid = new GameObject[_width, _height];
+            _grid = new TileVisu[_width, _height];
             
             GenerateGrid();
         }
@@ -40,7 +41,7 @@ namespace CardGame.UI
                 for (int y = 0; y < _height; y++)
                 {
                     GameObject instantiatedTile = Instantiate(_tilePrefab, _gridContainer.transform);
-                    _grid[x, y] = instantiatedTile;
+                    _grid[x, y] = instantiatedTile.GetComponent<TileVisu>();
                     instantiatedTile.name = $"Tile_{x}_{y}";
 
                     float offsetX = -totalWidth / 2f + _tileSize.x / 2f;
@@ -53,26 +54,26 @@ namespace CardGame.UI
             }
         }
 
-        public GameObject GetTile(int x, int y)
+        public TileVisu GetTile(int x, int y)
         {
             return _grid[x, y];
         }
 
-        public GameObject GetTile(Vector2Int arrayCoordinates)
+        public TileVisu GetTile(Vector2Int arrayCoordinates)
         {
             return _grid[arrayCoordinates.x, arrayCoordinates.y];
         }
 
-        public void SetTile(GameObject tile, int x, int y)
+        public void SetTile(TileData tile, int x, int y)
         {
             // On va passer le 
-            _grid[x, y] = tile;
+            _grid[x, y].UpdateTile(tile);
         }
 
-        public void SetTile(GameObject tile, Vector2Int arrayCoordinates)
+        public void SetTile(TileData tile, Vector2Int arrayCoordinates)
         {
             // On va passer le 
-            _grid[arrayCoordinates.x, arrayCoordinates.y] = tile;
+            _grid[arrayCoordinates.x, arrayCoordinates.y].UpdateTile(tile);
         }
 
 
