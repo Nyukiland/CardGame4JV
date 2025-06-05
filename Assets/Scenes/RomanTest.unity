@@ -572,6 +572,8 @@ MonoBehaviour:
   - rid: 542522248351187034
   - rid: 542522248351187035
   - rid: 542522248351187036
+  - rid: 542522248351187037
+  - rid: 542522248351187038
   references:
     version: 2
     RefIds:
@@ -593,6 +595,19 @@ MonoBehaviour:
       data:
         Enabled: 0
         _gridManager: {fileID: 1714262389}
+    - rid: 542522248351187037
+      type: {class: NetworkResource, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+        _drawPile: {fileID: 1031992356}
+        _grid: {fileID: 1714262389}
+    - rid: 542522248351187038
+      type: {class: CreateHandAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+        _countCard: 4
+        _prefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
+        _pile: {fileID: 1031992356}
 --- !u!4 &1973094708
 Transform:
   m_ObjectHideFlags: 0
