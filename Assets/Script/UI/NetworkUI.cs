@@ -109,11 +109,11 @@ namespace CardGame.UI
             _clientBackButton.onClick.AddListener(OpenMainMenu);
             
             // Inputs fields
-            _sessionNameInput.onEndEdit.AddListener(UpdateInputField);
-            _passwordInputHost.onEndEdit.AddListener(UpdateInputField);
-            _playerNameInput.onEndEdit.AddListener(UpdateInputField);
-            _codeInput.onEndEdit.AddListener(UpdateInputField);
-            _passwordInputClient.onEndEdit.AddListener(UpdateInputField);
+            _sessionNameInput.onEndEdit.AddListener(UpdateHostInputs);
+            _passwordInputHost.onEndEdit.AddListener(UpdateHostInputs);
+            _playerNameInput.onEndEdit.AddListener(UpdateClientInputs);
+            _codeInput.onEndEdit.AddListener(UpdateClientInputs);
+            _passwordInputClient.onEndEdit.AddListener(UpdateClientInputs);
             
             // Toggles
             _publicHostToggle.onValueChanged.AddListener(TogglePublicGames);
@@ -122,83 +122,104 @@ namespace CardGame.UI
             OpenMainMenu();
         }
 
-        public void CallOnValidate()
+        private void OnDestroy()
         {
-            OnValidate();
+            _mainHostButton.onClick.RemoveListener(OpenBeforeHost);
+            _mainConnectButton.onClick.RemoveListener(OpenBeforeClient);
+            _hostButton.onClick.RemoveListener(CallStartHostEvent);
+            _hostBackButton.onClick.RemoveListener(OpenMainMenu);
+            _copyCodeButton.onClick.RemoveListener(CallCopyEvent);
+            _unHostButton.onClick.RemoveListener(CallUnhostEvent);
+            _playButton.onClick.RemoveListener(StartGame);
+            _connectButton.onClick.RemoveListener(CallJoinGameEvent);
+            _quitGameButton.onClick.RemoveListener(QuitClientGame);
+            _clientBackButton.onClick.RemoveListener(OpenMainMenu);
+            
+            // Inputs fields
+            _sessionNameInput.onEndEdit.RemoveListener(UpdateHostInputs);
+            _passwordInputHost.onEndEdit.RemoveListener(UpdateHostInputs);
+            _playerNameInput.onEndEdit.RemoveListener(UpdateClientInputs);
+            _codeInput.onEndEdit.RemoveListener(UpdateClientInputs);
+            _passwordInputClient.onEndEdit.RemoveListener(UpdateClientInputs);
+            
+            // Toggles
+            _publicHostToggle.onValueChanged.RemoveListener(TogglePublicGames);
+            _publicFindToggle.onValueChanged.RemoveListener(TogglePublicGames);
+        }
+        
+        #endregion
+        
+        #region Update Visuals
+
+        public void UpdateHostInputs(string inputString)
+        {
+            UpdateBeforeHost();
+        }
+        
+        public void UpdateClientInputs(string inputString)
+        {
+            UpdateBeforeClient();
         }
 
-        private void OnValidate()
+        public void UpdateBeforeHost()
         {
-            switch (_currentScreen)
+            if (string.IsNullOrEmpty(_sessionNameInput.text))
             {
-                case CurrentScreen.None:
-                    return;
-                case CurrentScreen.MainMenu:
-                    break;
-                case CurrentScreen.BeforeHost:
-                    if (string.IsNullOrEmpty(_sessionNameInput.text))
-                    {
-                        _hostButtonGrey.gameObject.SetActive(true);
-                        _hostButton.interactable = false;
-                    }
-                    else
-                    {
-                        _hostButtonGrey.gameObject.SetActive(false);
-                        _hostButton.interactable = true;
-                    }
-                    break;
-                case CurrentScreen.AfterHost:
-                    int playerNumber = NetworkManager.Singleton.ConnectedClients.Count;
-                    _playersNumberText.text = $"{playerNumber}/4 players";
-                    if (playerNumber < 1)
-                    {
-                        _playButtonGrey.gameObject.SetActive(true);
-                        _playButton.interactable = false;
-                    }
-                    else
-                    {
-                        _playButtonGrey.gameObject.SetActive(false);
-                        _playButton.interactable = true;
-                    }
-                    break;
-                case CurrentScreen.BeforeClient:
-                    _publicHostsContainer.SetActive(IsPublicShown);
-                    if (string.IsNullOrEmpty(_playerNameInput.text) || string.IsNullOrEmpty(_codeInput.text))
-                    {
-                        _connectButtonGrey.gameObject.SetActive(true);
-                        _connectButton.interactable = false;
-                    }
-                    else
-                    {
-                        _connectButtonGrey.gameObject.SetActive(false);
-                        _connectButton.interactable = true;
-                    }
-                    break;
-                case CurrentScreen.AfterClient:
-                    break;
-                default:
-                    break;
+                _hostButtonGrey.gameObject.SetActive(true);
+                _hostButton.interactable = false;
+            }
+            else
+            {
+                _hostButtonGrey.gameObject.SetActive(false);
+                _hostButton.interactable = true;
             }
         }
 
+        public void UpdateAfterHost()
+        {
+            int playerNumber = NetworkManager.Singleton.ConnectedClients.Count;
+            _playersNumberText.text = $"{playerNumber}/4 players";
+            if (playerNumber < 1)
+            {
+                _playButtonGrey.gameObject.SetActive(true);
+                _playButton.interactable = false;
+            }
+            else
+            {
+                _playButtonGrey.gameObject.SetActive(false);
+                _playButton.interactable = true;
+            }
+        }
+
+        public void UpdateBeforeClient()
+        {
+            _publicHostsContainer.SetActive(IsPublicShown);
+            if (string.IsNullOrEmpty(_playerNameInput.text) || string.IsNullOrEmpty(_codeInput.text))
+            {
+                _connectButtonGrey.gameObject.SetActive(true);
+                _connectButton.interactable = false;
+            }
+            else
+            {
+                _connectButtonGrey.gameObject.SetActive(false);
+                _connectButton.interactable = true;
+            }
+        }
+        
         #endregion
         
         #region Change Panels
         
         private void OpenMainMenu()
         {
-            OpenPanel(_mainMenuGameObject);
-            _currentScreen = CurrentScreen.MainMenu;
-            
-            OnValidate();
+            OpenPanel(_mainMenuGameObject, CurrentScreen.MainMenu);
         }
         
         private void OpenBeforeHost()
         {
-            OpenPanel(_beforeHostGameObject);
-            _currentScreen = CurrentScreen.BeforeHost;
+            OpenPanel(_beforeHostGameObject, CurrentScreen.BeforeHost);
             
-            OnValidate();
+            UpdateBeforeHost();
         }
 
         private void OpenAfterHost()
@@ -207,10 +228,9 @@ namespace CardGame.UI
             Password = _passwordInputHost.text;
             if (string.IsNullOrEmpty(Password)) Password = "- None -";
             
-            OpenPanel(_afterHostGameObject);
-            _currentScreen = CurrentScreen.AfterHost;
+            OpenPanel(_afterHostGameObject, CurrentScreen.AfterHost);
             
-            OnValidate();
+            UpdateAfterHost();
 
             _sessionNameText.text = SessionName;
             _codeText.text = Code;
@@ -219,31 +239,26 @@ namespace CardGame.UI
 
         private void OpenBeforeClient()
         {
-            OpenPanel(_beforeClientGameObject);
-            _currentScreen = CurrentScreen.BeforeClient;
+            OpenPanel(_beforeClientGameObject, CurrentScreen.BeforeClient);
             
-            OnValidate();
+            UpdateBeforeClient();
         }
 
         public void OpenAfterClient()
         {
-            OpenPanel(_afterClientGameObject);
-            _currentScreen = CurrentScreen.AfterClient;
-            
-            OnValidate();
+            OpenPanel(_afterClientGameObject, CurrentScreen.AfterClient);
         }
 
-        private void CloseMenu()
+        public void CloseMenu()
         {
-            OpenPanel(null, true);
-            _currentScreen = CurrentScreen.None;
+            OpenPanel(null, CurrentScreen.None, true);
         }
         
         #endregion
         
         #region Methods
 
-        private void OpenPanel(GameObject panel, bool closeAll = false)
+        private void OpenPanel(GameObject panel, CurrentScreen nextScreen, bool closeAll = false)
         {
             // Warning : only open from Change Panel methods 
             _mainMenuGameObject.SetActive(false);
@@ -251,9 +266,12 @@ namespace CardGame.UI
             _afterHostGameObject.SetActive(false);
             _beforeClientGameObject.SetActive(false);
             _afterClientGameObject.SetActive(false);
-            
+
             if (!closeAll)
+            {
                 panel.SetActive(true);
+                _currentScreen = nextScreen;
+            }
         }
 
         private void TogglePublicGames(bool toggle)
@@ -274,11 +292,6 @@ namespace CardGame.UI
             }
             
             Debug.LogWarning($"The public hosting just got toggled in a screen that shouldn't be able to do it ({_currentScreen}).)");
-        }
-
-        private void UpdateInputField(string newText)
-        {
-            OnValidate();
         }
 
         private void StartGame()

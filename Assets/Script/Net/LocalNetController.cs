@@ -48,7 +48,13 @@ namespace CardGame.Net
                 _lanSearch.OnHostsUpdated -= UpdateConnectionList;
             }
             
+            _networkUI.TogglePublicEvent -= TogglePublicSearch;
+            _networkUI.StartHostEvent -= StartHost;
+            _networkUI.JoinGameEvent -= ()=>JoinGame();
+            _networkUI.UnhostEvent -= StopHosting;
             _networkUI.CopyCodeEvent -= CopyJoinCode;
+            _networkUI.QuitGameEvent -= DisconnectFromGame;
+            _networkUI.PlayGameEvent -= ()=> _netCommunication.LoadScene(_sceneName);
         }
         
         #endregion
@@ -124,12 +130,12 @@ namespace CardGame.Net
 
 		private void CallOnConnect(NetworkManager arg1, ConnectionEventData arg2)
 		{
-			_networkUI.CallOnValidate();
+			_networkUI.UpdateAfterHost();
 		}
 
 		private void CallOnDisconnect(ulong obj)
 		{
-			_networkUI.CallOnValidate();
+			_networkUI.UpdateAfterHost();
 		}
 
 		private void OnClientDisconnected(ulong clientId)
@@ -342,6 +348,12 @@ namespace CardGame.Net
 			{
 				_networkUI.QuitClientGame();
 				_netCommunication.OnDestroyEvent -= _networkUI.QuitClientGame;
+			};
+			
+			_netCommunication.OnLaunchGameEvent += ()=>
+			{
+				_networkUI.CloseMenu();
+				_netCommunication.OnLaunchGameEvent -= _networkUI.CloseMenu;
 			};
 		}
 

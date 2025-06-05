@@ -27,6 +27,7 @@ namespace CardGame.Net
 		public event TransmitValidation SendYourTurn;
 
 		public Action OnDestroyEvent;
+		public Action OnLaunchGameEvent;
 
 		private int _playerTurn = 0;
 
@@ -212,6 +213,7 @@ namespace CardGame.Net
 		[ClientRpc(RequireOwnership = false)]
 		public void LoadSceneClientRPC(string sceneName)
 		{
+			OnLaunchGameEvent?.Invoke();
 			SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
 		}
 		#endregion
