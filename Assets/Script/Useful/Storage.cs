@@ -27,6 +27,7 @@ namespace CardGame.Utility
 
 			List<T> group = GetGroupOfType<T>();
 			group.Remove(member);
+			_storage[typeof(T)] = group.ConvertAll(item => (object)item);
 		}
 
 		public void DeleteFromAllGroups(object member)
