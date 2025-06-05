@@ -49,6 +49,7 @@ namespace CardGame.Turns
 				NetCom.TilePlaced += UpdateGridPlaced;
 				NetCom.GridUpdated += UpdateGrid;
 				NetCom.TileForHand += UpdateHand;
+				NetCom.SendYourTurn += GoMyTurn;
 			}
 		}
 
@@ -103,6 +104,11 @@ namespace CardGame.Turns
 
 				_grid.SetTile(tile, data.Position.x, data.Position.y);
 			}
+		}
+
+		private void GoMyTurn()
+		{
+			Owner.SetState<PlaceTileCombinedState>();
 		}
 	}
 }

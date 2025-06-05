@@ -21,6 +21,13 @@ namespace CardGame.Net
 		public delegate void SendTileForHandEvent(int tileId);
 		public event SendTileForHandEvent TileForHand;
 
+		public delegate void TransmitValidation();
+		public event TransmitValidation SendYourTurn;
+
+		private int _playerTurn = 0;
+
+		private List<ulong> _playersID;
+
 		public override void OnNetworkSpawn()
 		{
 			if (!Instances.ContainsKey(OwnerClientId))
@@ -42,24 +49,38 @@ namespace CardGame.Net
 				SendMoveTileServerRPC(data);
 		}
 
+		public void SendTilePlaced(DataToSend data)
+		{
+			if (IsLocalPlayer)
+				SendTilePlacedServerRPC(data);
+		}
+
+		public void SendGrid(DataToSendList dataList)
+		{
+			if (IsLocalPlayer)
+				SendGridServerRPC(dataList);
+		}
+
+		public void TurnFinished()
+		{
+			if (IsLocalPlayer)
+				TurnCompletedServerRPC();
+		}
+
+		public void SetUp()
+		{
+			if (IsHost)
+				SetUpGameServerRPC();
+		}
+
+		#region Server
+
 		[ServerRpc(RequireOwnership = false)]
 		public void SendMoveTileServerRPC(DataToSend data, ServerRpcParams rpcParams = default)
 		{
 			ulong senderClientId = rpcParams.Receive.SenderClientId;
 
 			ForEachOtherClient(senderClientId, x => x.DistributeMovementTileClientRPC(data));
-		}
-
-		[ClientRpc(RequireOwnership = false)]
-		public void DistributeMovementTileClientRPC(DataToSend data)
-		{
-			TileMoved?.Invoke(data);
-		}
-
-		public void SendTilePlaced(DataToSend data)
-		{
-			if (IsLocalPlayer)
-				SendTilePlacedServerRPC(data);
 		}
 
 		[ServerRpc(RequireOwnership = false)]
@@ -76,24 +97,6 @@ namespace CardGame.Net
 
 			Instances.TryGetValue(senderClientId, out NetCommunication instance);
 			instance.GiveNewTileInHandClientRPC(tileId);
-		}
-
-		[ClientRpc(RequireOwnership = false)]
-		public void DistributeTilePlacedClientRPC(DataToSend data)
-		{
-			TilePlaced?.Invoke(data);
-		}
-
-		[ClientRpc(RequireOwnership = false)]
-		public void GiveNewTileInHandClientRPC(int ID)
-		{
-			TileForHand?.Invoke(ID);
-		}
-
-		public void SendGrid(DataToSendList dataList)
-		{
-			if (IsLocalPlayer)
-				SendGridServerRPC(dataList);
 		}
 
 		[ServerRpc(RequireOwnership = false)]
@@ -124,52 +127,72 @@ namespace CardGame.Net
 			}
 		}
 
+		[ServerRpc(RequireOwnership = false)]
+		public void TurnCompletedServerRPC()
+		{
+			_playerTurn++;
+			if (_playerTurn >= Instances.Count) _playerTurn = 0;
+
+			Instances[_playersID[_playerTurn]].SendYourTurn?.Invoke();
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		public void SetUpGameServerRPC()
+		{
+			_playersID.Add(OwnerClientId);
+
+			foreach (var instance in Instances)
+			{
+				//ugly 4 times but ok
+				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
+				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
+				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
+				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
+
+				if (instance.Key == OwnerClientId)
+					continue;
+
+				_playersID.Add(instance.Key);
+			}
+
+			Instances[_playersID[_playerTurn]].SendYourTurn?.Invoke();
+		}
+
+		#endregion
+
+		#region Client
+
+		[ClientRpc(RequireOwnership = false)]
+		public void DistributeMovementTileClientRPC(DataToSend data)
+		{
+			TileMoved?.Invoke(data);
+		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void DistributeTilePlacedClientRPC(DataToSend data)
+		{
+			TilePlaced?.Invoke(data);
+		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void GiveNewTileInHandClientRPC(int ID)
+		{
+			TileForHand?.Invoke(ID);
+		}
+
 		[ClientRpc(RequireOwnership = false)]
 		public void DistributeGridClientRPC(DataToSendList dataList)
 		{
 			GridUpdated?.Invoke(dataList);
 		}
 
-		private void ForEachOtherClient(ulong senderClientId, Action<NetCommunication> action)
+		[ClientRpc(RequireOwnership = false)]
+		public void CallTurnClientRPC()
 		{
-			foreach (var kvp in Instances)
-			{
-				ulong targetClientId = kvp.Key;
-				NetCommunication instance = kvp.Value;
-
-				if (targetClientId != senderClientId)
-					action(instance);
-			}
+			SendYourTurn?.Invoke();
 		}
 
-		public static TileData FromDataToSend(DataToSend data, List<TileSettings> allTileSettings)
-		{
-			// Find TileSettings by IdCode
-			TileSettings matchingSettings = allTileSettings.Find(ts => ts.IdCode == data.TileSettingsId);
-			if (matchingSettings == null)
-			{
-				UnityEngine.Debug.LogError($"[{nameof(NetCommunication)}] No TileSettings found with IdCode {data.TileSettingsId}");
-				return null;
-			}
-
-			// Create and initialize TileData
-			TileData tile = new TileData();
-			tile.InitTile(matchingSettings);
-
-			// Rotate to match received rotation count
-			for (int i = 0; i < data.TileRotationCount; i++)
-			{
-				tile.RotateTile();
-			}
-
-			// Override zones in case of changes during gameplay
-			for (int i = 0; i < 4; i++)
-			{
-				tile.Zones[i] = data.Zones[i];
-			}
-
-			return tile;
-		}
+		#endregion
 
 		#region Test
 
@@ -198,5 +221,17 @@ namespace CardGame.Net
 			ReceiveEventTest?.Invoke(current);
 		}
 		#endregion
+
+		private void ForEachOtherClient(ulong senderClientId, Action<NetCommunication> action)
+		{
+			foreach (var kvp in Instances)
+			{
+				ulong targetClientId = kvp.Key;
+				NetCommunication instance = kvp.Value;
+
+				if (targetClientId != senderClientId)
+					action(instance);
+			}
+		}
 	}
 }

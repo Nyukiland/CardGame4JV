@@ -1,5 +1,7 @@
 using CardGame.StateMachine;
 using CardGame.Net;
+using CardGame.Card;
+using UnityEngine;
 
 namespace CardGame.Turns
 {
@@ -14,25 +16,32 @@ namespace CardGame.Turns
 			_net = owner.GetStateComponent<NetworkResource>();
 		}
 
+		public void AskForSetUp()
+		{
+			if (!_net.IsNetActive()) return;
+
+			_net.NetCom.SetUp();
+		}
+
 		public void SendInfoTileMoved(DataToSend send)
 		{
 			if (!_net.IsNetActive()) return;
 
-			//_net.NetCom
+			
 		}
 
-		public void SendInfoTilePlaced(DataToSend send)
+		public void SendInfoTilePlaced(TileData send, Vector2Int pos)
 		{
 			if (!_net.IsNetActive()) return;
 
-			//_net.NetCom
+			_net.NetCom.SendTilePlaced(new DataToSend(send, pos));
 		}
 
 		public void SendTurnFinished()
 		{
 			if (!_net.IsNetActive()) return;
 
-			//_net.NetCom
+			_net.NetCom.TurnFinished();
 		}
 	}
 }

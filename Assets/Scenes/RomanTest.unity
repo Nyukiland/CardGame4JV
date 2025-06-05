@@ -585,7 +585,7 @@ MonoBehaviour:
       type: {class: CreateHandAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        countCard: 2
+        _countCard: 0
         _prefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
         _pile: {fileID: 1031992356}
     - rid: 542522248351187036

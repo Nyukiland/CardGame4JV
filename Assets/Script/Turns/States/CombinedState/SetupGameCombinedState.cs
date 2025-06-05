@@ -4,27 +4,39 @@ namespace CardGame.Turns
 {
 	public class SetupGameCombinedState : CombinedState
 	{
-        public SetupGameCombinedState()
-        {
-            AddSubState(new PlaceElementsSubState()); 
-        }
+		private SendInfoAbility _sender;
+		private NetworkResource _net;
 
-        public override void OnEnter()
-        {
-            base.OnEnter();
-        }
+		public SetupGameCombinedState()
+		{
+			AddSubState(new PlaceElementsSubState());
+		}
 
-        public override void OnExit()
-        {
-            base.OnExit();
-        }
+		public override void OnEnter()
+		{
+			base.OnEnter();
 
-        public override void Update(float deltaTime)
-        {
-            base.Update(deltaTime);
+			GetStateComponent(ref _net);
+			GetStateComponent(ref _sender);
+
+			if (_net.IsNetActive()) _sender.AskForSetUp();
+		}
+
+		public override void OnExit()
+		{
+			base.OnExit();
+		}
+
+		public override void Update(float deltaTime)
+		{
+			base.Update(deltaTime);
 
 			//in the update so it has a delay
-			Controller.SetState<PlaceTileCombinedState>();
-        }
-    }
+			if (!_net.IsNetActive())
+				Controller.SetState<PlaceTileCombinedState>();
+			else
+				Controller.SetState<NextPlayerCombinedState>();
+
+		}
+	}
 }

@@ -9,6 +9,7 @@ namespace CardGame.Turns
 		[SerializeField]
 		private GridManager _gridManager;
 
+		private SendInfoAbility _sender;
 		private ZoneHolderResource _handResource;
 
 		private TileVisu _currentTile;
@@ -59,7 +60,13 @@ namespace CardGame.Turns
 			if (_gridManager.GetTile(pos).TileData == null)
 			{
 				_gridManager.SetTile(_currentTile.TileData, pos);
+
+				_sender.SendInfoTilePlaced(_currentTile.TileData, pos);
+				_sender.SendTurnFinished();
+
 				GameObject.Destroy(_currentTile.gameObject);
+
+				Owner.SetState<NextPlayerCombinedState>();
 			}
 			else 
 				_handResource.GiveTileToHand(_currentTile.gameObject);
