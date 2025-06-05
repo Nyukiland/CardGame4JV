@@ -574,6 +574,7 @@ MonoBehaviour:
   - rid: 542522248351187036
   - rid: 542522248351187037
   - rid: 542522248351187038
+  - rid: 542522248351187039
   references:
     version: 2
     RefIds:
@@ -608,6 +609,10 @@ MonoBehaviour:
         _countCard: 4
         _prefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
         _pile: {fileID: 1031992356}
+    - rid: 542522248351187039
+      type: {class: SendInfoAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
 --- !u!4 &1973094708
 Transform:
   m_ObjectHideFlags: 0
