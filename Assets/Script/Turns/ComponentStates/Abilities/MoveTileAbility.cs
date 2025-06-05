@@ -18,6 +18,7 @@ namespace CardGame.Turns
 		{
 			base.Init(owner);
 			_handResource = owner.GetStateComponent<ZoneHolderResource>();
+			_sender = owner.GetStateComponent<SendInfoAbility>();
 		}
 
 		public void PickCard(Vector2 position)
@@ -57,7 +58,7 @@ namespace CardGame.Turns
 
 			Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
 
-			if (_gridManager.GetTile(pos).TileData == null)
+			if (_gridManager.GetTile(pos) != null && _gridManager.GetTile(pos).TileData == null)
 			{
 				_gridManager.SetTile(_currentTile.TileData, pos);
 
