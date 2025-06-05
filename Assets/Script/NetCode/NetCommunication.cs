@@ -110,11 +110,11 @@ namespace CardGame.Net
 			{
 				TileData tile = NetUtility.FromDataToTile(data, drawPile.AllTileSettings);
 
-				//if (grid.GetTile(data.Position.x, data.Position.y) != tile)
-				//{
-				//	isDifferent = true;
-				//	break;
-				//}
+				if (grid.GetTile(data.Position.x, data.Position.y).TileData != tile)
+				{
+					isDifferent = true;
+					break;
+				}
 			}
 
 			if (isDifferent)

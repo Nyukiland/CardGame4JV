@@ -71,7 +71,7 @@ namespace CardGame.Turns
 		{
 			TileData tileReceived = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
 
-			//_grid.SetTile(tileReceived, data.Position.x, data.Position.y);
+			_grid.SetTile(tileReceived, data.Position.x, data.Position.y);
 		}
 
 		private void UpdateHand(int ID)
@@ -94,10 +94,10 @@ namespace CardGame.Turns
 			{
 				TileData tile = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
 
-				//if (_grid.GetTile(data.Position.x, data.Position.y) == tile)
-				//	continue;
+				if (_grid.GetTile(data.Position.x, data.Position.y).TileData == tile)
+					continue;
 
-				//_grid.SetTile(tile, data.Position.x, data.Position.y);
+				_grid.SetTile(tile, data.Position.x, data.Position.y);
 			}
 		}
 	}
