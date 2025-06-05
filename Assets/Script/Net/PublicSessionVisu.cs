@@ -12,7 +12,7 @@ namespace CardGame.Net
 		private string _code;
 
 		private LocalNetController _testLinkUI;
-
+		
 		public void SetUpVisu(string name, string code, LocalNetController link)
 		{
 			_textName.text = name;
@@ -27,6 +27,22 @@ namespace CardGame.Net
 		public void JoinSession()
 		{
 			_testLinkUI.JoinGame(_code);
+		}
+		
+		
+		
+
+		// Used only for tests
+		private LocalNetControllerTestScene _testLinkUITest;
+		public void SetUpVisu(string name, string code, LocalNetControllerTestScene link)
+		{
+			_textName.text = name;
+			_textCode.text = $"({code})";
+
+			GameName = name;
+			_code = code;
+
+			_testLinkUITest = link;
 		}
 	}
 }

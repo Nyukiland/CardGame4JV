@@ -11,6 +11,8 @@ namespace CardGame.UI
     {
         #region Variables
         
+        [SerializeField] private GameObject _inputBlocker;
+        
         [Header("MainMenu")]
         [SerializeField] private GameObject _mainMenuGameObject;
         [SerializeField] private Button _mainHostButton;
@@ -20,8 +22,7 @@ namespace CardGame.UI
         [SerializeField] private GameObject _beforeHostGameObject;
         [SerializeField] private TMP_InputField _sessionNameInput;
         [SerializeField] private TMP_InputField _passwordInputHost;
-        [SerializeField] private Button _publicHostButton;
-        [SerializeField] private Image _publicHostImage;
+        [SerializeField] private Toggle _publicHostToggle;
         [SerializeField] private Button _hostButton;
         [SerializeField] private Image _hostButtonGrey;
         [SerializeField] private Button _hostBackButton;
@@ -39,13 +40,12 @@ namespace CardGame.UI
         
         [Header("BeforeClient")]
         [SerializeField] private GameObject _beforeClientGameObject;
-        [SerializeField] private TMP_InputField _nameInput;
+        [FormerlySerializedAs("_nameInput")] [SerializeField] private TMP_InputField _playerNameInput;
         [SerializeField] private TMP_InputField _codeInput;
         [SerializeField] private TMP_InputField _passwordInputClient;
         [SerializeField] private Button _connectButton;
         [SerializeField] private Image _connectButtonGrey;
-        [SerializeField] private Button _publicFindButton;
-        [SerializeField] private Image _publicFindImage;
+        [SerializeField] private Toggle _publicFindToggle;
         [SerializeField] private GameObject _publicHostsContainer;
         [SerializeField] private Button _clientBackButton;
         
@@ -53,49 +53,78 @@ namespace CardGame.UI
         [SerializeField] private GameObject _afterClientGameObject;
         [SerializeField] private Button _quitGameButton;
 
-        // Events
-        public StringEvent CopyCodeEvent;
-        public Action PastCodeEvent;
-        
-        // Delegates
-        public delegate void StringEvent(string eventString);
+        // public variables
+        public GameObject PublicHostsContainer => _publicHostsContainer;
+        public string Code { get; set; } = "No code found";
+        public string Password { get; set; } = "No password found";
+        public string SessionName { get; set; } = "No session name found";
+        public bool IsPublicShown { get; private set; }
+        public string PlayerName { get; private set; } = "No player name found";
         
         // private variables
         private CurrentScreen _currentScreen;
-        private bool _isPublicShown;
-        private string _sessionName = "No session name found";
-        private string _code = "No code found";
-        private string _playerName = "No player name found";
-        private string _password = "No password found";
+        
+        // Events
+        public StringEvent CopyCodeEvent;
+        public BoolEvent TogglePublicEvent;
+        public Action StartHostEvent;
+        public Action JoinGameEvent;
+        public Action UnhostEvent;
+        public Action QuitGameEvent;
+        public Action PlayGameEvent;
+        
+        // Delegates
+        public delegate void StringEvent(string stringEvent);
+        public delegate void BoolEvent(bool boolEvent);
 
         #endregion
         
         #region Unity Methods
+
+        [Header("Test")]
+        [SerializeField] private TextMeshProUGUI _codeTest;
+        [SerializeField] private TextMeshProUGUI _passwordTest;
+        [SerializeField] private TextMeshProUGUI _sessionNameTest;
+        [SerializeField] private TextMeshProUGUI _playerNameTest;
+        private void Update()
+        {
+            _codeTest.text = "Code : "+Code;
+            _passwordTest.text = "Password : "+Password;
+            _sessionNameTest.text = "SessionName : "+SessionName;
+            _playerNameTest.text = "PlayerName : "+PlayerName;
+        }
 
         private void Awake()
         {
             // Buttons
             _mainHostButton.onClick.AddListener(OpenBeforeHost);
             _mainConnectButton.onClick.AddListener(OpenBeforeClient);
-            _publicHostButton.onClick.AddListener(TogglePublicGames);
-            _hostButton.onClick.AddListener(OpenAfterHost);
+            _hostButton.onClick.AddListener(CallStartHostEvent);
             _hostBackButton.onClick.AddListener(OpenMainMenu);
-            _copyCodeButton.onClick.AddListener(CopyHostCode);
-            _unHostButton.onClick.AddListener(Unhost);
+            _copyCodeButton.onClick.AddListener(CallCopyEvent);
+            _unHostButton.onClick.AddListener(CallUnhostEvent);
             _playButton.onClick.AddListener(StartGame);
-            _connectButton.onClick.AddListener(OpenAfterClient);
-            _publicFindButton.onClick.AddListener(TogglePublicGames);
-            _quitGameButton.onClick.AddListener(QuitHostedGame);
+            _connectButton.onClick.AddListener(CallJoinGameEvent);
+            _quitGameButton.onClick.AddListener(QuitClientGame);
             _clientBackButton.onClick.AddListener(OpenMainMenu);
             
             // Inputs fields
             _sessionNameInput.onEndEdit.AddListener(UpdateInputField);
             _passwordInputHost.onEndEdit.AddListener(UpdateInputField);
-            _nameInput.onEndEdit.AddListener(UpdateInputField);
+            _playerNameInput.onEndEdit.AddListener(UpdateInputField);
             _codeInput.onEndEdit.AddListener(UpdateInputField);
             _passwordInputClient.onEndEdit.AddListener(UpdateInputField);
+            
+            // Toggles
+            _publicHostToggle.onValueChanged.AddListener(TogglePublicGames);
+            _publicFindToggle.onValueChanged.AddListener(TogglePublicGames);
 
             OpenMainMenu();
+        }
+
+        public void CallOnValidate()
+        {
+            OnValidate();
         }
 
         private void OnValidate()
@@ -107,7 +136,6 @@ namespace CardGame.UI
                 case CurrentScreen.MainMenu:
                     break;
                 case CurrentScreen.BeforeHost:
-                    _publicHostImage.gameObject.SetActive(_isPublicShown);
                     if (string.IsNullOrEmpty(_sessionNameInput.text))
                     {
                         _hostButtonGrey.gameObject.SetActive(true);
@@ -129,14 +157,13 @@ namespace CardGame.UI
                     }
                     else
                     {
-                        _playButtonGrey.gameObject.SetActive(true);
-                        _playButton.interactable = false;
+                        _playButtonGrey.gameObject.SetActive(false);
+                        _playButton.interactable = true;
                     }
                     break;
                 case CurrentScreen.BeforeClient:
-                    _publicFindImage.gameObject.SetActive(_isPublicShown);
-                    _publicHostsContainer.SetActive(_isPublicShown);
-                    if (string.IsNullOrEmpty(_nameInput.text) || string.IsNullOrEmpty(_codeInput.text))
+                    _publicHostsContainer.SetActive(IsPublicShown);
+                    if (string.IsNullOrEmpty(_playerNameInput.text) || string.IsNullOrEmpty(_codeInput.text))
                     {
                         _connectButtonGrey.gameObject.SetActive(true);
                         _connectButton.interactable = false;
@@ -158,7 +185,7 @@ namespace CardGame.UI
         
         #region Change Panels
         
-        public void OpenMainMenu()
+        private void OpenMainMenu()
         {
             OpenPanel(_mainMenuGameObject);
             _currentScreen = CurrentScreen.MainMenu;
@@ -166,7 +193,7 @@ namespace CardGame.UI
             OnValidate();
         }
         
-        public void OpenBeforeHost()
+        private void OpenBeforeHost()
         {
             OpenPanel(_beforeHostGameObject);
             _currentScreen = CurrentScreen.BeforeHost;
@@ -174,23 +201,23 @@ namespace CardGame.UI
             OnValidate();
         }
 
-        public void OpenAfterHost()
+        private void OpenAfterHost()
         {
-            _sessionName = _sessionNameInput.text;
-            _password = _passwordInputHost.text;
-            if (string.IsNullOrEmpty(_password)) _password = "- None -";
+            SessionName = _sessionNameInput.text;
+            Password = _passwordInputHost.text;
+            if (string.IsNullOrEmpty(Password)) Password = "- None -";
             
             OpenPanel(_afterHostGameObject);
             _currentScreen = CurrentScreen.AfterHost;
             
             OnValidate();
 
-            _sessionNameText.text = _sessionName;
-            _codeText.text = _code;
-            _passwordText.text = _password;
+            _sessionNameText.text = SessionName;
+            _codeText.text = Code;
+            _passwordText.text = Password;
         }
 
-        public void OpenBeforeClient()
+        private void OpenBeforeClient()
         {
             OpenPanel(_beforeClientGameObject);
             _currentScreen = CurrentScreen.BeforeClient;
@@ -206,7 +233,7 @@ namespace CardGame.UI
             OnValidate();
         }
 
-        public void CloseMenu()
+        private void CloseMenu()
         {
             OpenPanel(null, true);
             _currentScreen = CurrentScreen.None;
@@ -229,22 +256,20 @@ namespace CardGame.UI
                 panel.SetActive(true);
         }
 
-        private void TogglePublicGames()
+        private void TogglePublicGames(bool toggle)
         {
-            _isPublicShown = !_isPublicShown;
+            IsPublicShown = toggle;
 
             if (_currentScreen == CurrentScreen.BeforeHost)
             {
-                _publicHostImage.gameObject.SetActive(_isPublicShown);
                 // Hosting will be public
                 return;
             }
 
             if (_currentScreen == CurrentScreen.BeforeClient)
             {
-                _publicFindImage.gameObject.SetActive(_isPublicShown);
-                _publicHostsContainer.SetActive(_isPublicShown);
-                // Show public hosted games
+                _publicHostsContainer.SetActive(toggle);
+                TogglePublicEvent?.Invoke(toggle);
                 return;
             }
             
@@ -256,30 +281,55 @@ namespace CardGame.UI
             OnValidate();
         }
 
-        private void Unhost()
+        private void StartGame()
         {
-            OpenBeforeHost();
+            PlayGameEvent?.Invoke();
+            CloseMenu();
+        }
+
+        public void QuitClientGame()
+        {
+            QuitGameEvent?.Invoke();
             
-            // Interrupt hosting
-        }
-
-        private void CopyHostCode()
-        {
-            CopyCodeEvent?.Invoke(_code);
-        }
-
-        public void StartGame()
-        {
-            // Launch game with current players
-        }
-
-        public void QuitHostedGame()
-        {
             OpenBeforeClient();
-            
-            // Remove player from game
         }
 
+        public void ToggleInputBlock(bool toggle)
+        {
+            _inputBlocker.SetActive(toggle);
+        }
+
+        #endregion
+        
+        #region Event Methods
+        
+        private void CallStartHostEvent()
+        {
+            StartHostEvent?.Invoke();
+            OpenAfterHost();
+        }
+        
+        private void CallJoinGameEvent()
+        {
+            PlayerName = _playerNameInput.text;
+            Code = _codeInput.text;
+            if (!string.IsNullOrEmpty(_passwordInputClient.text))
+                Password = _passwordInputClient.text;
+            
+            JoinGameEvent?.Invoke();
+        }
+        
+        private void CallUnhostEvent()
+        {
+            UnhostEvent?.Invoke();
+            OpenBeforeHost();
+        }
+
+        private void CallCopyEvent()
+        {
+            CopyCodeEvent?.Invoke(Code);
+        }
+        
         #endregion
     }
 

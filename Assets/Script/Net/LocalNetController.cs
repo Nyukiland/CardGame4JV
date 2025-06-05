@@ -1,85 +1,59 @@
-using Unity.Netcode.Transports.UTP;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using System.Net.Sockets;
-using Unity.Collections;
-using UnityEngine.UI;
-using Unity.Netcode;
 using System.Linq;
-using UnityEngine;
 using System.Net;
-using TMPro;
+using System.Net.Sockets;
+using CardGame.UI;
+using Cysharp.Threading.Tasks;
+using Unity.Collections;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
+using UnityEngine;
 
 namespace CardGame.Net
 {
-	public class LocalNetController : MonoBehaviour
-	{
-		[SerializeField, Disable]
-		private NetCommunication _netCommunication;
+    public class LocalNetController : MonoBehaviour
+    {
+        [SerializeField, Disable] private NetCommunication _netCommunication;
 
-		[SerializeField, Disable]
-		private LanSearchBeacon _lanSearch;
+        [SerializeField, Disable] private LanSearchBeacon _lanSearch;
 
-		[SerializeField]
-		private TextMeshProUGUI _netComText, _receivedInfo;
+        [SerializeField] private NetworkUI _networkUI;
+        
+        [SerializeField] private PublicSessionVisu _displayPublic;
+        [SerializeField] private string _sceneName;
+        
+        private UnityTransport _transport;
+        
+        #region Unity Methods
 
-		[SerializeField]
-		private TMP_InputField _passwordField, _connectCode, _gameName;
+        private void Start()
+        {
+            _transport = NetworkManager.Singleton.gameObject.GetComponent<UnityTransport>();
+            _lanSearch = GetComponent<LanSearchBeacon>();
+            _lanSearch.OnHostsUpdated += UpdateConnectionList;
 
-		[SerializeField]
-		private Toggle _toggleHost;
-
-		[SerializeField]
-		private VerticalLayoutGroup _publicSessionVerticalLayout;
-
-		[SerializeField]
-		private GameObject _displayPublic;
-
-		private UnityTransport _transport;
-
-		private string _joinPassword;
-		private string _joinCode;
-
-		private void Start()
-		{
-			_transport = NetworkManager.Singleton.gameObject.GetComponent<UnityTransport>();
-			_lanSearch = GetComponent<LanSearchBeacon>();
-			_lanSearch.OnHostsUpdated += UpdateConnectionList;
-		}
-
-		private void Update()
-		{
-			if (_netCommunication != null)
-			{
-				_netComText.text = _netCommunication.gameObject.name + " / \n Join Code: " + _joinCode;
-			}
-		}
-
-		private void OnDestroy()
-		{
-			if (_netCommunication != null)
-			{
-				_netCommunication.ReceiveEventTest -= NetCommunication_ReceiveEvent;
-			}
-
-			if (_lanSearch != null)
-			{
-				_lanSearch.OnHostsUpdated -= UpdateConnectionList;
-			}
-		}
-
-		private void NetCommunication_ReceiveEvent(string data)
-		{
-			_receivedInfo.text = data;
-		}
-
-		public void SendInfo()
-		{
-			_netCommunication.SubmitInfoTest(_netCommunication.name + " / \n password: " + _passwordField.text);
-		}
-
-
-		#region Connection
+            _networkUI.TogglePublicEvent += TogglePublicSearch;
+            _networkUI.StartHostEvent += StartHost;
+            _networkUI.JoinGameEvent += ()=>JoinGame();
+            _networkUI.UnhostEvent += StopHosting;
+            _networkUI.CopyCodeEvent += CopyJoinCode;
+            _networkUI.QuitGameEvent += DisconnectFromGame;
+            _networkUI.PlayGameEvent += ()=> _netCommunication.LoadScene(_sceneName);
+        }
+        
+        private void OnDestroy()
+        {
+            if (_lanSearch != null)
+            {
+                _lanSearch.OnHostsUpdated -= UpdateConnectionList;
+            }
+            
+            _networkUI.CopyCodeEvent -= CopyJoinCode;
+        }
+        
+        #endregion
+        
+        #region Connection
 
 		private void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 		{
@@ -90,11 +64,11 @@ namespace CardGame.Net
 			{
 				response.Approved = false;
 				response.Pending = false;
-				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetController)}] Connection rejected: game is full.", this);
+				Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Connection rejected: game is full.", this);
 				return;
 			}
 
-			if (receivedPassword.ToString() == _joinPassword)
+			if (receivedPassword == _networkUI.Code)
 			{
 				response.Approved = true;
 				response.CreatePlayerObject = true;
@@ -102,7 +76,7 @@ namespace CardGame.Net
 			else
 			{
 				response.Approved = false;
-				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetController)}] Connection rejected: wrong password", this);
+				Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Connection rejected: wrong password", this);
 			}
 
 			response.Pending = false;
@@ -110,11 +84,10 @@ namespace CardGame.Net
 
 		public void StartHost()
 		{
-			if (string.IsNullOrEmpty(_gameName.text)) return;
+			if (string.IsNullOrEmpty(_networkUI.SessionName)) return;
 
 			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
 			NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-			_joinPassword = _passwordField.text;
 
 			string localIP = GetLocalIPv4();
 			ushort startingPort = 60121;
@@ -132,26 +105,38 @@ namespace CardGame.Net
 
 			if (selectedPort > maxPort)
 			{
-				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetController)}] No available ports found in the specified range.", this);
+				Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] No available ports found in the specified range.", this);
 				return;
 			}
 
-			_joinCode = NetUtility.GetJoinCode(localIP, selectedPort);
+			_networkUI.Code = NetUtility.GetJoinCode(localIP, selectedPort);
 
 			_transport.SetConnectionData(localIP, selectedPort);
 			NetworkManager.Singleton.StartHost();
 
-			if (_toggleHost.isOn)
-				_lanSearch.StartBroadcast(_gameName.text, selectedPort, _joinCode);
+			if (_networkUI.IsPublicShown)
+				_lanSearch.StartBroadcast(_networkUI.SessionName, selectedPort, _networkUI.Code);
 
+			NetworkManager.Singleton.OnConnectionEvent += CallOnConnect;
+			NetworkManager.Singleton.OnClientDisconnectCallback += CallOnDisconnect;
 			GetNetComForThisClientAsync().Forget();
+		}
+
+		private void CallOnConnect(NetworkManager arg1, ConnectionEventData arg2)
+		{
+			_networkUI.CallOnValidate();
+		}
+
+		private void CallOnDisconnect(ulong obj)
+		{
+			_networkUI.CallOnValidate();
 		}
 
 		private void OnClientDisconnected(ulong clientId)
 		{
 			if (clientId == NetworkManager.Singleton.LocalClientId) return;
 
-			UnityEngine.Debug.LogWarning($"[{nameof(LocalNetController)}] Client {clientId} disconnected.");
+			Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Client {clientId} disconnected.");
 		}
 
 		private bool IsPortAvailable(string ip, int port)
@@ -171,18 +156,19 @@ namespace CardGame.Net
 
 		public void JoinGame(string joinCode = default)
 		{
-			string password = _passwordField.text;
-			if (string.IsNullOrEmpty(joinCode)) joinCode = _connectCode.text;
+			if (string.IsNullOrEmpty(joinCode)) joinCode = _networkUI.Code;
 
 			//if still empty return
 			if (string.IsNullOrEmpty(joinCode)) return;
+
+			_networkUI.ToggleInputBlock(true);
 
 			NetUtility.DecodeJoinCode(joinCode, out string ip, out ushort port);
 
 			_transport.SetConnectionData(ip, port);
 
 			FastBufferWriter writer = new(32, Allocator.Temp);
-			writer.WriteValueSafe(new FixedString32Bytes(password));
+			writer.WriteValueSafe(new FixedString32Bytes(_networkUI.Password));
 			NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
 
 			SafeConnectAsync().Forget();
@@ -192,6 +178,9 @@ namespace CardGame.Net
 		{
 			if (_netCommunication == null || !_netCommunication.IsHost) return;
 
+			NetworkManager.Singleton.OnConnectionEvent -= CallOnConnect;
+			NetworkManager.Singleton.OnClientDisconnectCallback -= CallOnDisconnect;
+			
 			_lanSearch.StopBroadcast();
 			
 			DisconnectLogic();
@@ -209,10 +198,7 @@ namespace CardGame.Net
 			NetworkManager.Singleton.Shutdown();
 
 			_netCommunication = null;
-			_joinCode = null;
-
-			_netComText.text = string.Empty;
-			_receivedInfo.text = string.Empty;
+			_networkUI.Code = string.Empty;
 		}
 
 		private string GetLocalIPv4()
@@ -250,11 +236,17 @@ namespace CardGame.Net
 			{
 				TogglePublicSearch(false);
 				await GetNetComForThisClientAsync();
+
+				_networkUI.OpenAfterClient();
 			}
 			else
 			{
 				NetworkManager.Singleton.Shutdown();
 			}
+			
+			_networkUI.ToggleInputBlock(false);
+
+			return;
 
 			void OnConnected(ulong clientId)
 			{
@@ -283,7 +275,8 @@ namespace CardGame.Net
 		{
 			List<LanSearchBeacon.BeaconDataWithIP> listToUse = new(listData);
 			List<string> gameNames = listToUse.Select(x => x.gameName).ToList();
-			List<PublicSessionVisu> sessions = _publicSessionVerticalLayout.GetComponentsInChildren<PublicSessionVisu>().ToList();
+			List<PublicSessionVisu> sessions = _networkUI.PublicHostsContainer.GetComponentsInChildren<PublicSessionVisu>().ToList();
+			Debug.Log(sessions.Count);
 			if (sessions.Count != 0)
 			{
 				for (int i = sessions.Count - 1; i >= 0; i--)
@@ -305,19 +298,19 @@ namespace CardGame.Net
 
 			foreach (LanSearchBeacon.BeaconDataWithIP data in listToUse)
 			{
-				PublicSessionVisu session = Instantiate(_displayPublic, _publicSessionVerticalLayout.transform).GetComponent<PublicSessionVisu>();
+				PublicSessionVisu session = Instantiate(_displayPublic, _networkUI.PublicHostsContainer.transform).GetComponent<PublicSessionVisu>();
 				session.SetUpVisu(data.gameName, data.joinCode, this);
 			}
 		}
 
-		public void TogglePublicSearch(bool isOn)
+		private void TogglePublicSearch(bool isOn)
 		{
 			if (isOn)
 				_lanSearch.StartListening();
 			else
 			{
 				_lanSearch.StopListening();
-				List<PublicSessionVisu> sessions = _publicSessionVerticalLayout.GetComponentsInChildren<PublicSessionVisu>().ToList();
+				List<PublicSessionVisu> sessions = _networkUI.PublicHostsContainer.GetComponentsInChildren<PublicSessionVisu>().ToList();
 				if (sessions.Count != 0)
 				{
 					for (int i = sessions.Count - 1; i >= 0; i--)
@@ -342,17 +335,23 @@ namespace CardGame.Net
 			await UniTask.WaitUntil(() =>
 				NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom));
 
+
 			_netCommunication = netCom;
-			_netCommunication.ReceiveEventTest += NetCommunication_ReceiveEvent;
+
+			_netCommunication.OnDestroyEvent += ()=>
+			{
+				_networkUI.QuitClientGame();
+				_netCommunication.OnDestroyEvent -= _networkUI.QuitClientGame;
+			};
 		}
 
-		public void CopyJoinCode()
+		private void CopyJoinCode(string code)
 		{
-			if (string.IsNullOrEmpty(_joinCode)) return;
+			if (string.IsNullOrEmpty(code)) return;
 
-			CopyHandler.CopyToClipboard(_joinCode);
+			CopyHandler.CopyToClipboard(code);
 		}
 
 		#endregion
-	}
+    }
 }

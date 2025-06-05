@@ -4,6 +4,7 @@ using Unity.Netcode;
 using CardGame.Card;
 using CardGame.UI;
 using System;
+using UnityEngine.SceneManagement;
 
 namespace CardGame.Net
 {
@@ -24,6 +25,8 @@ namespace CardGame.Net
 		public delegate void TransmitValidation();
 		public event TransmitValidation SendYourTurn;
 
+		public Action OnDestroyEvent;
+
 		private int _playerTurn = 0;
 
 		private List<ulong> _playersID;
@@ -40,6 +43,7 @@ namespace CardGame.Net
 
 		public override void OnNetworkDespawn()
 		{
+			OnDestroyEvent?.Invoke();
 			Instances.Remove(OwnerClientId);
 		}
 
@@ -73,6 +77,12 @@ namespace CardGame.Net
 				SetUpGameServerRPC();
 		}
 
+		public void LoadScene(string sceneName)
+		{
+			if (IsHost)
+				LoadSceneServerRPC(sceneName);
+		}
+		
 		#region Server
 
 		[ServerRpc(RequireOwnership = false)]
@@ -158,6 +168,12 @@ namespace CardGame.Net
 			Instances[_playersID[_playerTurn]].SendYourTurn?.Invoke();
 		}
 
+		[ServerRpc(RequireOwnership = false)]
+		public void LoadSceneServerRPC(string sceneName)
+		{
+			ForEachOtherClient(0, communication => communication.LoadSceneClientRPC(sceneName));
+		}
+		
 		#endregion
 
 		#region Client
@@ -192,6 +208,11 @@ namespace CardGame.Net
 			SendYourTurn?.Invoke();
 		}
 
+		[ClientRpc(RequireOwnership = false)]
+		public void LoadSceneClientRPC(string sceneName)
+		{
+			SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+		}
 		#endregion
 
 		#region Test
