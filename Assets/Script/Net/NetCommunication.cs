@@ -29,10 +29,8 @@ namespace CardGame.Net
 		public Action OnDestroyEvent;
 		public Action OnLaunchGameEvent;
 
-		private int _playerTurn = 0;
-
-		[Disable]
-		public List<ulong> PlayersID = new();
+		private static NetworkVariable<int> _playerTurn = new (0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+		private static NetworkList<ulong> _playersID = new (new List<ulong>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
 		public override void OnNetworkSpawn()
 		{
@@ -144,43 +142,35 @@ namespace CardGame.Net
 		[ServerRpc(RequireOwnership = false)]
 		public void TurnCompletedServerRPC()
 		{
-			_playerTurn++;
-			if (_playerTurn >= PlayersID.Count) _playerTurn = 0;
+			_playerTurn.Value++;
+			if (_playerTurn.Value >= _playersID.Count) _playerTurn.Value = 0;
 
-			Instances[PlayersID[_playerTurn]].CallTurnClientRPC();
+			Instances[_playersID[_playerTurn.Value]].CallTurnClientRPC();
 		}
 
-		[ServerRpc(RequireOwnership = false)]
+		[ServerRpc(RequireOwnership = true)]
 		public void SetUpGameServerRPC()
 		{
-			PlayersID.Add(OwnerClientId);
+			_playersID.Add(OwnerClientId);
 
 			//fill the list
 			foreach (var instance in Instances)
 			{
+				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
+				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
+				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
+				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
+
 				if (instance.Key == OwnerClientId)
 					continue;
 
-				PlayersID.Add(instance.Key);
+				_playersID.Add(instance.Key);
 			}
 
-			//for each client give tile and give the list of player
-			//sync temp then use networkvar i think
-			foreach (var instance in Instances)
-			{
-				instance.Value.PlayersID = new(PlayersID);
-
-				//ugly 4 times but ok
-				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
-				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
-				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
-				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
-			}
-			
-			Instances[PlayersID[_playerTurn]].CallTurnClientRPC();
+			Instances[_playersID[_playerTurn.Value]].CallTurnClientRPC();
 		}
 
-		[ServerRpc(RequireOwnership = false)]
+		[ServerRpc(RequireOwnership = true)]
 		public void LoadSceneServerRPC(string sceneName)
 		{
 			ForEachOtherClient(0, communication => communication.LoadSceneClientRPC(sceneName));

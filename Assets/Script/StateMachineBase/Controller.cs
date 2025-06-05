@@ -52,7 +52,7 @@ namespace CardGame.StateMachine
 			_state?.Update(deltaTime);
 			ComponentUpdate(deltaTime);
 
-			UnityEngine.Debug.Log(CurrentState);
+			//UnityEngine.Debug.Log(CurrentState);
 		}
 
 		public void FixedUpdate()
