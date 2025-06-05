@@ -11,7 +11,7 @@ namespace CardGame
 
 		private List<TileSettings> _tileInDrawPile = new();
 
-		private void Start()
+		private void Awake()
 		{
 			foreach (TileSettings item in AllTileSettings)
 			{

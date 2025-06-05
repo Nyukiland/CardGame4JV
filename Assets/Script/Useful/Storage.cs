@@ -16,6 +16,7 @@ namespace CardGame.Utility
 			if (!group.Contains(member))
 			{
 				group.Add(member);
+				_storage[typeof(T)] = group.ConvertAll(item => (object)item);
 			}
 		}
 
@@ -57,9 +58,9 @@ namespace CardGame.Utility
 		{
 			List<T> list = GetGroupOfType<T>();
 
-			if (list.Count >= index) return null;
+			if (list.Count <= index) return null;
 
-			return GetGroupOfType<T>()[index];
+			return list[index];
 		}
 
 		public List<T> GetGroupOfType<T>() where T : class

@@ -1,4 +1,6 @@
 using CardGame.StateMachine;
+using CardGame.Utility;
+using Cysharp.Threading.Tasks;
 
 namespace CardGame.Turns
 {
@@ -6,6 +8,7 @@ namespace CardGame.Turns
 	{
 		private SendInfoAbility _sender;
 		private NetworkResource _net;
+		private CreateHandAbility _createHandAbility;
 
 		public SetupGameCombinedState()
 		{
@@ -18,25 +21,26 @@ namespace CardGame.Turns
 
 			GetStateComponent(ref _net);
 			GetStateComponent(ref _sender);
+			GetStateComponent(ref _createHandAbility);
 
-			if (_net.IsNetActive()) _sender.AskForSetUp();
+
+			WaitStart().Forget();
 		}
 
-		public override void OnExit()
+		private async UniTask WaitStart()
 		{
-			base.OnExit();
-		}
+			await UniTask.Delay(500);
 
-		public override void Update(float deltaTime)
-		{
-			base.Update(deltaTime);
-
-			//in the update so it has a delay
-			if (!_net.IsNetActive())
-				Controller.SetState<PlaceTileCombinedState>();
-			else
+			if (_net.IsNetActive())
+			{
+				_sender.AskForSetUp();
 				Controller.SetState<NextPlayerCombinedState>();
-
+			}
+			else
+			{
+				Controller.SetState<PlaceTileCombinedState>();
+				_createHandAbility.GenerateTiles(_createHandAbility.CountCard);
+			}
 		}
 	}
 }

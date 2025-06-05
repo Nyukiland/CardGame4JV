@@ -26,6 +26,8 @@ namespace CardGame.Turns
 		{
 			base.Init(owner);
 
+			_createHand = owner.GetStateComponent<CreateHandAbility>();
+
 			GetNetComForThisClientAsync().Forget();
 		}
 

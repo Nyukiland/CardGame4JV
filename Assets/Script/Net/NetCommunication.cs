@@ -5,6 +5,7 @@ using CardGame.Card;
 using CardGame.UI;
 using System;
 using UnityEngine.SceneManagement;
+using CardGame.StateMachine;
 
 namespace CardGame.Net
 {
@@ -29,7 +30,7 @@ namespace CardGame.Net
 
 		private int _playerTurn = 0;
 
-		private List<ulong> _playersID;
+		private List<ulong> _playersID = new();
 
 		public override void OnNetworkSpawn()
 		{
