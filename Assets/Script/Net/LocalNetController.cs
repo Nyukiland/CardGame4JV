@@ -66,7 +66,7 @@ namespace CardGame.Net
 			FastBufferReader reader = new(request.Payload, Allocator.None);
 			reader.ReadValueSafe(out FixedString32Bytes receivedPassword);
 
-			if (NetworkManager.Singleton.ConnectedClients.Count >= 2)
+			if (NetworkManager.Singleton.ConnectedClients.Count >= 4)
 			{
 				response.Approved = false;
 				response.Pending = false;
