@@ -17,6 +17,7 @@ namespace CardGame.UI
 		[SerializeField] private GameObject _mainMenuGameObject;
 		[SerializeField] private Button _mainHostButton;
 		[SerializeField] private Button _mainConnectButton;
+		[SerializeField] private Button _mainSoloButton;
 
 		[Header("BeforeHost")]
 		[SerializeField] private GameObject _beforeHostGameObject;
@@ -40,7 +41,7 @@ namespace CardGame.UI
 
 		[Header("BeforeClient")]
 		[SerializeField] private GameObject _beforeClientGameObject;
-		[FormerlySerializedAs("_nameInput")][SerializeField] private TMP_InputField _playerNameInput;
+		[SerializeField] private TMP_InputField _playerNameInput;
 		[SerializeField] private TMP_InputField _codeInput;
 		[SerializeField] private TMP_InputField _passwordInputClient;
 		[SerializeField] private Button _connectButton;
@@ -105,6 +106,7 @@ namespace CardGame.UI
 			// Buttons
 			_mainHostButton.onClick.AddListener(OpenBeforeHost);
 			_mainConnectButton.onClick.AddListener(OpenBeforeClient);
+			_mainSoloButton.onClick.AddListener(StartGame);
 			_hostButton.onClick.AddListener(CallStartHostEvent);
 			_hostBackButton.onClick.AddListener(OpenMainMenu);
 			_copyCodeButton.onClick.AddListener(CallCopyEvent);
@@ -119,6 +121,8 @@ namespace CardGame.UI
 			_passwordInputHost.onEndEdit.AddListener(UpdateHostInputs);
 			_playerNameInput.onEndEdit.AddListener(UpdateClientInputs);
 			_codeInput.onEndEdit.AddListener(UpdateClientInputs);
+			//_codeInput.contentType = TMP_InputField.ContentType.Alphanumeric;
+			//_codeInput.onValidateInput += delegate (string s, int i, char c) { return char.ToUpper(c); };
 			_passwordInputClient.onEndEdit.AddListener(UpdateClientInputs);
 
 			// Toggles
@@ -130,8 +134,10 @@ namespace CardGame.UI
 
 		private void OnDestroy()
 		{
+			// Buttons
 			_mainHostButton.onClick.RemoveListener(OpenBeforeHost);
 			_mainConnectButton.onClick.RemoveListener(OpenBeforeClient);
+			_mainSoloButton.onClick.RemoveListener(StartGame);
 			_hostButton.onClick.RemoveListener(CallStartHostEvent);
 			_hostBackButton.onClick.RemoveListener(OpenMainMenu);
 			_copyCodeButton.onClick.RemoveListener(CallCopyEvent);
@@ -185,7 +191,7 @@ namespace CardGame.UI
 		{
 			int playerNumber = NetworkManager.Singleton.ConnectedClients.Count;
 			_playersNumberText.text = $"{playerNumber}/4 players";
-			if (playerNumber < 1)
+			if (playerNumber < 2)
 			{
 				_playButtonGrey.gameObject.SetActive(true);
 				_playButton.interactable = false;
@@ -359,6 +365,6 @@ namespace CardGame.UI
 		BeforeHost,
 		AfterHost,
 		BeforeClient,
-		AfterClient,
+		AfterClient
 	}
 }

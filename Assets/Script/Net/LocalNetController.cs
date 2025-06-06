@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CardGame.Net
 {
@@ -38,8 +39,9 @@ namespace CardGame.Net
             _networkUI.UnhostEvent += StopHosting;
             _networkUI.CopyCodeEvent += CopyJoinCode;
             _networkUI.QuitGameEvent += DisconnectFromGame;
-            _networkUI.PlayGameEvent += ()=> _netCommunication.LoadScene(_sceneName);
-        }
+			_networkUI.PlayGameEvent += LaunchGame;
+
+		}
         
         private void OnDestroy()
         {
@@ -54,7 +56,7 @@ namespace CardGame.Net
             _networkUI.UnhostEvent -= StopHosting;
             _networkUI.CopyCodeEvent -= CopyJoinCode;
             _networkUI.QuitGameEvent -= DisconnectFromGame;
-            _networkUI.PlayGameEvent -= ()=> _netCommunication.LoadScene(_sceneName);
+			_networkUI.PlayGameEvent -= LaunchGame;
         }
         
         #endregion
@@ -365,5 +367,21 @@ namespace CardGame.Net
 		}
 
 		#endregion
-    }
+
+		#region Solo
+
+		private void LaunchGame()
+		{
+			if (NetworkManager.Singleton.ConnectedClients.Count <= 1)
+			{
+				SceneManager.LoadScene(_sceneName, LoadSceneMode.Additive);
+			}
+			else
+			{
+				_netCommunication.LoadScene(_sceneName);
+			}
+		}
+
+		#endregion
+	}
 }
