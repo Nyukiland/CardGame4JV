@@ -31,7 +31,12 @@ namespace CardGame.UI
 
 		public TileData TileData { get; set; }
 
-		public void UpdateTile(TileData data)
+        private void Start()
+        {
+			UpdateTile(TileData);
+        }
+
+        public void UpdateTile(TileData data)
 		{
 			TileData = data;
 			UpdateVisu();
@@ -46,7 +51,24 @@ namespace CardGame.UI
 		{
 			List<ZoneData> zones = new();
 
-			ZoneData zone = TileData.TileSettings.NorthZone;
+			if (TileData == null)
+			{
+                _visuNorth.enabled = false;
+                _visuSouth.enabled = false;
+                _visuEast.enabled = false;
+                _visuWest.enabled = false;
+                _visuCenter.enabled = false;
+
+				return;
+            }
+
+            _visuNorth.enabled = true;
+            _visuSouth.enabled = true;
+            _visuEast.enabled = true;
+            _visuWest.enabled = true;
+            _visuCenter.enabled = true;
+
+            ZoneData zone = TileData.TileSettings.NorthZone;
 			zones.Add(zone);
 			_visuNorth.material = GetMaterialForType(zone.environment);
 

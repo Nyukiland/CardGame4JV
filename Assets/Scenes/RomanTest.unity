@@ -503,7 +503,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1714262390}
-  - component: {fileID: 1714262389}
   m_Layer: 0
   m_Name: grid
   m_TagString: Untagged
@@ -511,26 +510,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1714262389
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1714262388}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65a8709cefcfc0a40a3a20ed7adcf747, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _width: 10
-  _height: 10
-  _gridContainer: {fileID: 1714262388}
-  _tilePrefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
-  _tileSize: {x: 0, y: 0}
-  _spacing: {x: 0.05, y: 0.05}
-  _baseColor: {r: 0, g: 0, b: 0, a: 0}
-  _offsetColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!4 &1714262390
 Transform:
   m_ObjectHideFlags: 0
@@ -583,6 +562,7 @@ MonoBehaviour:
   - rid: 542522248351187037
   - rid: 542522248351187038
   - rid: 542522248351187039
+  - rid: 8034276745595322368
   references:
     version: 2
     RefIds:
@@ -596,20 +576,18 @@ MonoBehaviour:
       type: {class: CreateHandAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        _countCard: 0
+        _countCard: 3
         _prefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
         _pile: {fileID: 1031992356}
     - rid: 542522248351187036
       type: {class: MoveTileAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        _gridManager: {fileID: 1714262389}
     - rid: 542522248351187037
       type: {class: NetworkResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
         _drawPile: {fileID: 1031992356}
-        _grid: {fileID: 1714262389}
     - rid: 542522248351187038
       type: {class: CreateHandAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
@@ -621,6 +599,18 @@ MonoBehaviour:
       type: {class: SendInfoAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
+    - rid: 8034276745595322368
+      type: {class: GridManager, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+        _width: 5
+        _height: 5
+        _gridContainer: {fileID: 1714262388}
+        _tilePrefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
+        _tileSize: {x: 1, y: 1}
+        _spacing: {x: 0, y: 0}
+        _baseColor: {r: 0, g: 0, b: 0, a: 0}
+        _offsetColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!4 &1973094708
 Transform:
   m_ObjectHideFlags: 0
@@ -687,7 +677,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.1764706}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
