@@ -73,10 +73,10 @@ namespace CardGame.Net
 				TurnCompletedServerRPC();
 		}
 
-		public void SetUp()
+		public void SetUp(int tileInHand)
 		{
 			if (IsHost)
-				SetUpGameServerRPC();
+				SetUpGameServerRPC(tileInHand);
 		}
 
 		public void LoadScene(string sceneName)
@@ -104,11 +104,12 @@ namespace CardGame.Net
 
 			ulong senderClientId = rpcParams.Receive.SenderClientId;
 
-			int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
-
 			ForEachOtherClient(senderClientId, x => x.DistributeTilePlacedClientRPC(data));
 
-			Instances.TryGetValue(senderClientId, out NetCommunication instance);
+            int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
+            if (tileId == -1) return;
+
+            Instances.TryGetValue(senderClientId, out NetCommunication instance);
 			instance.GiveNewTileInHandClientRPC(tileId);
 		}
 
@@ -150,17 +151,17 @@ namespace CardGame.Net
 		}
 
 		[ServerRpc(RequireOwnership = true)]
-		public void SetUpGameServerRPC()
+		public void SetUpGameServerRPC(int tileInHand)
 		{
 			_playersID.Add(OwnerClientId);
 
 			//fill the list
 			foreach (var instance in Instances)
 			{
-				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
-				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
-				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
-				instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
+				for (int i = 0; i < tileInHand; i++)
+				{
+					instance.Value.GiveNewTileInHandClientRPC(Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile());
+				}
 
 				if (instance.Key == OwnerClientId)
 					continue;
