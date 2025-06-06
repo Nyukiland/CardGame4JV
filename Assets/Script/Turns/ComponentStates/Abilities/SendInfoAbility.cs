@@ -8,19 +8,22 @@ namespace CardGame.Turns
 	public class SendInfoAbility : Ability
 	{
 		private NetworkResource _net;
+		private int tileInHand;
 
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
 
 			_net = owner.GetStateComponent<NetworkResource>();
-		}
+            tileInHand = owner.GetStateComponent<CreateHandAbility>().CountCard;
+
+        }
 
 		public void AskForSetUp()
 		{
 			if (!_net.IsNetActive()) return;
 
-			_net.NetCom.SetUp();
+			_net.NetCom.SetUp(tileInHand);
 		}
 
 		public void SendInfoTileMoved(DataToSend send)
@@ -33,7 +36,6 @@ namespace CardGame.Turns
 		public void SendInfoTilePlaced(TileData send, Vector2Int pos)
 		{
 			if (!_net.IsNetActive()) return;
-
 			_net.NetCom.SendTilePlaced(new DataToSend(send, pos));
 		}
 

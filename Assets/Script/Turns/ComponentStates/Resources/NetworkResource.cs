@@ -76,7 +76,6 @@ namespace CardGame.Turns
 		private void UpdateGridPlaced(DataToSend data)
 		{
 			TileData tileReceived = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
-
 			_grid.SetTile(tileReceived, data.Position.x, data.Position.y);
 		}
 

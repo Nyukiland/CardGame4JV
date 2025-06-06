@@ -13,10 +13,7 @@ namespace CardGame
 
 		private void Awake()
 		{
-			foreach (TileSettings item in AllTileSettings)
-			{
-				_tileInDrawPile.Add(item);
-			}
+			_tileInDrawPile = new(AllTileSettings);
 		}
 
 		private void OnEnable()
@@ -31,6 +28,7 @@ namespace CardGame
 
 		public int GetTileIDFromDrawPile()
 		{
+			if (_tileInDrawPile.Count == 0) return -1;
 			int index = Random.Range(0, _tileInDrawPile.Count - 1);
 			TileSettings settings = _tileInDrawPile[index];
 			_tileInDrawPile.RemoveAt(index);
