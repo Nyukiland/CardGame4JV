@@ -117,7 +117,7 @@ namespace CardGame.Net
 		{
 			ulong senderClientId = rpcParams.Receive.SenderClientId;
 
-			GridManager grid = Storage.Instance.GetElement<GridManager>();
+			GridManagerResource grid = Storage.Instance.GetElement<GridManagerResource>();
 			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
 
 			bool isDifferent = false;

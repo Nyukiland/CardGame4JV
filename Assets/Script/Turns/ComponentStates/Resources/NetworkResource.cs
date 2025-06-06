@@ -19,14 +19,14 @@ namespace CardGame.Turns
 		[SerializeField]
 		private DrawPile _drawPile;
 
-		private GridManager _grid;
+		private GridManagerResource _grid;
 
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
 
 			_createHand = owner.GetStateComponent<CreateHandAbility>();
-            _grid = owner.GetStateComponent<GridManager>();
+            _grid = owner.GetStateComponent<GridManagerResource>();
 
             GetNetComForThisClientAsync().Forget();
 

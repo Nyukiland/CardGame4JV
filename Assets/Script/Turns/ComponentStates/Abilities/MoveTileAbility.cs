@@ -6,7 +6,7 @@ namespace CardGame.Turns
 {
 	public class MoveTileAbility : Ability
 	{
-		private GridManager _gridManager;
+		private GridManagerResource _gridManager;
 
 		private SendInfoAbility _sender;
 		private ZoneHolderResource _handResource;
@@ -18,7 +18,7 @@ namespace CardGame.Turns
 			base.Init(owner);
 			_handResource = owner.GetStateComponent<ZoneHolderResource>();
 			_sender = owner.GetStateComponent<SendInfoAbility>();
-            _gridManager = owner.GetStateComponent<GridManager>();
+            _gridManager = owner.GetStateComponent<GridManagerResource>();
 
         }
 
