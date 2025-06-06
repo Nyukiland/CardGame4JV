@@ -1,10 +1,12 @@
 using CardGame.Card;
+using CardGame.StateMachine;
+using CardGame.UI;
 using CardGame.Utility;
 using UnityEngine;
 
-namespace CardGame.UI
+namespace CardGame.Turns
 {
-    public class GridManager : MonoBehaviour
+    public class GridManager : Resource
     {
         [Header("Grid")]
         [SerializeField] private int _width;
@@ -19,13 +21,14 @@ namespace CardGame.UI
 
         private TileVisu[,] _grid;
 
-        private void Start()
+        public override void Init(Controller owner)
         {
             _grid = new TileVisu[_width, _height];
 
             GenerateGrid();
         }
-        private void OnEnable()
+
+        public override void OnEnable()
         {
             Storage.Instance.Register(this);
         }
@@ -39,7 +42,7 @@ namespace CardGame.UI
             {
                 for (int y = 0; y < _height; y++)
                 {
-                    GameObject instantiatedTile = Instantiate(_tilePrefab, _gridContainer.transform);
+                    GameObject instantiatedTile = GameObject.Instantiate(_tilePrefab, _gridContainer.transform);
                     _grid[x, y] = instantiatedTile.GetComponent<TileVisu>();
                     instantiatedTile.name = $"Tile_{x}_{y}";
 
@@ -48,7 +51,7 @@ namespace CardGame.UI
                     float posX = offsetX + x * (_tileSize.x + _spacing.x);
                     float posY = offsetY - y * (_tileSize.y + _spacing.y);
                     instantiatedTile.transform.position = new Vector2(posX, posY);
-                    instantiatedTile.SetActive(false);
+                    instantiatedTile.SetActive(true);
                 }
             }
         }
@@ -61,7 +64,7 @@ namespace CardGame.UI
 
         public TileVisu GetTile(Vector2Int arrayCoordinates)
         {
-            if (arrayCoordinates.x > _width-1 || arrayCoordinates.x < 0 || arrayCoordinates.y > _height - 1 || arrayCoordinates.y < 0) return null;
+            if (arrayCoordinates.x > _width - 1 || arrayCoordinates.x < 0 || arrayCoordinates.y > _height - 1 || arrayCoordinates.y < 0) return null;
             return _grid[arrayCoordinates.x, arrayCoordinates.y];
         }
 
@@ -74,13 +77,14 @@ namespace CardGame.UI
 
         public bool SetTile(TileData tile, Vector2Int arrayCoordinates)
         {
-            if (arrayCoordinates.x > _width-1 || arrayCoordinates.x < 0 || arrayCoordinates.y > _height - 1 || arrayCoordinates.y < 0) return false;
+            if (arrayCoordinates.x > _width - 1 || arrayCoordinates.x < 0 || arrayCoordinates.y > _height - 1 || arrayCoordinates.y < 0) return false;
             TileVisu tileVisu = _grid[arrayCoordinates.x, arrayCoordinates.y];
             return SetTile(tileVisu, tile);
 
         }
 
-        private bool SetTile(TileVisu tileVisu, TileData tile) {
+        private bool SetTile(TileVisu tileVisu, TileData tile)
+        {
             // On va passer les données de la tuile, désactiver le collider et rendre le GameObject visible
             tileVisu.UpdateTile(tile);
             tileVisu.gameObject.GetComponent<BoxCollider>().enabled = false;
@@ -89,9 +93,9 @@ namespace CardGame.UI
         }
 
 
-        private void OnDisable()
+        public override void OnDisable()
         {
-            Storage.Instance.Delete(this);
+            if (Storage.CheckInstance()) Storage.Instance.Delete(this);
         }
     }
 

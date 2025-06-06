@@ -6,7 +6,6 @@ namespace CardGame.Turns
 {
 	public class MoveTileAbility : Ability
 	{
-		[SerializeField]
 		private GridManager _gridManager;
 
 		private SendInfoAbility _sender;
@@ -19,7 +18,9 @@ namespace CardGame.Turns
 			base.Init(owner);
 			_handResource = owner.GetStateComponent<ZoneHolderResource>();
 			_sender = owner.GetStateComponent<SendInfoAbility>();
-		}
+            _gridManager = owner.GetStateComponent<GridManager>();
+
+        }
 
 		public void PickCard(Vector2 position)
 		{

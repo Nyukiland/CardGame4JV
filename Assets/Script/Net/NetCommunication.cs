@@ -6,6 +6,7 @@ using CardGame.UI;
 using System;
 using UnityEngine.SceneManagement;
 using CardGame.StateMachine;
+using CardGame.Turns;
 
 namespace CardGame.Net
 {

@@ -19,7 +19,6 @@ namespace CardGame.Turns
 		[SerializeField]
 		private DrawPile _drawPile;
 
-		[SerializeField]
 		private GridManager _grid;
 
 		public override void Init(Controller owner)
@@ -27,8 +26,10 @@ namespace CardGame.Turns
 			base.Init(owner);
 
 			_createHand = owner.GetStateComponent<CreateHandAbility>();
+            _grid = owner.GetStateComponent<GridManager>();
 
-			GetNetComForThisClientAsync().Forget();
+            GetNetComForThisClientAsync().Forget();
+
 		}
 
 		public bool IsNetActive()
