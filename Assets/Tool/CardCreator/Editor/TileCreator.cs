@@ -1,3 +1,4 @@
+using CardGame;
 using CardGame.Card;
 using CardGame.UI;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ public class TileCreator : EditorWindow
             TileSettings tile = AssetDatabase.LoadAssetAtPath<TileSettings>(path);
             if (tile != null) _tileDataList.Add(tile);
         }
+
+        FillDrawPileInScene();
     }
 
     [MenuItem("Tools/Tile Creator")]
@@ -282,6 +285,32 @@ public class TileCreator : EditorWindow
 
         tex.Apply();
         return tex;
+    }
+
+    private void FillDrawPileInScene()
+    {
+        DrawPile drawPile = Object.FindFirstObjectByType<DrawPile>();
+        if (drawPile == null)
+        {
+            Debug.LogWarning("Pas de draw pile dans la scene");
+            return;
+        }
+
+        drawPile.AllTileSettings.Clear();
+
+        string[] guids = AssetDatabase.FindAssets("t:TileSettings", new[] { "Assets/Script/Data" });
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (path.Contains("/Trash")) continue;
+
+            TileSettings tile = AssetDatabase.LoadAssetAtPath<TileSettings>(path);
+            if (tile != null)
+                drawPile.AllTileSettings.Add(tile);
+        }
+
+        EditorUtility.SetDirty(drawPile);
     }
 
 

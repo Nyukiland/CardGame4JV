@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c445cec05d1a07744b5c5dd201f7a2e2, type: 3}
   m_Name: NewTile_02
   m_EditorClassIdentifier: 
-  _tileUIPrefab: {fileID: 5958024384898385175, guid: 4ba6c92221bc6704e8a030aa66793bc4, type: 3}
   _northZone:
     environment: 2
     isOpen: 0
