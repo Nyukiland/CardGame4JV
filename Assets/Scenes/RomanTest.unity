@@ -562,7 +562,7 @@ MonoBehaviour:
   - rid: 542522248351187037
   - rid: 542522248351187038
   - rid: 542522248351187039
-  - rid: 8034276745595322368
+  - rid: 4835484058177241183
   references:
     version: 2
     RefIds:
@@ -599,18 +599,14 @@ MonoBehaviour:
       type: {class: SendInfoAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-    - rid: 8034276745595322368
-      type: {class: GridManager, ns: CardGame.Turns, asm: Assembly-CSharp}
+    - rid: 4835484058177241183
+      type: {class: GridManagerResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
         _width: 5
         _height: 5
         _gridContainer: {fileID: 1714262388}
         _tilePrefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
-        _tileSize: {x: 1, y: 1}
-        _spacing: {x: 0, y: 0}
-        _baseColor: {r: 0, g: 0, b: 0, a: 0}
-        _offsetColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!4 &1973094708
 Transform:
   m_ObjectHideFlags: 0

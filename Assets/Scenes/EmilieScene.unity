@@ -324,9 +324,9 @@ MonoBehaviour:
   - rid: 4134850263988305926
   - rid: 4134850263988305927
   - rid: 4134850263988305928
-  - rid: 4835484058177241179
   - rid: 4835484058177241180
   - rid: 4835484058177241181
+  - rid: 4835484058177241184
   references:
     version: 2
     RefIds:
@@ -357,18 +357,6 @@ MonoBehaviour:
       type: {class: HoldHandResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-    - rid: 4835484058177241179
-      type: {class: GridManager, ns: CardGame.Turns, asm: Assembly-CSharp}
-      data:
-        Enabled: 0
-        _width: 5
-        _height: 5
-        _gridContainer: {fileID: 476795181}
-        _tilePrefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
-        _tileSize: {x: 1, y: 1}
-        _spacing: {x: 0.025, y: 0.025}
-        _baseColor: {r: 0, g: 0, b: 0, a: 0}
-        _offsetColor: {r: 0, g: 0, b: 0, a: 0}
     - rid: 4835484058177241180
       type: {class: DoTerrainEffectAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
@@ -379,6 +367,14 @@ MonoBehaviour:
         Enabled: 0
         _handZone: {fileID: 2026021320}
         _tileInHand: []
+    - rid: 4835484058177241184
+      type: {class: GridManagerResource, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+        _width: 5
+        _height: 5
+        _gridContainer: {fileID: 476795181}
+        _tilePrefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
 --- !u!4 &1934208546
 Transform:
   m_ObjectHideFlags: 0
