@@ -601,6 +601,7 @@ MonoBehaviour:
   - rid: 4835484058177241183
   - rid: 542522273821360218
   - rid: 542522273821360219
+  - rid: 4835484058177241186
   references:
     version: 2
     RefIds:
@@ -654,6 +655,10 @@ MonoBehaviour:
         _height: 5
         _gridContainer: {fileID: 1714262388}
         _tilePrefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
+    - rid: 4835484058177241186
+      type: {class: AutoPlayAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
 --- !u!4 &1973094708
 Transform:
   m_ObjectHideFlags: 0

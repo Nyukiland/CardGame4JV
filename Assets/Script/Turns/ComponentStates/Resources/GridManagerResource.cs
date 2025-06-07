@@ -15,6 +15,9 @@ namespace CardGame.Turns
 		[Header("Tiles")]
 		[SerializeField] private GameObject _tilePrefab;
 
+		public int Width => _width;
+		public int Height => _height;
+
 		private TileVisu[,] _grid;
 
 		public override void Init(Controller owner)

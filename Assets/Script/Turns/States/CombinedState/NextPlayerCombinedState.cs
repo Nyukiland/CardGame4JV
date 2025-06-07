@@ -7,6 +7,7 @@ namespace CardGame.Turns
 		private NetworkResource _net;
 		private HUDResource _hudResource;
 		private HUDAbility _hudAbility;
+		private AutoPlayAbility _autoPlayAbility;
 
         public NextPlayerCombinedState()
         {
@@ -21,8 +22,8 @@ namespace CardGame.Turns
 			GetStateComponent(ref _hudResource);
 			GetStateComponent(ref _hudAbility);
 
-			if (!_net.IsNetActive())
-				Controller.SetState<PlaceTileCombinedState>();
+            if (!_net.IsNetActive())
+				GetStateComponent(ref _autoPlayAbility);
         }
     }
 }
