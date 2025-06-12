@@ -602,6 +602,7 @@ MonoBehaviour:
   - rid: 542522273821360218
   - rid: 542522273821360219
   - rid: 4835484058177241186
+  - rid: 8034276891835498586
   references:
     version: 2
     RefIds:
@@ -657,6 +658,10 @@ MonoBehaviour:
         _tilePrefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
     - rid: 4835484058177241186
       type: {class: AutoPlayAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+    - rid: 8034276891835498586
+      type: {class: RotateTileAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
 --- !u!4 &1973094708

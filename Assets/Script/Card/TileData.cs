@@ -25,14 +25,16 @@ namespace CardGame.Card
 
         public void RotateTile()
         {
+            ZoneData copiedZone = Zones[3]; // rotation aiguille d'une montre
+
+            for (int i = 3; i > 0; i--)
+            {
+                Zones[i] = Zones[i - 1];
+            }
+            Zones[0] = copiedZone;
+
             TileRotationCount += 1;
 
-            ZoneData copiedZone = Zones[0];
-            for (int i = 0; i < 3; i++)
-            { 
-                Zones[i] = Zones[i+1];
-            }
-            Zones[3] = copiedZone;
 
         }
     }

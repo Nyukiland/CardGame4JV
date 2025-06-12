@@ -68,24 +68,23 @@ namespace CardGame.UI
             _visuWest.enabled = true;
             _visuCenter.enabled = true;
 
-            ZoneData zone = TileData.TileSettings.NorthZone;
-			zones.Add(zone);
-			_visuNorth.material = GetMaterialForType(zone.environment);
+            ZoneData[] zonesRotated = TileData.Zones;
 
-			zone = TileData.TileSettings.SouthZone;
-			zones.Add(zone);
-			_visuSouth.material = GetMaterialForType(zone.environment);
+            zones.Add(zonesRotated[0]); // North
+            _visuNorth.material = GetMaterialForType(zonesRotated[0].environment);
 
-			zone = TileData.TileSettings.EastZone;
-			zones.Add(zone);
-			_visuEast.material = GetMaterialForType(zone.environment);
+            zones.Add(zonesRotated[1]); // East
+            _visuEast.material = GetMaterialForType(zonesRotated[1].environment);
 
-			zone = TileData.TileSettings.WestZone;
-			zones.Add(zone);
-			_visuWest.material = GetMaterialForType(zone.environment);
+            zones.Add(zonesRotated[2]); // South
+            _visuSouth.material = GetMaterialForType(zonesRotated[2].environment);
 
-			//temp
-			_visuCenter.enabled = false;
+            zones.Add(zonesRotated[3]); // West
+            _visuWest.material = GetMaterialForType(zonesRotated[3].environment);
+
+
+            //temp
+            _visuCenter.enabled = false;
 
 			for (int i = 0; i < zones.Count - 1; i++)
 			{
