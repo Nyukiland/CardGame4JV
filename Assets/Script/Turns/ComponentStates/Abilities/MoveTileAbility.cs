@@ -1,15 +1,17 @@
 using CardGame.StateMachine;
+using CardGame.Utility;
 using CardGame.UI;
 using UnityEngine;
+using CardGame.Card;
 
 namespace CardGame.Turns
 {
 	public class MoveTileAbility : Ability
 	{
 		private GridManagerResource _gridManager;
-
 		private SendInfoAbility _sender;
 		private ZoneHolderResource _handResource;
+		private CreateHandAbility _createHand;
 
 		private TileVisu _currentTile;
 
@@ -21,7 +23,7 @@ namespace CardGame.Turns
 			_handResource = owner.GetStateComponent<ZoneHolderResource>();
 			_sender = owner.GetStateComponent<SendInfoAbility>();
             _gridManager = owner.GetStateComponent<GridManagerResource>();
-
+			_createHand = owner.GetStateComponent<CreateHandAbility>();
         }
 
 		public void PickCard(Vector2 position)
@@ -66,7 +68,10 @@ namespace CardGame.Turns
 				_gridManager.SetTile(_currentTile.TileData, pos);
 
 				_sender.SendInfoTilePlaced(_currentTile.TileData, pos);
-				_sender.SendTurnFinished();
+				if (!_sender.SendTurnFinished())
+				{
+					SoloDrawCard();
+				}
 
 				Owner.SetState<NextPlayerCombinedState>();
 
@@ -74,7 +79,27 @@ namespace CardGame.Turns
 			}
 			else 
 				_handResource.GiveTileToHand(_currentTile.gameObject);
+		}
 
+		private void SoloDrawCard()
+		{
+			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
+
+			int tileId = drawPile.GetTileIDFromDrawPile();
+			if (tileId != -1) return;
+
+			TileSettings tileSettings = null;
+			foreach (TileSettings setting in drawPile.AllTileSettings)
+			{
+				if (setting.IdCode == tileId)
+				{
+					tileSettings = setting;
+					break;
+				}
+			}
+
+			UnityEngine.Debug.Log("t");
+			_createHand.CreateTile(tileSettings);
 		}
 	}
 }

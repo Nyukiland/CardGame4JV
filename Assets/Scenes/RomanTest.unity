@@ -590,6 +590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7d0d4a543fd10d409b6d9ed0272d34b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _camera: {fileID: 7528136974546612638, guid: 7a4a890669a6920418bfbece267a668f, type: 3}
   _defaultState: CardGame.Turns.SetupGameCombinedState
   _components:
   - rid: 542522248351187034
@@ -660,6 +661,7 @@ MonoBehaviour:
       type: {class: AutoPlayAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
+        _waitSec: 2
     - rid: 8034276891835498586
       type: {class: RotateTileAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:

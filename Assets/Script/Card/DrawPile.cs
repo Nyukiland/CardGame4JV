@@ -23,7 +23,7 @@ namespace CardGame
 
 		private void OnDisable()
 		{
-			Storage.Instance.Delete(this);
+			if (Storage.CheckInstance()) Storage.Instance.Delete(this);
 		}
 
 		public int GetTileIDFromDrawPile()

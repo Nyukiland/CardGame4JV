@@ -10,6 +10,8 @@ namespace CardGame.Turns
 	{
 		private GridManagerResource _grid;
 
+		[SerializeField]
+		private float _waitSec = 2f;
 
         public override void Init(Controller owner)
         {
@@ -25,7 +27,7 @@ namespace CardGame.Turns
 
         private async UniTask AutoPlay()
         {
-            await UniTask.WaitForSeconds(0.5f);
+            await UniTask.WaitForSeconds(_waitSec);
             DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
 
             // Tire une tuile dans la pile

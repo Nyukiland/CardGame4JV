@@ -39,11 +39,12 @@ namespace CardGame.Turns
 			_net.NetCom.SendTilePlaced(new DataToSend(send, pos));
 		}
 
-		public void SendTurnFinished()
+		public bool SendTurnFinished()
 		{
-			if (!_net.IsNetActive()) return;
+			if (!_net.IsNetActive()) return false;
 
 			_net.NetCom.TurnFinished();
+			return true;
 		}
 	}
 }

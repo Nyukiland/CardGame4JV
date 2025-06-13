@@ -8,6 +8,9 @@ namespace CardGame.StateMachine
 {
 	public class Controller : MonoBehaviour, ISelectableInfo
 	{
+		[SerializeField]
+		private GameObject _camera;
+
 		[SerializeField, TypeSelector(typeof(State))]
 		private string _defaultState;
 
@@ -16,6 +19,12 @@ namespace CardGame.StateMachine
 
 		protected virtual void Awake()
 		{
+#if UNITY_EDITOR
+			//just for test puporse
+			if (Camera.main == null)
+				Instantiate(_camera);
+#endif
+
 			_components.ForEach(comp => comp.EarlyInit());
 			_components.ForEach(comp => comp.InitController(owner: this));
 		}
@@ -192,7 +201,7 @@ namespace CardGame.StateMachine
 		string ISelectableInfo.GetInfo()
 		{
 			string text = "Controller: \n" +
-				$"Previous State: {PrevState} \n" + 
+				$"Previous State: {PrevState} \n" +
 				$"Current State: {CurrentState}";
 
 			if (_state != null) text += "\n" + _state.DisplayInfoController();
