@@ -60,8 +60,11 @@ namespace CardGame.Turns
 
 			for (int i = 0; i < count; i++)
 			{
-				float t = (float)i / (float)count;
-				Vector3 pos = Vector3.Lerp(pos1, pos2, t);
+                //float t = (float)i / (float)count;
+				// Faut faire count -1 : si 4 cartes, on avait 0, .25 .50 .75 et jamais 1, donc la on a 0 .33 .66 1
+				// On evite juste la division par 0 s'il n'y a qu'une carte
+                float t = count > 1 ? (float)i / (count - 1) : 0.5f; 
+                Vector3 pos = Vector3.Lerp(pos1, pos2, t);
 				_tileInHand[i].transform.position = pos + (Camera.main.transform.forward * 2);
 			}
 		}
