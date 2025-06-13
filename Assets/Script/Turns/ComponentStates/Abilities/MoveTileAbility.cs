@@ -13,6 +13,8 @@ namespace CardGame.Turns
 
 		private TileVisu _currentTile;
 
+		public bool CanPlaceOnGrid { get; set; } = false;
+
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
@@ -59,7 +61,7 @@ namespace CardGame.Turns
 
 			Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
 
-			if (_gridManager.GetTile(pos) != null && _gridManager.GetTile(pos).TileData == null)
+			if (CanPlaceOnGrid && _gridManager.GetTile(pos) != null && _gridManager.GetTile(pos).TileData == null)
 			{
 				_gridManager.SetTile(_currentTile.TileData, pos);
 
