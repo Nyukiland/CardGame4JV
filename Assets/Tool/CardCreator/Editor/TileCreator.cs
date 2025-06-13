@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using static UnityEditor.AddressableAssets.Settings.AddressableAssetSettings;
+
 
 public class TileCreator : EditorWindow
 {
@@ -27,7 +29,7 @@ public class TileCreator : EditorWindow
             if (tile != null) _tileDataList.Add(tile);
         }
 
-        FillDrawPileInScene();
+        //FillDrawPileInScene();
     }
 
     [MenuItem("Tools/Tile Creator")]
@@ -164,8 +166,27 @@ public class TileCreator : EditorWindow
 
         AssetDatabase.CreateAsset(newTile, path);
         AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+#if UNITY_EDITOR
+        // === ADDRESSABLES SETUP ===
+        string assetGUID = AssetDatabase.AssetPathToGUID(path);
+        var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
+
+        if (settings != null)
+        {
+            var entry = settings.CreateOrMoveEntry(assetGUID, settings.DefaultGroup);
+            entry.SetAddress(path); // or a custom address if you want
+            entry.labels.Add("TileSetting");
+
+            settings.SetDirty(ModificationEvent.EntryModified, entry, true);
+
+        }
+#endif
+
         RefreshTileDataList();
     }
+
 
     private void MoveTileToTrash(TileSettings tile)
     {
