@@ -48,7 +48,7 @@ namespace CardGame.Turns
                     instantiatedTile.name = $"Tile_{x}_{y}";
 
                     instantiatedTile.transform.position = new Vector2(x, y);
-                    instantiatedTile.SetActive(true);
+                    instantiatedTile.SetActive(false);
                 }
             }
 
@@ -75,24 +75,29 @@ namespace CardGame.Turns
         public bool SetTile(TileData tile, int x, int y)
         {
             if (x > _width - 1 || x < 0 || y > _height - 1 || y < 0) return false;
+
+
             TileVisu tileVisu = _grid[x, y];
-            return SetTile(tileVisu, tile);
+            //if (tileVisu != null) return false; TODO > Ca BUG
+
+            // On va passer les données de la tuile, désactiver le collider et rendre le GameObject visible
+            tileVisu.UpdateTile(tile);
+            tileVisu.gameObject.SetActive(true);
+            ActivateSurroundingTiles(x, y);
+            return true;
         }
 
         public bool SetTile(TileData tile, Vector2Int arrayCoordinates)
         {
-            if (arrayCoordinates.x > _width - 1 || arrayCoordinates.x < 0 || arrayCoordinates.y > _height - 1 || arrayCoordinates.y < 0) return false;
-            TileVisu tileVisu = _grid[arrayCoordinates.x, arrayCoordinates.y];
-            return SetTile(tileVisu, tile);
-
+            return SetTile(tile, arrayCoordinates.x, arrayCoordinates.y);
         }
 
-        private bool SetTile(TileVisu tileVisu, TileData tile)
+        private void ActivateSurroundingTiles(int x, int y)
         {
-            // On va passer les données de la tuile, désactiver le collider et rendre le GameObject visible
-            tileVisu.UpdateTile(tile);
-            tileVisu.gameObject.SetActive(true);
-            return true;
+            if (x + 1 <= _width - 1) _grid[x + 1, y].gameObject.SetActive(true);
+            if (x - 1 >= 0) _grid[x - 1, y].gameObject.SetActive(true);
+            if (y + 1 <= _height - 1 ) _grid[x, y + 1].gameObject.SetActive(true);
+            if (y - 1 >= 0) _grid[x, y - 1].gameObject.SetActive(true);
         }
 
 
