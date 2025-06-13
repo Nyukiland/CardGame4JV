@@ -86,7 +86,7 @@ namespace CardGame.Turns
 			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
 
 			int tileId = drawPile.GetTileIDFromDrawPile();
-			if (tileId != -1) return;
+			if (tileId == -1) return;
 
 			TileSettings tileSettings = null;
 			foreach (TileSettings setting in drawPile.AllTileSettings)
@@ -98,7 +98,6 @@ namespace CardGame.Turns
 				}
 			}
 
-			UnityEngine.Debug.Log("t");
 			_createHand.CreateTile(tileSettings);
 		}
 	}
