@@ -35,7 +35,6 @@ namespace CardGame.Card
 
             TileRotationCount += 1;
 
-
         }
     }
 }

@@ -13,13 +13,8 @@ namespace CardGame.Turns
             {
                 if (hit.collider.GetComponentInParent<TileVisu>() is TileVisu visu)
                 {
-                    Debug.Log($"Before Rotate - North: {visu.TileData.Zones[0].environment}");
-
                     visu.TileData.RotateTile();
                     visu.UpdateTile(visu.TileData);
-
-                    Debug.Log($"After Rotate - North: {visu.TileData.Zones[0].environment}");
-                    Debug.Log("Rotated Tile");
                 }
             }
         }

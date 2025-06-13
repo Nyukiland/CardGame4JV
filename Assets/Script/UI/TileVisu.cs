@@ -7,7 +7,9 @@ namespace CardGame.UI
 {
 	public class TileVisu : MonoBehaviour
 	{
-		[SerializeField]
+        [SerializeField]
+        private MeshRenderer _visuValidity;
+        [SerializeField]
 		private MeshRenderer _visuNorth;
 		[SerializeField]
 		private MeshRenderer _visuSouth;
@@ -105,6 +107,11 @@ namespace CardGame.UI
 				}
 			}
 		}
+
+		public void ChangeValidityVisual(bool isValid)
+		{
+			_visuValidity.material = isValid ? _green : _red;
+        }
 
 		private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
 		{
