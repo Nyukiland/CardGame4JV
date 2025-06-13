@@ -366,19 +366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 261ac0dec689f7d48a814255c25054d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AllTileSettings:
-  - {fileID: 11400000, guid: ccabf74a04038784d87ebb68b573205f, type: 2}
-  - {fileID: 11400000, guid: bb964019461487f4ab129fb1514e11a5, type: 2}
-  - {fileID: 11400000, guid: b222ea78219f37e46a9a7d77ba238f3a, type: 2}
-  - {fileID: 11400000, guid: 8c5a91358d954334cab79ade3e0e1059, type: 2}
-  - {fileID: 11400000, guid: 8c5a91358d954334cab79ade3e0e1059, type: 2}
-  - {fileID: 11400000, guid: 8c5a91358d954334cab79ade3e0e1059, type: 2}
-  - {fileID: 11400000, guid: 8c5a91358d954334cab79ade3e0e1059, type: 2}
-  - {fileID: 11400000, guid: 8c5a91358d954334cab79ade3e0e1059, type: 2}
-  - {fileID: 11400000, guid: 8c5a91358d954334cab79ade3e0e1059, type: 2}
-  - {fileID: 11400000, guid: 8c5a91358d954334cab79ade3e0e1059, type: 2}
-  - {fileID: 11400000, guid: 8c5a91358d954334cab79ade3e0e1059, type: 2}
-  - {fileID: 11400000, guid: 8c5a91358d954334cab79ade3e0e1059, type: 2}
+  AllTileSettings: []
 --- !u!4 &1031992357
 Transform:
   m_ObjectHideFlags: 0
@@ -570,6 +558,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1973094708}
+  - component: {fileID: 1973094709}
   - component: {fileID: 1973094707}
   m_Layer: 0
   m_Name: Controller
@@ -604,6 +593,7 @@ MonoBehaviour:
   - rid: 542522273821360219
   - rid: 4835484058177241186
   - rid: 8034276891835498586
+  - rid: 7534538971935670362
   references:
     version: 2
     RefIds:
@@ -663,6 +653,10 @@ MonoBehaviour:
       data:
         Enabled: 0
         _waitSec: 2
+    - rid: 7534538971935670362
+      type: {class: RotateTileAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
     - rid: 8034276891835498586
       type: {class: RotateTileAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
@@ -682,6 +676,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1973094709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1973094706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cddcbf3021420243847a46664363d58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2013116585
 GameObject:
   m_ObjectHideFlags: 0

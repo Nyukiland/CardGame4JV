@@ -12,5 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/RomanTest.unity
     guid: cfc721239e6543347a615ab279a9337e
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 1f6cd7e4fddbdad43953b862effcace8, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: f035d4e649f21f24089800a221b5501c, type: 3}
   m_UseUCBPForAssetBundles: 0

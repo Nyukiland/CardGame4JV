@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_GUID: 446bb55b36361634ab4bcc480cc3bd20
+  m_SerializeEntries:
+  - m_GUID: 0f887436e8f14bf488d747477cae211e
+    m_Address: Assets/Script/Data/NewTile_05.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c5a91358d954334cab79ade3e0e1059
+    m_Address: Assets/Script/Data/NewTile_04.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b222ea78219f37e46a9a7d77ba238f3a
+    m_Address: Assets/Script/Data/NewTile_03.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb964019461487f4ab129fb1514e11a5
+    m_Address: Assets/Script/Data/NewTile_02.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ccabf74a04038784d87ebb68b573205f
+    m_Address: Assets/Script/Data/NewTile_01.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: abd327a6fd5f71f4dae703005c224d0f, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: d868dc4040feaf943a5de24d8eae3ae9, type: 2}
+    - {fileID: 11400000, guid: 6820c0cd7660a6d4d8758ee0d6ad7304, type: 2}
