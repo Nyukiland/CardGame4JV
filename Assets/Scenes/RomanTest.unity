@@ -657,6 +657,7 @@ MonoBehaviour:
         _height: 5
         _gridContainer: {fileID: 1714262388}
         _tilePrefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
+        _startingTileSettings: {fileID: 11400000, guid: d3b09ec51731b2646976bc7aca021007, type: 2}
     - rid: 4835484058177241186
       type: {class: AutoPlayAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
