@@ -22,7 +22,19 @@ namespace CardGame.Turns
 			return RectTransformUtility.RectangleContainsScreenPoint(_handZone, position);
 		}
 
-		public void GiveTileToHand(GameObject tile)
+        private int GetInsertionIndex(Vector3 droppedPosition)
+        {
+            for (int i = 0; i < _tileInHand.Count; i++)
+            {
+                if (droppedPosition.x < _tileInHand[i].transform.position.x)
+                    return i;
+            }
+
+            return _tileInHand.Count; // add a la fin sinon
+        }
+
+
+        public void GiveTileToHand(GameObject tile)
 		{
 			if (_tileInHand.Contains(tile))
 			{
@@ -30,9 +42,10 @@ namespace CardGame.Turns
 				return;
 			}
 
-			_tileInHand.Add(tile);
+            int insertIndex = GetInsertionIndex(tile.transform.position);
+            _tileInHand.Insert(insertIndex, tile);
 
-			UpdatePlacementInHand();
+            UpdatePlacementInHand();
 		}
 
 		public void RemoveTileFromHand(GameObject tile)
