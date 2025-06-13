@@ -11,8 +11,7 @@ namespace CardGame.Turns
 
         public NextPlayerCombinedState()
         {
-			//AddSubState(new RotateTileSubState());
-			//AddSubState(new MoveTileSubState());
+			AddSubState(new MoveTileSubState());
 		}
 
         public override void OnEnter()
