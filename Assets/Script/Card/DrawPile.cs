@@ -39,6 +39,8 @@ namespace CardGame
 		
 		private async UniTask LoadTiles()
 		{
+			AllTileSettings.Clear();
+			
 			AsyncOperationHandle<IList<TileSettings>> handle = await AddressableManager.LoadLabel<TileSettings>("TileSetting");
 
 			_hashSet = new();
