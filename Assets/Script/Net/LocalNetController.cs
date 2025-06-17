@@ -307,7 +307,7 @@ namespace CardGame.Net
 			foreach (LanSearchBeacon.BeaconDataWithIP data in listToUse)
 			{
 				PublicSessionVisu session = Instantiate(_displayPublic, _networkUI.PublicHostsContainer.transform).GetComponent<PublicSessionVisu>();
-				session.SetUpVisu(data.gameName, data.joinCode, this);
+				//session.SetUpVisu(data.gameName, data.joinCode, this);
 			}
 		}
 

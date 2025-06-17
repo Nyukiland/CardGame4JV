@@ -1,66 +1,37 @@
-using Unity.Netcode.Transports.UTP;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using System.Net.Sockets;
 using Unity.Collections;
-using UnityEngine.UI;
 using Unity.Netcode;
 using System.Linq;
 using UnityEngine;
 using System.Net;
-using TMPro;
 
 namespace CardGame.Net
 {
-	public class LocalNetControllerTestScene : MonoBehaviour
+	public class LocalNetControllerTestScene : NetControllerParent
 	{
-		[SerializeField, Disable]
-		private NetCommunication _netCommunication;
-
 		[SerializeField, Disable]
 		private LanSearchBeacon _lanSearch;
 
-		[SerializeField]
-		private TextMeshProUGUI _netComText, _receivedInfo;
-
-		[SerializeField]
-		private TMP_InputField _passwordField, _connectCode, _gameName;
-
-		[SerializeField]
-		private Toggle _toggleHost;
-
-		[SerializeField]
-		private VerticalLayoutGroup _publicSessionVerticalLayout;
-
-		[SerializeField]
-		private GameObject _displayPublic;
-
-		private UnityTransport _transport;
-
-		private string _joinPassword;
-		private string _joinCode;
-
-		private void Start()
+		protected override void Start()
 		{
-			_transport = NetworkManager.Singleton.gameObject.GetComponent<UnityTransport>();
+			base.Start();
+
+			//should be called by a button later
+			Launch();
+		}
+
+		public override void Launch()
+		{
+			base.Launch();
 			_lanSearch = GetComponent<LanSearchBeacon>();
 			_lanSearch.OnHostsUpdated += UpdateConnectionList;
 		}
 
-		private void Update()
+		public override void EndUseNet(bool shutdownNet = true)
 		{
-			if (_netCommunication != null)
-			{
-				_netComText.text = _netCommunication.gameObject.name + " / \n Join Code: " + _joinCode;
-			}
-		}
-
-		private void OnDestroy()
-		{
-			if (_netCommunication != null)
-			{
-				_netCommunication.ReceiveEventTest -= NetCommunication_ReceiveEvent;
-			}
+			base.EndUseNet();
 
 			if (_lanSearch != null)
 			{
@@ -68,47 +39,18 @@ namespace CardGame.Net
 			}
 		}
 
-		private void NetCommunication_ReceiveEvent(string data)
+		protected override void OnDestroy()
 		{
-			_receivedInfo.text = data;
+			base.OnDestroy();
+			if (_lanSearch != null)
+			{
+				_lanSearch.OnHostsUpdated -= UpdateConnectionList;
+			}
 		}
-
-		public void SendInfo()
-		{
-			_netCommunication.SubmitInfoTest(_netCommunication.name + " / \n password: " + _passwordField.text);
-		}
-
 
 		#region Connection
 
-		private void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
-		{
-			FastBufferReader reader = new(request.Payload, Allocator.None);
-			reader.ReadValueSafe(out FixedString32Bytes receivedPassword);
-
-			if (NetworkManager.Singleton.ConnectedClients.Count >= 2)
-			{
-				response.Approved = false;
-				response.Pending = false;
-				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Connection rejected: game is full.", this);
-				return;
-			}
-
-			if (receivedPassword.ToString() == _joinPassword)
-			{
-				response.Approved = true;
-				response.CreatePlayerObject = true;
-			}
-			else
-			{
-				response.Approved = false;
-				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Connection rejected: wrong password", this);
-			}
-
-			response.Pending = false;
-		}
-
-		public void StartHost()
+		public override void StartHost()
 		{
 			if (string.IsNullOrEmpty(_gameName.text)) return;
 
@@ -158,7 +100,7 @@ namespace CardGame.Net
 		{
 			try
 			{
-				TcpListener listener = new TcpListener(IPAddress.Parse(ip), port);
+				TcpListener listener = new (IPAddress.Parse(ip), port);
 				listener.Start();
 				listener.Stop();
 				return true;
@@ -169,7 +111,7 @@ namespace CardGame.Net
 			}
 		}
 
-		public void JoinGame(string joinCode = default)
+		public override void JoinGame(string joinCode = default)
 		{
 			string password = _passwordField.text;
 			if (string.IsNullOrEmpty(joinCode)) joinCode = _connectCode.text;
@@ -207,6 +149,7 @@ namespace CardGame.Net
 		private void DisconnectLogic()
 		{
 			NetworkManager.Singleton.Shutdown();
+			TogglePublicSearch(false);
 
 			_netCommunication = null;
 			_joinCode = null;
@@ -225,54 +168,11 @@ namespace CardGame.Net
 			return "127.0.0.1";
 		}
 
-		private async UniTask SafeConnectAsync()
+		protected override async UniTask SafeConnectAsync()
 		{
-			bool connectionResultReceived = false;
-			bool connectionSucceeded = false;
-			float timeout = 2f;
+			await base.SafeConnectAsync();
 
-			NetworkManager.Singleton.OnClientConnectedCallback += OnConnected;
-			NetworkManager.Singleton.OnClientDisconnectCallback += OnDisconnected;
-
-			NetworkManager.Singleton.StartClient();
-
-			float elapsed = 0f;
-			while (!connectionResultReceived && elapsed < timeout)
-			{
-				elapsed += Time.deltaTime;
-				await UniTask.Yield(); // non-blocking
-			}
-
-			NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
-			NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
-
-			if (connectionSucceeded)
-			{
-				TogglePublicSearch(false);
-				await GetNetComForThisClientAsync();
-			}
-			else
-			{
-				NetworkManager.Singleton.Shutdown();
-			}
-
-			void OnConnected(ulong clientId)
-			{
-				if (clientId == NetworkManager.Singleton.LocalClientId)
-				{
-					connectionResultReceived = true;
-					connectionSucceeded = true;
-				}
-			}
-
-			void OnDisconnected(ulong clientId)
-			{
-				if (clientId == NetworkManager.Singleton.LocalClientId)
-				{
-					connectionResultReceived = true;
-					connectionSucceeded = false;
-				}
-			}
+			if (!NetworkManager.Singleton.ShutdownInProgress) TogglePublicSearch(false);
 		}
 
 		#endregion
@@ -329,28 +229,6 @@ namespace CardGame.Net
 					}
 				}
 			}
-		}
-
-		#endregion
-
-		#region Useful
-
-		private async UniTask GetNetComForThisClientAsync()
-		{
-			NetCommunication netCom = null;
-
-			await UniTask.WaitUntil(() =>
-				NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom));
-
-			_netCommunication = netCom;
-			_netCommunication.ReceiveEventTest += NetCommunication_ReceiveEvent;
-		}
-
-		public void CopyJoinCode()
-		{
-			if (string.IsNullOrEmpty(_joinCode)) return;
-
-			CopyHandler.CopyToClipboard(_joinCode);
 		}
 
 		#endregion

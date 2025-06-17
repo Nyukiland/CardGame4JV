@@ -1,69 +1,69 @@
-using Unity.Networking.Transport.Relay;
 using Unity.Services.Lobbies.Models;
 using Unity.Services.Authentication;
-using Unity.Netcode.Transports.UTP;
+using Unity.Services.Relay.Models;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Unity.Services.Lobbies;
 using Unity.Services.Relay;
 using Unity.Services.Core;
 using Unity.Collections;
-using UnityEngine.UI;
+using System.Threading;
 using Unity.Netcode;
 using System.Linq;
 using UnityEngine;
-using TMPro;
+using System;
 
 namespace CardGame.Net
 {
-	public class DistantNetController : MonoBehaviour
+	public class DistantNetController : NetControllerParent
 	{
-		[SerializeField]
-		private TextMeshProUGUI _netComText, _receivedInfo;
-		[SerializeField]
-		private TMP_InputField _passwordField, _connectCode, _gameName;
-		[SerializeField]
-		private Toggle _toggleHost;
-		[SerializeField]
-		private VerticalLayoutGroup _publicSessionVerticalLayout;
-		[SerializeField]
-		private GameObject _displayPublic;
-
-
 		private string _lobbyId;
-		private string _joinCode;
-		private UnityTransport _transport;
-		private NetCommunication _netCommunication;
+		private CancellationTokenSource _heartbeatTokenSource;
 
-		private void Start()
+		protected override void Start()
 		{
-			_transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+			base.Start();
+
+			//should be called by a button later
+			Launch();
+		}
+
+		public override void Launch()
+		{
+			base.Launch();
 			InitUnityServices().Forget();
 		}
 
-		private async UniTask InitUnityServices()
+		//call when go online 
+		public async UniTask InitUnityServices()
 		{
 			await UnityServices.InitializeAsync();
 			if (!AuthenticationService.Instance.IsSignedIn)
 				await AuthenticationService.Instance.SignInAnonymouslyAsync();
 		}
 
-		private void Update()
+		public override void EndUseNet(bool shutdownNet = true)
 		{
-			if (_netCommunication != null)
-			{
-				_netComText.text = _netCommunication.gameObject.name + " / \n Join Code: " + _joinCode;
-			}
+			base.EndUseNet();
+			_heartbeatTokenSource?.Cancel();
 		}
 
-		public async void StartHost()
+		public override void StartHost()
+		{
+			base.StartHost();
+
+			StartHostAsynch().Forget();
+		}
+
+		private async UniTask StartHostAsynch()
 		{
 			if (string.IsNullOrEmpty(_gameName.text)) return;
+			_joinPassword = _passwordField.text;
 
-			var allocation = await RelayService.Instance.CreateAllocationAsync(1);
+			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(1);
 			_joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-			var createOptions = new CreateLobbyOptions
+			CreateLobbyOptions createOptions = new()
 			{
 				IsPrivate = !_toggleHost.isOn,
 				Data = new Dictionary<string, DataObject>
@@ -73,118 +73,69 @@ namespace CardGame.Net
 				}
 			};
 
-			var lobby = await LobbyService.Instance.CreateLobbyAsync(_gameName.text, 2, createOptions);
+			Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(_gameName.text, _maxPlayer, createOptions);
 			_lobbyId = lobby.Id;
 
-			//TO FIX
-			//_transport.SetRelayServerData(new RelayServerData(allocation, "dtls"));
+			_transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
 			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
 			NetworkManager.Singleton.StartHost();
 
 			await GetNetComForThisClientAsync();
-			_ = HeartbeatLobby();
+			_heartbeatTokenSource = new CancellationTokenSource();
+			_ = HeartbeatLobby(_heartbeatTokenSource.Token);
+
 		}
 
-		private void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+		public override void JoinGame(string code = null)
 		{
-			var reader = new FastBufferReader(request.Payload, Unity.Collections.Allocator.None);
-			reader.ReadValueSafe(out FixedString32Bytes receivedPassword);
-			response.Approved = receivedPassword.ToString() == _passwordField.text;
-			response.CreatePlayerObject = response.Approved;
-			response.Pending = false;
+			base.JoinGame();
+			JoinGameAsynch().Forget();
 		}
 
-		public async void JoinGame(string code = null)
+		private async UniTask JoinGameAsynch(string code = null)
 		{
 			if (string.IsNullOrEmpty(code)) code = _connectCode.text;
 			if (string.IsNullOrEmpty(code)) return;
 
-			var lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code);
+			Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code);
 			_joinCode = lobby.Data["relayJoinCode"].Value;
 
-			var allocation = await RelayService.Instance.JoinAllocationAsync(_joinCode);
-			//TO FIX
-			// _transport.SetRelayServerData(new RelayServerData(allocation, "dtls"));
+			JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(_joinCode);
+			_transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
 
-			var writer = new FastBufferWriter(32, Unity.Collections.Allocator.Temp);
+			FastBufferWriter writer = new(32, Allocator.Temp);
 			writer.WriteValueSafe(new FixedString32Bytes(_passwordField.text));
 			NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
 
 			SafeConnectAsync().Forget();
 		}
 
-		private async UniTask SafeConnectAsync()
+		private async UniTask HeartbeatLobby(CancellationToken token)
 		{
-			bool connected = false;
-			float timer = 0;
-			float timeout = 3f;
-
-			NetworkManager.Singleton.OnClientConnectedCallback += OnConnected;
-			NetworkManager.Singleton.OnClientDisconnectCallback += OnDisconnected;
-			NetworkManager.Singleton.StartClient();
-
-			while (!connected && timer < timeout)
+			try
 			{
-				timer += Time.deltaTime;
-				await UniTask.Yield();
+				while (!token.IsCancellationRequested && NetworkManager.Singleton.IsHost)
+				{
+					await LobbyService.Instance.SendHeartbeatPingAsync(_lobbyId);
+					await UniTask.Delay(15000);
+				}
 			}
-
-			NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
-			NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
-
-			if (connected)
-				await GetNetComForThisClientAsync();
-			else
-				NetworkManager.Singleton.Shutdown();
-
-			void OnConnected(ulong id) { if (id == NetworkManager.Singleton.LocalClientId) connected = true; }
-			void OnDisconnected(ulong id) { if (id == NetworkManager.Singleton.LocalClientId) connected = false; }
-		}
-
-		private async UniTask HeartbeatLobby()
-		{
-			while (NetworkManager.Singleton.IsHost)
+			catch (OperationCanceledException)
 			{
-				await LobbyService.Instance.SendHeartbeatPingAsync(_lobbyId);
-				await UniTask.Delay(15000);
+				//stopped
 			}
 		}
 
-		private async UniTask GetNetComForThisClientAsync()
+		public async UniTask RefreshPublicLobbies()
 		{
-			NetCommunication netCom = null;
-			await UniTask.WaitUntil(() => NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom));
-			_netCommunication = netCom;
-			_netCommunication.ReceiveEventTest += NetCommunication_ReceiveEvent;
-		}
+			QueryResponse result = await LobbyService.Instance.QueryLobbiesAsync();
+			List<PublicSessionVisu> sessions = _publicSessionVerticalLayout.GetComponentsInChildren<PublicSessionVisu>().ToList();
+			foreach (PublicSessionVisu s in sessions) Destroy(s.gameObject);
 
-		private void NetCommunication_ReceiveEvent(string data)
-		{
-			_receivedInfo.text = data;
-		}
-
-		public void SendInfo()
-		{
-			_netCommunication.SubmitInfoTest(_netCommunication.name + " / \\n password: " + _passwordField.text);
-		}
-
-		public void CopyJoinCode()
-		{
-			if (!string.IsNullOrEmpty(_joinCode))
-				CopyHandler.CopyToClipboard(_joinCode);
-		}
-
-		public async void RefreshPublicLobbies()
-		{
-			var result = await LobbyService.Instance.QueryLobbiesAsync();
-			var sessions = _publicSessionVerticalLayout.GetComponentsInChildren<PublicSessionVisu>().ToList();
-			foreach (var s in sessions) Destroy(s.gameObject);
-
-			foreach (var lobby in result.Results)
+			foreach (Lobby lobby in result.Results)
 			{
-				//TO FIX
-				var visu = Instantiate(_displayPublic, _publicSessionVerticalLayout.transform).GetComponent<PublicSessionVisu>();
-				//visu.SetUpVisu(lobby.Name, lobby.LobbyCode, this);
+				PublicSessionVisu visu = Instantiate(_displayPublic, _publicSessionVerticalLayout.transform).GetComponent<PublicSessionVisu>();
+				visu.SetUpVisu(lobby.Name, lobby.LobbyCode, this);
 			}
 		}
 	}
