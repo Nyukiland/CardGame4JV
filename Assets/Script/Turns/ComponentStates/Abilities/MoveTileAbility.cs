@@ -15,7 +15,8 @@ namespace CardGame.Turns
 
 		private TileVisu _currentTile;
 
-		public bool CanPlaceOnGrid { get; set; } = false;
+
+        public bool CanPlaceOnGrid { get; set; } = false;
 
 		public override void Init(Controller owner)
 		{
@@ -38,17 +39,39 @@ namespace CardGame.Turns
 			}
 		}
 
-		public void MoveCard(Vector2 position)
-		{
-			if (_currentTile == null)
-				return;
+        public void MoveCard(Vector2 position)
+        {
+            if (_currentTile == null)
+                return;
 
-			Vector3 pos = Camera.main.ScreenToWorldPoint(position);
-			pos = Vector3Int.FloorToInt(pos);
-			pos += Camera.main.transform.forward * 2;
+            // Deplacement de la tuile
+            Vector3 pos = Camera.main.ScreenToWorldPoint(position);
+            pos = Vector3Int.FloorToInt(pos);
+            pos += Camera.main.transform.forward * 2;
+            _currentTile.transform.position = pos;
 
-			_currentTile.transform.position = pos;
-		}
+            // Verification de sa validity
+            if (_handResource.IsInHand(position)) //on fait rien quand c'est dans la main
+            {
+                _currentTile.ResetValidityVisual();
+                return;
+            }
+
+            Vector2Int gridPos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
+            TileVisu target = _gridManager.GetTile(gridPos);
+
+            if (target == null || target.TileData != null)
+            {
+                _currentTile.ChangeValidityVisual(false); // noir
+            }
+            else
+            {
+                int connections = GetPlacementConnectionCount(_currentTile.TileData, gridPos);
+                _currentTile.ChangeValidityVisual(connections > 0); // jaune si > 0, sinon noir
+            }
+        }
+
+
 
         public void ReleaseCard(Vector2 position)
         {
@@ -57,6 +80,7 @@ namespace CardGame.Turns
 
             if (_handResource.IsInHand(position))
             {
+                _currentTile.ResetValidityVisual();
                 _handResource.GiveTileToHand(_currentTile.gameObject);
                 return;
             }
@@ -64,12 +88,14 @@ namespace CardGame.Turns
             Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
             TileVisu targetTile = _gridManager.GetTile(pos);
 
+            _currentTile.ResetValidityVisual();
+
             if (CanPlaceOnGrid && targetTile != null && targetTile.TileData == null)
             {
                 int connectionCount = GetPlacementConnectionCount(_currentTile.TileData, pos);
                 if (connectionCount == 0)
                 {
-                    Debug.Log("Placement invalide");
+                    //Debug.Log("Placement invalide");
                     _handResource.GiveTileToHand(_currentTile.gameObject);
                     return;
                 }
@@ -81,7 +107,6 @@ namespace CardGame.Turns
                 {
                     for (int i = 0; i < connectionCount; i++)
                     {
-
                         SoloDrawCard();
                     }
                 }
@@ -94,6 +119,7 @@ namespace CardGame.Turns
                 _handResource.GiveTileToHand(_currentTile.gameObject);
             }
         }
+
 
         private int GetPlacementConnectionCount(TileData tileData, Vector2Int pos)
         {
@@ -139,7 +165,7 @@ namespace CardGame.Turns
                 connections++;
             }
 
-            Debug.Log($"Placement valide avec {connections}");
+            //Debug.Log($"Placement valide avec {connections}");
             return connections;
         }
 
@@ -163,5 +189,6 @@ namespace CardGame.Turns
 
 			_createHand.CreateTile(tileSettings);
 		}
-	}
+
+    }
 }

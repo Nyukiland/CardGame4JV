@@ -30,8 +30,14 @@ namespace CardGame.UI
 		private Material _blue;
 		[SerializeField]
 		private Material _white;
+        [SerializeField]
+        private Material _grey; // default
+        [SerializeField]
+        private Material _black; // Not valid
+        [SerializeField]
+        private Material _yellow; // valid
 
-		public TileData TileData { get; set; }
+        public TileData TileData { get; set; }
 
         private void Start()
         {
@@ -108,12 +114,17 @@ namespace CardGame.UI
 			}
 		}
 
-		public void ChangeValidityVisual(bool isValid)
-		{
-			_visuValidity.material = isValid ? _green : _red;
+        public void ChangeValidityVisual(bool isValid)
+        {
+            _visuValidity.material = isValid ? _yellow : _black;
         }
 
-		private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
+        public void ResetValidityVisual()
+        {
+            _visuValidity.material = _grey;
+        }
+
+        private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
 		{
 			switch (type)
 			{
