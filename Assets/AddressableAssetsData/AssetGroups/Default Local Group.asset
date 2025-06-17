@@ -21,8 +21,38 @@ MonoBehaviour:
     m_SerializedLabels:
     - TileSetting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 198dee13924131c4e941abc50f07571d
+    m_Address: Assets/Script/Data\NewTile_09.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 226c4334de0660b4e921b232010fe619
+    m_Address: Assets/Script/Data\NewTile_07.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 232b26a193921aa47bc2674bef250c4a
+    m_Address: Assets/Script/Data\NewTile_10.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 555073b8dc1e37c4da86ee400b768983
+    m_Address: Assets/Script/Data\NewTile_08.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8c5a91358d954334cab79ade3e0e1059
     m_Address: Assets/Script/Data/NewTile_04.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9a1626e4700ce0540bc1a4b2dfebbf6b
+    m_Address: Assets/Script/Data\NewTile_06.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - TileSetting
@@ -33,14 +63,38 @@ MonoBehaviour:
     m_SerializedLabels:
     - TileSetting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7912a4e26d89894ab98436a0d68e3a8
+    m_Address: Assets/Script/Data\NewTile_14.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bb964019461487f4ab129fb1514e11a5
     m_Address: Assets/Script/Data/NewTile_02.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - TileSetting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: caecdebf6f8ff4346bf0c22514132cfb
+    m_Address: Assets/Script/Data\NewTile_13.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ccabf74a04038784d87ebb68b573205f
     m_Address: Assets/Script/Data/NewTile_01.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e552f34d98b90894fbaa432adf8fd389
+    m_Address: Assets/Script/Data\NewTile_12.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe53c9105e7cac84ca6fb093a204295f
+    m_Address: Assets/Script/Data\NewTile_11.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - TileSetting

@@ -66,24 +66,34 @@ namespace CardGame.Turns
 
             if (CanPlaceOnGrid && targetTile != null && targetTile.TileData == null)
             {
-                if (!IsPlacementValid(_currentTile.TileData, pos))
+                int connectionCount = GetPlacementConnectionCount(_currentTile.TileData, pos);
+                if (connectionCount == 0)
                 {
                     Debug.Log("Placement invalide");
                     _handResource.GiveTileToHand(_currentTile.gameObject);
                     return;
                 }
 
-                // Debug.Log("Placement valide");
                 _gridManager.SetTile(_currentTile.TileData, pos);
-
                 _sender.SendInfoTilePlaced(_currentTile.TileData, pos);
+
                 if (!_sender.SendTurnFinished())
                 {
-                    SoloDrawCard();
+                    if (connectionCount == 1)
+                    {
+                        SoloDrawCard();
+                    }
+                    else
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+
+                            SoloDrawCard();
+                        }
+                    }
                 }
 
                 Owner.SetState<NextPlayerCombinedState>();
-
                 GameObject.Destroy(_currentTile.gameObject);
             }
             else
@@ -92,21 +102,21 @@ namespace CardGame.Turns
             }
         }
 
-        private bool IsPlacementValid(TileData tileData, Vector2Int pos)
+        private int GetPlacementConnectionCount(TileData tileData, Vector2Int pos)
         {
-            GridManagerResource grid = _gridManager;
-
-            TileVisu neighbor;
-            TileData neighborData;
+            int connections = 0;
 
             ZoneData[] myZones = tileData.Zones;
+
+            (GridManagerResource grid, TileVisu neighbor, TileData neighborData) = (_gridManager, null, null);
 
             // Nord vs sud
             neighbor = grid.GetTile(new Vector2Int(pos.x, pos.y + 1));
             if (neighbor != null && (neighborData = neighbor.TileData) != null)
             {
                 if (myZones[0].environment != neighborData.Zones[2].environment)
-                    return false;
+                    return 0;
+                connections++;
             }
 
             // Est vs Ouest
@@ -114,7 +124,8 @@ namespace CardGame.Turns
             if (neighbor != null && (neighborData = neighbor.TileData) != null)
             {
                 if (myZones[1].environment != neighborData.Zones[3].environment)
-                    return false;
+                    return 0;
+                connections++;
             }
 
             // Sud vs Nord
@@ -122,7 +133,8 @@ namespace CardGame.Turns
             if (neighbor != null && (neighborData = neighbor.TileData) != null)
             {
                 if (myZones[2].environment != neighborData.Zones[0].environment)
-                    return false;
+                    return 0;
+                connections++;
             }
 
             // Ouest vs est
@@ -130,11 +142,14 @@ namespace CardGame.Turns
             if (neighbor != null && (neighborData = neighbor.TileData) != null)
             {
                 if (myZones[3].environment != neighborData.Zones[1].environment)
-                    return false;
+                    return 0;
+                connections++;
             }
 
-            return true;
+            Debug.Log($"Placement valide avec {connections}");
+            return connections;
         }
+
 
         private void SoloDrawCard()
 		{

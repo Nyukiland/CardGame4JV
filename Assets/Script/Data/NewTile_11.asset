@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c445cec05d1a07744b5c5dd201f7a2e2, type: 3}
-  m_Name: NewTile_05
+  m_Name: NewTile_11
   m_EditorClassIdentifier: 
   _northZone:
-    environment: 1
-    isOpen: 0
+    environment: 2
+    isOpen: 1
   _eastZone:
-    environment: 3
+    environment: 2
     isOpen: 1
   _southZone:
-    environment: 3
+    environment: 2
     isOpen: 1
   _westZone:
-    environment: 3
-    isOpen: 1
+    environment: 4
+    isOpen: 0
   _cardEffect: []
   _cardFeedback: []
   references:
