@@ -50,38 +50,93 @@ namespace CardGame.Turns
 			_currentTile.transform.position = pos;
 		}
 
-		public void ReleaseCard(Vector2 position)
-		{
-			if (_currentTile == null)
-				return;
+        public void ReleaseCard(Vector2 position)
+        {
+            if (_currentTile == null)
+                return;
 
-			if (_handResource.IsInHand(position))
-			{
-				_handResource.GiveTileToHand(_currentTile.gameObject);
-				return;
-			}
+            if (_handResource.IsInHand(position))
+            {
+                _handResource.GiveTileToHand(_currentTile.gameObject);
+                return;
+            }
 
-			Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
+            Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
+            TileVisu targetTile = _gridManager.GetTile(pos);
 
-			if (CanPlaceOnGrid && _gridManager.GetTile(pos) != null && _gridManager.GetTile(pos).TileData == null)
-			{
-				_gridManager.SetTile(_currentTile.TileData, pos);
+            if (CanPlaceOnGrid && targetTile != null && targetTile.TileData == null)
+            {
+                if (!IsPlacementValid(_currentTile.TileData, pos))
+                {
+                    Debug.Log("Placement invalide");
+                    _handResource.GiveTileToHand(_currentTile.gameObject);
+                    return;
+                }
 
-				_sender.SendInfoTilePlaced(_currentTile.TileData, pos);
-				if (!_sender.SendTurnFinished())
-				{
-					SoloDrawCard();
-				}
+                // Debug.Log("Placement valide");
+                _gridManager.SetTile(_currentTile.TileData, pos);
 
-				Owner.SetState<NextPlayerCombinedState>();
+                _sender.SendInfoTilePlaced(_currentTile.TileData, pos);
+                if (!_sender.SendTurnFinished())
+                {
+                    SoloDrawCard();
+                }
 
-				GameObject.Destroy(_currentTile.gameObject);
-			}
-			else 
-				_handResource.GiveTileToHand(_currentTile.gameObject);
-		}
+                Owner.SetState<NextPlayerCombinedState>();
 
-		private void SoloDrawCard()
+                GameObject.Destroy(_currentTile.gameObject);
+            }
+            else
+            {
+                _handResource.GiveTileToHand(_currentTile.gameObject);
+            }
+        }
+
+        private bool IsPlacementValid(TileData tileData, Vector2Int pos)
+        {
+            GridManagerResource grid = _gridManager;
+
+            TileVisu neighbor;
+            TileData neighborData;
+
+            ZoneData[] myZones = tileData.Zones;
+
+            // Nord vs sud
+            neighbor = grid.GetTile(new Vector2Int(pos.x, pos.y + 1));
+            if (neighbor != null && (neighborData = neighbor.TileData) != null)
+            {
+                if (myZones[0].environment != neighborData.Zones[2].environment)
+                    return false;
+            }
+
+            // Est vs Ouest
+            neighbor = grid.GetTile(new Vector2Int(pos.x + 1, pos.y));
+            if (neighbor != null && (neighborData = neighbor.TileData) != null)
+            {
+                if (myZones[1].environment != neighborData.Zones[3].environment)
+                    return false;
+            }
+
+            // Sud vs Nord
+            neighbor = grid.GetTile(new Vector2Int(pos.x, pos.y - 1));
+            if (neighbor != null && (neighborData = neighbor.TileData) != null)
+            {
+                if (myZones[2].environment != neighborData.Zones[0].environment)
+                    return false;
+            }
+
+            // Ouest vs est
+            neighbor = grid.GetTile(new Vector2Int(pos.x - 1, pos.y));
+            if (neighbor != null && (neighborData = neighbor.TileData) != null)
+            {
+                if (myZones[3].environment != neighborData.Zones[1].environment)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void SoloDrawCard()
 		{
 			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
 
