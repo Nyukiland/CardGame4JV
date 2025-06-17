@@ -79,17 +79,10 @@ namespace CardGame.Turns
 
                 if (!_sender.SendTurnFinished())
                 {
-                    if (connectionCount == 1)
+                    for (int i = 0; i < connectionCount; i++)
                     {
-                        SoloDrawCard();
-                    }
-                    else
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
 
-                            SoloDrawCard();
-                        }
+                        SoloDrawCard();
                     }
                 }
 
