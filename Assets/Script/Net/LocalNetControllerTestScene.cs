@@ -29,16 +29,6 @@ namespace CardGame.Net
 			_lanSearch.OnHostsUpdated += UpdateConnectionList;
 		}
 
-		public override void EndUseNet(bool shutdownNet = true)
-		{
-			base.EndUseNet();
-
-			if (_lanSearch != null)
-			{
-				_lanSearch.OnHostsUpdated -= UpdateConnectionList;
-			}
-		}
-
 		protected override void OnDestroy()
 		{
 			base.OnDestroy();
@@ -130,25 +120,25 @@ namespace CardGame.Net
 			SafeConnectAsync().Forget();
 		}
 
-		public void StopHosting()
+		public override void StopHosting()
 		{
-			if (_netCommunication == null || !_netCommunication.IsHost) return;
-
+			base.StopHosting();
 			_lanSearch.StopBroadcast();
-			
+
 			DisconnectLogic();
 		}
 
-		public void DisconnectFromGame()
+		public override void DisconnectFromGame()
 		{
-			if (_netCommunication == null || !_netCommunication.IsClient) return;
+			base.DisconnectFromGame();
 
 			DisconnectLogic();
 		}
 
 		private void DisconnectLogic()
 		{
-			NetworkManager.Singleton.Shutdown();
+			base.DisconnectFromGame();
+			
 			TogglePublicSearch(false);
 
 			_netCommunication = null;

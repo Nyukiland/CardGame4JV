@@ -42,9 +42,9 @@ namespace CardGame.Net
 				await AuthenticationService.Instance.SignInAnonymouslyAsync();
 		}
 
-		public override void EndUseNet(bool shutdownNet = true)
+		public override void StopHosting()
 		{
-			base.EndUseNet();
+			base.StopHosting();
 			_heartbeatTokenSource?.Cancel();
 		}
 
@@ -60,30 +60,37 @@ namespace CardGame.Net
 			if (string.IsNullOrEmpty(_gameName.text)) return;
 			_joinPassword = _passwordField.text;
 
-			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(1);
+			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(_maxPlayer-1);
 			_joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+			UnityEngine.Debug.Log(_joinCode);
 
-			CreateLobbyOptions createOptions = new()
-			{
-				IsPrivate = !_toggleHost.isOn,
-				Data = new Dictionary<string, DataObject>
-				{
-					{ "relayJoinCode", new DataObject(DataObject.VisibilityOptions.Member, _joinCode) },
-					{ "password", new DataObject(DataObject.VisibilityOptions.Private, _passwordField.text) }
-				}
-			};
+			//if (_toggleHost.isOn)
+			//{
+			//	CreateLobbyOptions createOptions = new()
+			//	{
+			//		IsPrivate = !_toggleHost.isOn,
+			//		Data = new Dictionary<string, DataObject>
+			//	{
+			//		{ "relayJoinCode", new DataObject(DataObject.VisibilityOptions.Member, _joinCode) },
+			//		{ "password", new DataObject(DataObject.VisibilityOptions.Private, _passwordField.text) }
+			//	}
+			//	};
 
-			Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(_gameName.text, _maxPlayer, createOptions);
-			_lobbyId = lobby.Id;
+			//	Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(_gameName.text, _maxPlayer, createOptions);
+			//	_lobbyId = lobby.Id;
+			//}
 
 			_transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
 			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
 			NetworkManager.Singleton.StartHost();
 
 			await GetNetComForThisClientAsync();
-			_heartbeatTokenSource = new CancellationTokenSource();
-			_ = HeartbeatLobby(_heartbeatTokenSource.Token);
 
+			//if (_toggleHost.isOn)
+			//{
+			//	_heartbeatTokenSource = new CancellationTokenSource();
+			//	_ = HeartbeatLobby(_heartbeatTokenSource.Token);
+			//}
 		}
 
 		public override void JoinGame(string code = null)
@@ -97,17 +104,26 @@ namespace CardGame.Net
 			if (string.IsNullOrEmpty(code)) code = _connectCode.text;
 			if (string.IsNullOrEmpty(code)) return;
 
-			Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code);
-			_joinCode = lobby.Data["relayJoinCode"].Value;
+			try
+			{
+				UnityEngine.Debug.Log(code);
 
-			JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(_joinCode);
-			_transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
+				//Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code);
+				//_joinCode = lobby.Data["relayJoinCode"].Value;
 
-			FastBufferWriter writer = new(32, Allocator.Temp);
-			writer.WriteValueSafe(new FixedString32Bytes(_passwordField.text));
-			NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
+				JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(code);
+				_transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
 
-			SafeConnectAsync().Forget();
+				FastBufferWriter writer = new(32, Allocator.Temp);
+				writer.WriteValueSafe(new FixedString32Bytes(_passwordField.text));
+				NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
+
+				SafeConnectAsync().Forget();
+			}
+			catch (RelayServiceException e)
+			{
+				Debug.LogError($"Failed to join relay: {e.Message}");
+			}
 		}
 
 		private async UniTask HeartbeatLobby(CancellationToken token)

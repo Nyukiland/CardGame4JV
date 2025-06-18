@@ -29,9 +29,6 @@ namespace CardGame.Net
 			_testLinkUI.JoinGame(_code);
 		}
 		
-		
-		
-
 		// Used only for tests
 		private LocalNetControllerTestScene _testLinkUITest;
 		public void SetUpVisu(string name, string code, LocalNetControllerTestScene link)

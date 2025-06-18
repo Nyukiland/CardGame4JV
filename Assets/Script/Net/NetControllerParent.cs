@@ -47,9 +47,18 @@ namespace CardGame.Net
 		}
 
 		//call when you stop using this mode
-		public virtual void EndUseNet(bool shutdownNet = true)
+		public virtual void StopHosting()
 		{
-			if (shutdownNet) NetworkManager.Singleton.Shutdown();
+			if (_netCommunication == null || !_netCommunication.IsHost) return;
+
+			NetworkManager.Singleton.Shutdown();
+		}
+
+		public virtual void DisconnectFromGame()
+		{
+			if (_netCommunication == null || !_netCommunication.IsClient) return;
+
+			NetworkManager.Singleton.Shutdown();
 		}
 
 		#region TestStuff
