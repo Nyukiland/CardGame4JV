@@ -190,5 +190,15 @@ namespace CardGame.Turns
 			_createHand.CreateTile(tileSettings);
 		}
 
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+
+            if (_currentTile)
+            {
+                ReleaseCard(new(10000, 10000)); // Position arbitraire 
+            }
+        }
     }
 }
