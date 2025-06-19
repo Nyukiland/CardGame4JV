@@ -78,30 +78,33 @@ namespace CardGame.Turns
             if (_currentTile == null)
                 return;
 
+			TileVisu tempTile = _currentTile;
+			_currentTile = null;
+
             if (_handResource.IsInHand(position))
             {
-                _currentTile.ResetValidityVisual();
-                _handResource.GiveTileToHand(_currentTile.gameObject);
+				tempTile.ResetValidityVisual();
+                _handResource.GiveTileToHand(tempTile.gameObject);
                 return;
             }
 
             Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
             TileVisu targetTile = _gridManager.GetTile(pos);
 
-            _currentTile.ResetValidityVisual();
+			tempTile.ResetValidityVisual();
 
             if (CanPlaceOnGrid && targetTile != null && targetTile.TileData == null)
             {
-                int connectionCount = GetPlacementConnectionCount(_currentTile.TileData, pos);
+                int connectionCount = GetPlacementConnectionCount(tempTile.TileData, pos);
                 if (connectionCount == 0)
                 {
                     //Debug.Log("Placement invalide");
-                    _handResource.GiveTileToHand(_currentTile.gameObject);
+                    _handResource.GiveTileToHand(tempTile.gameObject);
                     return;
                 }
 
-                _gridManager.SetTile(_currentTile.TileData, pos);
-                _sender.SendInfoTilePlaced(_currentTile.TileData, pos);
+                _gridManager.SetTile(tempTile.TileData, pos);
+                _sender.SendInfoTilePlaced(tempTile.TileData, pos);
 
                 if (!_sender.SendTurnFinished())
                 {
@@ -112,11 +115,11 @@ namespace CardGame.Turns
                 }
 
                 Owner.SetState<NextPlayerCombinedState>();
-                GameObject.Destroy(_currentTile.gameObject);
+                GameObject.Destroy(tempTile.gameObject);
             }
             else
             {
-                _handResource.GiveTileToHand(_currentTile.gameObject);
+                _handResource.GiveTileToHand(tempTile.gameObject);
             }
         }
 
