@@ -15,7 +15,7 @@ using System;
 
 namespace CardGame.Net
 {
-	public class DistantNetController : NetControllerParent
+	public class DistantNetControllerTest : NetControllerParentTest
 	{
 		private string _lobbyId;
 		private CancellationTokenSource _heartbeatTokenSource;

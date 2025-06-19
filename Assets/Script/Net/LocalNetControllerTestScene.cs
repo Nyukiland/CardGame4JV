@@ -9,7 +9,7 @@ using System.Net;
 
 namespace CardGame.Net
 {
-	public class LocalNetControllerTestScene : NetControllerParent
+	public class LocalNetControllerTestScene : NetControllerParentTest
 	{
 		[SerializeField, Disable]
 		private LanSearchBeacon _lanSearch;

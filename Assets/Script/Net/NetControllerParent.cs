@@ -1,10 +1,8 @@
 using Unity.Netcode.Transports.UTP;
 using Cysharp.Threading.Tasks;
 using Unity.Collections;
-using UnityEngine.UI;
 using Unity.Netcode;
 using UnityEngine;
-using TMPro;
 
 namespace CardGame.Net
 {
@@ -12,18 +10,6 @@ namespace CardGame.Net
 	{
 		[SerializeField, Disable]
 		protected NetCommunication _netCommunication;
-
-		[SerializeField]
-		protected TextMeshProUGUI _netComText, _receivedInfo;
-
-		[SerializeField]
-		protected TMP_InputField _passwordField, _connectCode, _gameName;
-
-		[SerializeField]
-		protected Toggle _toggleHost;
-
-		[SerializeField]
-		protected VerticalLayoutGroup _publicSessionVerticalLayout;
 
 		[SerializeField]
 		protected GameObject _displayPublic;
@@ -60,36 +46,6 @@ namespace CardGame.Net
 
 			NetworkManager.Singleton.Shutdown();
 		}
-
-		#region TestStuff
-
-		protected virtual void Update()
-		{
-			if (_netCommunication != null)
-			{
-				_netComText.text = _netCommunication.gameObject.name + " / \n Join Code: " + _joinCode;
-			}
-		}
-
-		protected virtual void NetCommunication_ReceiveEvent(string data)
-		{
-			_receivedInfo.text = data;
-		}
-
-		public virtual void SendInfo()
-		{
-			_netCommunication.SubmitInfoTest(_netCommunication.name + " / \\n password: " + _passwordField.text);
-		}
-
-		protected virtual void OnDestroy()
-		{
-			if (_netCommunication != null)
-			{
-				_netCommunication.ReceiveEventTest -= NetCommunication_ReceiveEvent;
-			}
-		}
-
-		#endregion
 
 		#region Connection
 
@@ -172,7 +128,6 @@ namespace CardGame.Net
 				NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom));
 
 			_netCommunication = netCom;
-			_netCommunication.ReceiveEventTest += NetCommunication_ReceiveEvent;
 		}
 
 		public virtual void CopyJoinCode()
