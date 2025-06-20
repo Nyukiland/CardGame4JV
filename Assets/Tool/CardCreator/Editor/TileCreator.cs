@@ -7,29 +7,28 @@ using UnityEditor;
 using UnityEngine;
 using static UnityEditor.AddressableAssets.Settings.AddressableAssetSettings;
 
-
 public class TileCreator : EditorWindow
 {
     private Vector2 _scrollLeft;
     private Vector2 _scrollRight;
     private List<TileSettings> _tileDataList = new();
     private TileSettings _selectedTile;
+    private Dictionary<TileSettings, Texture2D> _tilePreviews = new();
 
     private void RefreshTileDataList()
     {
         _tileDataList.Clear();
-        string[] guids = AssetDatabase.FindAssets("t:TileSettings", new[] { "Assets/Script/Data" }); //On recup les cartes dans le dossier
+        _tilePreviews.Clear(); // Reset previews
 
+        string[] guids = AssetDatabase.FindAssets("t:TileSettings", new[] { "Assets/Script/Data" });
         foreach (string guid in guids)
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid); // - la corbeille
+            string path = AssetDatabase.GUIDToAssetPath(guid);
             if (path.Contains("/Trash")) continue;
 
             TileSettings tile = AssetDatabase.LoadAssetAtPath<TileSettings>(path);
             if (tile != null) _tileDataList.Add(tile);
         }
-
-        //FillDrawPileInScene();
     }
 
     [MenuItem("Tools/Tile Creator")]
@@ -69,7 +68,7 @@ public class TileCreator : EditorWindow
             Color originalBg = GUI.backgroundColor;
 
             if (tile == _selectedTile)
-                GUI.backgroundColor = Color.gray * 0.6f; // dark background quand select
+                GUI.backgroundColor = Color.gray * 0.6f;
 
             if (GUILayout.Button(RenderTilePreview(tile), GUILayout.Width(180), GUILayout.Height(180)))
                 _selectedTile = tile;
@@ -90,8 +89,16 @@ public class TileCreator : EditorWindow
             GUI.backgroundColor = new Color(0.0f, 0.0f, 0.0f);
             EditorGUILayout.BeginVertical("HelpBox");
             GUI.backgroundColor = originalColor;
+
             Editor editor = Editor.CreateEditor(_selectedTile);
+
+            EditorGUI.BeginChangeCheck();
             editor.OnInspectorGUI();
+            if (EditorGUI.EndChangeCheck())
+            {
+                _tilePreviews.Remove(_selectedTile);
+                Repaint(); // force l’UI à redessiner la preview
+            }
 
             GUILayout.Space(10);
 
@@ -105,6 +112,7 @@ public class TileCreator : EditorWindow
                 string path = AssetDatabase.GetAssetPath(_selectedTile);
                 AssetDatabase.RenameAsset(path, _selectedTile.name);
                 AssetDatabase.SaveAssets();
+                _tilePreviews.Clear(); // Clear cache
                 EditorApplication.delayCall += RefreshTileDataList;
             }
             GUI.backgroundColor = originalColor;
@@ -118,6 +126,7 @@ public class TileCreator : EditorWindow
             {
                 MoveTileToTrash(_selectedTile);
                 _selectedTile = null;
+                _tilePreviews.Clear(); // Clear cache
                 EditorApplication.delayCall += RefreshTileDataList;
             }
             GUI.backgroundColor = originalColor;
@@ -134,7 +143,6 @@ public class TileCreator : EditorWindow
 
         EditorGUILayout.EndHorizontal();
     }
-
 
     private void CreateNewTile()
     {
@@ -169,24 +177,21 @@ public class TileCreator : EditorWindow
         AssetDatabase.Refresh();
 
 #if UNITY_EDITOR
-        // === ADDRESSABLES SETUP ===
         string assetGUID = AssetDatabase.AssetPathToGUID(path);
         var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
 
         if (settings != null)
         {
             var entry = settings.CreateOrMoveEntry(assetGUID, settings.DefaultGroup);
-            entry.SetAddress(path); // or a custom address if you want
+            entry.SetAddress(path);
             entry.labels.Add("TileSetting");
-
             settings.SetDirty(ModificationEvent.EntryModified, entry, true);
-
         }
 #endif
 
+        _tilePreviews.Clear(); // Clear cache
         RefreshTileDataList();
     }
-
 
     private void MoveTileToTrash(TileSettings tile)
     {
@@ -201,17 +206,21 @@ public class TileCreator : EditorWindow
 
         AssetDatabase.MoveAsset(originalPath, newPath);
         AssetDatabase.SaveAssets();
+        _tilePreviews.Clear(); // Clear cache
         RefreshTileDataList();
     }
 
-    private Texture2D RenderTilePreview(TileSettings tile) //On dessine la tile directement :(
+    private Texture2D RenderTilePreview(TileSettings tile)
     {
+        if (_tilePreviews.TryGetValue(tile, out Texture2D cached))
+            return cached;
+
         int size = 128;
         Texture2D tex = new Texture2D(size, size);
         Color[] pixels = new Color[size * size];
         for (int i = 0; i < pixels.Length; i++) pixels[i] = Color.black;
 
-        Color GetColor(ENVIRONEMENT_TYPE type) => type switch // Couleurs de chaque enviro
+        Color GetColor(ENVIRONEMENT_TYPE type) => type switch
         {
             ENVIRONEMENT_TYPE.Forest => Color.green,
             ENVIRONEMENT_TYPE.Snow => Color.white,
@@ -222,7 +231,7 @@ public class TileCreator : EditorWindow
 
         Vector2 center = new Vector2(size / 2f, size / 2f);
 
-        bool IsInTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c) // nique
+        bool IsInTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c)
         {
             float s = a.y * c.x - a.x * c.y + (c.y - a.y) * p.x + (a.x - c.x) * p.y;
             float t = a.x * b.y - a.y * b.x + (a.y - b.y) * p.x + (b.x - a.x) * p.y;
@@ -254,20 +263,16 @@ public class TileCreator : EditorWindow
         {
             DrawTriangle(GetColor(zone.environment), angle, 1f);
             if (!zone.isOpen)
-                DrawTriangle(Color.black, angle, 0.4f); // On cache avec un ptit triangle noir qui pointe au centre
-
+                DrawTriangle(Color.black, angle, 0.4f);
         }
-        
-        //On draw les 4 triangles
+
         DrawZone(tile.NorthZone, 0);
         DrawZone(tile.WestZone, 90);
-        DrawZone(tile.SouthZone, 180); 
+        DrawZone(tile.SouthZone, 180);
         DrawZone(tile.EastZone, 270);
 
-
         int thickness = 2;
-
-        for (int i = 0; i < size; i++) // On draw des diago noires
+        for (int i = 0; i < size; i++)
         {
             for (int t = -thickness; t <= thickness; t++)
             {
@@ -279,64 +284,30 @@ public class TileCreator : EditorWindow
                 if (x1 >= 0 && x1 < size && y1 >= 0 && y1 < size)
                     tex.SetPixel(x1, y1, Color.black);
                 if (x2 >= 0 && x2 < size && y2 >= 0 && y2 < size)
-                    tex.SetPixel(x2, y2, Color.black); 
+                    tex.SetPixel(x2, y2, Color.black);
             }
         }
 
-
-        // On draw une bordure noire
         int borderThickness = 3;
         for (int x = 0; x < size; x++)
         {
             for (int b = 0; b < borderThickness; b++)
             {
-                tex.SetPixel(x, b, Color.black); // haut
-                tex.SetPixel(x, size - 1 - b, Color.black); // bas
+                tex.SetPixel(x, b, Color.black);
+                tex.SetPixel(x, size - 1 - b, Color.black);
             }
         }
         for (int y = 0; y < size; y++)
         {
             for (int b = 0; b < borderThickness; b++)
             {
-                tex.SetPixel(b, y, Color.black); // gauche
-                tex.SetPixel(size - 1 - b, y, Color.black); // droite
+                tex.SetPixel(b, y, Color.black);
+                tex.SetPixel(size - 1 - b, y, Color.black);
             }
         }
 
-
         tex.Apply();
+        _tilePreviews[tile] = tex;
         return tex;
     }
-
-    private void FillDrawPileInScene()
-    {
-        DrawPile drawPile = Object.FindFirstObjectByType<DrawPile>();
-        if (drawPile == null)
-        {
-            Debug.LogWarning("Pas de draw pile dans la scene");
-            return;
-        }
-
-        drawPile.AllTileSettings.Clear();
-
-        string[] guids = AssetDatabase.FindAssets("t:TileSettings", new[] { "Assets/Script/Data" });
-
-        foreach (string guid in guids)
-        {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            if (path.Contains("/Trash")) continue;
-
-            TileSettings tile = AssetDatabase.LoadAssetAtPath<TileSettings>(path);
-            if (tile != null)
-                drawPile.AllTileSettings.Add(tile);
-        }
-
-        EditorUtility.SetDirty(drawPile);
-    }
-
-
-
-
-
-
 }
