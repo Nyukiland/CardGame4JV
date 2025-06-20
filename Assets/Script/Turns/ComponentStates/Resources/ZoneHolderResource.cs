@@ -12,6 +12,8 @@ namespace CardGame.Turns
 		[SerializeField]
 		private List<GameObject> _tileInHand;
 
+		public int TileInHandCount => _tileInHand.Count;
+
 		public override void LateInit()
 		{
 			UpdatePlacementInHand();

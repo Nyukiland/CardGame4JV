@@ -13,6 +13,12 @@ namespace CardGame.Turns
 		[SerializeField]
 		private float _waitSec = 2f;
 
+		public bool IsFinished
+		{
+			get; 
+			private set;
+		}
+
         public override void Init(Controller owner)
         {
             base.Init(owner);
@@ -24,6 +30,12 @@ namespace CardGame.Turns
             base.OnEnable();
             AutoPlay().Forget();
         }
+
+		public override void OnDisable()
+		{
+			base.OnDisable();
+			IsFinished = false;
+		}
 
         private async UniTask AutoPlay()
         {
@@ -67,7 +79,7 @@ namespace CardGame.Turns
 
 
 
-            Owner.SetState<PlaceTileCombinedState>();
+			IsFinished = true;
         }
     }
 }

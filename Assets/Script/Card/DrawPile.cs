@@ -69,5 +69,10 @@ namespace CardGame
 
 			return settings.IdCode;
 		}	
+
+		public void DiscardTile(TileSettings settings) 
+		{
+			_tileInDrawPile.Add(settings);
+		}
     }
 }

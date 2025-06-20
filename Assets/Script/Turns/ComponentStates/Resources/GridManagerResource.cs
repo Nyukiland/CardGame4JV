@@ -37,7 +37,6 @@ namespace CardGame.Turns
 
         private void GenerateGrid()
         {
-
             for (int x = 0; x < _width; x++)
             {
                 for (int y = 0; y < _height; y++)
@@ -100,12 +99,57 @@ namespace CardGame.Turns
             if (y - 1 >= 0) _grid[x, y - 1].gameObject.SetActive(true);
         }
 
+		public int GetPlacementConnectionCount(TileData tileData, Vector2Int pos)
+		{
+			int connections = 0;
 
-        public override void OnDisable()
+			ZoneData[] myZones = tileData.Zones;
+
+			(GridManagerResource grid, TileVisu neighbor, TileData neighborData) = (this, null, null);
+
+			// Nord vs sud
+			neighbor = grid.GetTile(new Vector2Int(pos.x, pos.y + 1));
+			if (neighbor != null && (neighborData = neighbor.TileData) != null)
+			{
+				if (myZones[0].environment != neighborData.Zones[2].environment)
+					return 0;
+				connections++;
+			}
+
+			// Est vs Ouest
+			neighbor = grid.GetTile(new Vector2Int(pos.x + 1, pos.y));
+			if (neighbor != null && (neighborData = neighbor.TileData) != null)
+			{
+				if (myZones[1].environment != neighborData.Zones[3].environment)
+					return 0;
+				connections++;
+			}
+
+			// Sud vs Nord
+			neighbor = grid.GetTile(new Vector2Int(pos.x, pos.y - 1));
+			if (neighbor != null && (neighborData = neighbor.TileData) != null)
+			{
+				if (myZones[2].environment != neighborData.Zones[0].environment)
+					return 0;
+				connections++;
+			}
+
+			// Ouest vs est
+			neighbor = grid.GetTile(new Vector2Int(pos.x - 1, pos.y));
+			if (neighbor != null && (neighborData = neighbor.TileData) != null)
+			{
+				if (myZones[3].environment != neighborData.Zones[1].environment)
+					return 0;
+				connections++;
+			}
+
+			//Debug.Log($"Placement valide avec {connections}");
+			return connections;
+		}
+
+		public override void OnDisable()
         {
             if (Storage.CheckInstance()) Storage.Instance.Delete(this);
         }
     }
-
-
 }

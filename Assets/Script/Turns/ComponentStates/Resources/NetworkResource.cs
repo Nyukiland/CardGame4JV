@@ -21,6 +21,12 @@ namespace CardGame.Turns
 
 		private GridManagerResource _grid;
 
+		public bool IsFinished
+		{
+			get; 
+			set;
+		}
+
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
@@ -110,7 +116,7 @@ namespace CardGame.Turns
 
 		private void GoMyTurn()
 		{
-			Owner.SetState<PlaceTileCombinedState>();
+			IsFinished = true;
 		}
 	}
 }

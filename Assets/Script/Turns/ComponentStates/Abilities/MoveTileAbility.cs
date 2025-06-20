@@ -11,10 +11,12 @@ namespace CardGame.Turns
 		private GridManagerResource _gridManager;
 		private SendInfoAbility _sender;
 		private ZoneHolderResource _handResource;
-		private CreateHandAbility _createHand;
 
-		private TileVisu _currentTile;
-
+		public TileVisu CurrentTile
+		{
+			get;
+			set;
+		}
 
         public bool CanPlaceOnGrid { get; set; } = false;
 
@@ -24,7 +26,6 @@ namespace CardGame.Turns
 			_handResource = owner.GetStateComponent<ZoneHolderResource>();
 			_sender = owner.GetStateComponent<SendInfoAbility>();
             _gridManager = owner.GetStateComponent<GridManagerResource>();
-			_createHand = owner.GetStateComponent<CreateHandAbility>();
         }
 
 		public void PickCard(Vector2 position)
@@ -34,26 +35,26 @@ namespace CardGame.Turns
 				if (hit.collider.GetComponentInParent<TileVisu>() is TileVisu visu)
 				{
 					_handResource.RemoveTileFromHand(visu.gameObject);
-					_currentTile = visu;
+					CurrentTile = visu;
 				}
 			}
 		}
 
         public void MoveCard(Vector2 position)
         {
-            if (_currentTile == null)
+            if (CurrentTile == null)
                 return;
 
             // Deplacement de la tuile
             Vector3 pos = Camera.main.ScreenToWorldPoint(position);
             pos = Vector3Int.FloorToInt(pos);
             pos += Camera.main.transform.forward * 2;
-            _currentTile.transform.position = pos;
+            CurrentTile.transform.position = pos;
 
             // Verification de sa validity
-            if (_handResource.IsInHand(position)) //on fait rien quand c'est dans la main
+            if (!CanPlaceOnGrid || _handResource.IsInHand(position)) //on fait rien quand c'est dans la main ou si on ne peut pas la placer
             {
-                _currentTile.ResetValidityVisual();
+                CurrentTile.ResetValidityVisual();
                 return;
             }
 
@@ -62,145 +63,12 @@ namespace CardGame.Turns
 
             if (target == null || target.TileData != null)
             {
-                _currentTile.ChangeValidityVisual(false); // noir
+                CurrentTile.ChangeValidityVisual(false); // noir
             }
             else
             {
-                int connections = GetPlacementConnectionCount(_currentTile.TileData, gridPos);
-                _currentTile.ChangeValidityVisual(connections > 0); // jaune si > 0, sinon noir
-            }
-        }
-
-
-
-        public void ReleaseCard(Vector2 position)
-        {
-            if (_currentTile == null)
-                return;
-
-			TileVisu tempTile = _currentTile;
-			_currentTile = null;
-
-            if (_handResource.IsInHand(position))
-            {
-				tempTile.ResetValidityVisual();
-                _handResource.GiveTileToHand(tempTile.gameObject);
-                return;
-            }
-
-            Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
-            TileVisu targetTile = _gridManager.GetTile(pos);
-
-			tempTile.ResetValidityVisual();
-
-            if (CanPlaceOnGrid && targetTile != null && targetTile.TileData == null)
-            {
-                int connectionCount = GetPlacementConnectionCount(tempTile.TileData, pos);
-                if (connectionCount == 0)
-                {
-                    //Debug.Log("Placement invalide");
-                    _handResource.GiveTileToHand(tempTile.gameObject);
-                    return;
-                }
-
-                _gridManager.SetTile(tempTile.TileData, pos);
-                _sender.SendInfoTilePlaced(tempTile.TileData, pos);
-
-                if (!_sender.SendTurnFinished())
-                {
-                    for (int i = 0; i < connectionCount; i++)
-                    {
-                        SoloDrawCard();
-                    }
-                }
-
-                Owner.SetState<NextPlayerCombinedState>();
-                GameObject.Destroy(tempTile.gameObject);
-            }
-            else
-            {
-                _handResource.GiveTileToHand(tempTile.gameObject);
-            }
-        }
-
-
-        private int GetPlacementConnectionCount(TileData tileData, Vector2Int pos)
-        {
-            int connections = 0;
-
-            ZoneData[] myZones = tileData.Zones;
-
-            (GridManagerResource grid, TileVisu neighbor, TileData neighborData) = (_gridManager, null, null);
-
-            // Nord vs sud
-            neighbor = grid.GetTile(new Vector2Int(pos.x, pos.y + 1));
-            if (neighbor != null && (neighborData = neighbor.TileData) != null)
-            {
-                if (myZones[0].environment != neighborData.Zones[2].environment)
-                    return 0;
-                connections++;
-            }
-
-            // Est vs Ouest
-            neighbor = grid.GetTile(new Vector2Int(pos.x + 1, pos.y));
-            if (neighbor != null && (neighborData = neighbor.TileData) != null)
-            {
-                if (myZones[1].environment != neighborData.Zones[3].environment)
-                    return 0;
-                connections++;
-            }
-
-            // Sud vs Nord
-            neighbor = grid.GetTile(new Vector2Int(pos.x, pos.y - 1));
-            if (neighbor != null && (neighborData = neighbor.TileData) != null)
-            {
-                if (myZones[2].environment != neighborData.Zones[0].environment)
-                    return 0;
-                connections++;
-            }
-
-            // Ouest vs est
-            neighbor = grid.GetTile(new Vector2Int(pos.x - 1, pos.y));
-            if (neighbor != null && (neighborData = neighbor.TileData) != null)
-            {
-                if (myZones[3].environment != neighborData.Zones[1].environment)
-                    return 0;
-                connections++;
-            }
-
-            //Debug.Log($"Placement valide avec {connections}");
-            return connections;
-        }
-
-
-        private void SoloDrawCard()
-		{
-			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
-
-			int tileId = drawPile.GetTileIDFromDrawPile();
-			if (tileId == -1) return;
-
-			TileSettings tileSettings = null;
-			foreach (TileSettings setting in drawPile.AllTileSettings)
-			{
-				if (setting.IdCode == tileId)
-				{
-					tileSettings = setting;
-					break;
-				}
-			}
-
-			_createHand.CreateTile(tileSettings);
-		}
-
-
-        public override void OnDisable()
-        {
-            base.OnDisable();
-
-            if (_currentTile)
-            {
-                ReleaseCard(new(10000, 10000)); // Position arbitraire 
+                int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
+                CurrentTile.ChangeValidityVisual(connections > 0); // jaune si > 0, sinon noir
             }
         }
     }
