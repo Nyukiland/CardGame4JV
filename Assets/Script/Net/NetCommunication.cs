@@ -30,7 +30,7 @@ namespace CardGame.Net
 		public Action OnLaunchGameEvent;
 
 		[SerializeField, Disable]
-		private NetDataManager _dataManager;
+		private GameManager _manager;
 
 		public override void OnNetworkSpawn()
 		{
@@ -105,10 +105,10 @@ namespace CardGame.Net
 
 			ForEachOtherClient(senderClientId, x => x.DistributeTilePlacedClientRPC(data));
 
-            int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
-            if (tileId == -1) return;
+			int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
+			if (tileId == -1) return;
 
-            Instances.TryGetValue(senderClientId, out NetCommunication instance);
+			Instances.TryGetValue(senderClientId, out NetCommunication instance);
 			instance.GiveNewTileInHandClientRPC(tileId);
 		}
 
@@ -143,21 +143,21 @@ namespace CardGame.Net
 		[ServerRpc(RequireOwnership = false)]
 		public void TurnCompletedServerRPC()
 		{
-			_dataManager.PlayerTurn.Value++;
-			if (_dataManager.PlayerTurn.Value >= _dataManager.PlayersID.Count) _dataManager.PlayerTurn.Value = 0;
+			_manager.Turns.Value++;
 
-			Instances[_dataManager.PlayersID[_dataManager.PlayerTurn.Value]].CallTurnClientRPC();
+			Instances[_manager.PlayersID[_manager.PlayerTurn]].CallTurnClientRPC();
 		}
 
 		[ServerRpc(RequireOwnership = true)]
 		public void SetUpGameServerRPC(int tileInHand)
 		{
-			_dataManager = NetDataManager.Instance;
+			_manager = GameManager.Instance;
 
-			_dataManager.PlayerTurn.Value = 0;
-			_dataManager.PlayersID.Clear();
+			_manager.Turns.Value = 0;
+			_manager.PlayersID.Clear();
 
-			_dataManager.PlayersID.Add(OwnerClientId);
+			_manager.SetPlayerInfo(OwnerClientId, "Host");
+			_manager.SetLocalPlayerInfo();
 
 			//fill the list
 			foreach (var instance in Instances)
@@ -170,10 +170,13 @@ namespace CardGame.Net
 				if (instance.Key == OwnerClientId)
 					continue;
 
-				instance.Value.SetUpOnClientRPC();
+				UnityEngine.Debug.Log("t");
+				_manager.SetPlayerInfo(instance.Value.OwnerClientId, "Client" + _manager.PlayersID.Count);
+
+				instance.Value.SetUpOnClientRPC(instance.Value.OwnerClientId);
 			}
 
-			Instances[_dataManager.PlayersID[_dataManager.PlayerTurn.Value]].CallTurnClientRPC();
+			Instances[_manager.PlayersID[_manager.PlayerTurn]].CallTurnClientRPC();
 		}
 
 		[ServerRpc(RequireOwnership = true)]
@@ -224,10 +227,10 @@ namespace CardGame.Net
 		}
 
 		[ClientRpc(RequireOwnership = false)]
-		public void SetUpOnClientRPC()
+		public void SetUpOnClientRPC(ulong owner)
 		{
-			_dataManager = NetDataManager.Instance;
-			_dataManager.PlayersID.Add(OwnerClientId);
+			_manager = GameManager.Instance;
+			_manager.SetLocalPlayerInfo();
 		}
 		#endregion
 
