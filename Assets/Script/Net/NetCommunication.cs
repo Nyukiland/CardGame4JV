@@ -145,7 +145,7 @@ namespace CardGame.Net
 		{
 			_manager.Turns.Value++;
 
-			Instances[_manager.PlayersID[_manager.PlayerTurn]].CallTurnClientRPC();
+			Instances[_manager.PlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
 		}
 
 		[ServerRpc(RequireOwnership = true)]
@@ -176,7 +176,7 @@ namespace CardGame.Net
 				instance.Value.SetUpOnClientRPC(instance.Value.OwnerClientId);
 			}
 
-			Instances[_manager.PlayersID[_manager.PlayerTurn]].CallTurnClientRPC();
+			Instances[_manager.PlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
 		}
 
 		[ServerRpc(RequireOwnership = true)]

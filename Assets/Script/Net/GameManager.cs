@@ -44,7 +44,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		private set;
 	} = -1;
 
-	public int PlayerTurn
+	public int PlayerIndexTurn
 	{
 		get
 		{
@@ -62,12 +62,32 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 	}
 
+	public int GlobalTurn => Turns.Value;
+
+	public int LocalPlayerTurn
+	{
+		get
+		{
+			if (PlayersID.Count == 0) return -1;
+			return Mathf.CeilToInt((float)(Turns.Value + 1) / PlayersID.Count);
+		}
+	}
+
 	public bool FlagTurn
 	{
 		get
 		{
 			if (PlayersID.Count == 0) return false;
-			return Mathf.CeilToInt((float)(Turns.Value+1) / PlayersID.Count) % 3 == 0;
+			return Mathf.CeilToInt((float)(Turns.Value + 1) / PlayersID.Count) % 3 == 0;
+		}
+	}
+
+	public int PlayerScore
+	{
+		get
+		{
+			if (Scores.Count == 0) return 0;
+			return Scores[PlayerIndex];
 		}
 	}
 
@@ -94,7 +114,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		UnityEngine.Debug.Log($"{nameof(GameManager)}: \n" +
 			$"{nameof(Turns)}: {Turns.Value} \n" +
-			$"{nameof(PlayerTurn)}: {PlayerTurn} \n \n" +
+			$"{nameof(PlayerIndexTurn)}: {PlayerIndexTurn} \n \n" +
 			$"{nameof(PlayerIndex)}: {PlayerIndex} \n" +
 			$"{nameof(PlayerName)}: {PlayerName} \n" +
 			$"{nameof(FlagTurn)}: {FlagTurn}"
@@ -110,7 +130,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	public string GetInfo()
 	{
 		return $"{nameof(GameManager)}: \n" +
-			$"{nameof(PlayerTurn)}: {PlayerTurn} \n \n" +
+			$"{nameof(PlayerIndexTurn)}: {PlayerIndexTurn} \n \n" +
 			$"{nameof(PlayerIndex)}: {PlayerIndex} \n" +
 			$"{nameof(PlayerName)}: {PlayerName} \n" +
 			$"{nameof(FlagTurn)}: {FlagTurn}";
