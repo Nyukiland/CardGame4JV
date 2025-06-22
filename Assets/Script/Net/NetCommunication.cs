@@ -143,9 +143,9 @@ namespace CardGame.Net
 		[ServerRpc(RequireOwnership = false)]
 		public void TurnCompletedServerRPC()
 		{
-			_manager.Turns.Value++;
+			_manager.OnlineTurns.Value++;
 
-			Instances[_manager.PlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
+			Instances[_manager.OnlinePlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
 		}
 
 		[ServerRpc(RequireOwnership = true)]
@@ -153,8 +153,7 @@ namespace CardGame.Net
 		{
 			_manager = GameManager.Instance;
 
-			_manager.Turns.Value = 0;
-			_manager.PlayersID.Clear();
+			_manager.ResetManager();
 
 			_manager.SetPlayerInfo(OwnerClientId, "Host");
 			_manager.SetLocalPlayerInfo();
@@ -170,12 +169,12 @@ namespace CardGame.Net
 				if (instance.Key == OwnerClientId)
 					continue;
 
-				_manager.SetPlayerInfo(instance.Value.OwnerClientId, "Client" + _manager.PlayersID.Count);
+				_manager.SetPlayerInfo(instance.Value.OwnerClientId, "Client" + _manager.OnlinePlayersID.Count);
 
 				instance.Value.SetUpOnClientRPC(instance.Value.OwnerClientId);
 			}
 
-			Instances[_manager.PlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
+			Instances[_manager.OnlinePlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
 		}
 
 		[ServerRpc(RequireOwnership = true)]

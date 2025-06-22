@@ -40,6 +40,9 @@ namespace CardGame.Turns
 			else
 			{
 				Controller.SetState<PlaceTileCombinedState>();
+				GameManager.Instance.ResetManager();
+				GameManager.Instance.SetPlayerInfo(1111, "Player");
+				GameManager.Instance.SetPlayerInfo(2222, "Bot");
 				_createHandAbility.GenerateTiles(_createHandAbility.CountCard);
 			}
 		}

@@ -25,18 +25,46 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		private set { _instance = value; }
 	}
 
-	[Disable]
-	public NetworkVariable<int> Turns =
-		new(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+	#region
 
-	public NetworkList<int> Scores =
+	public override void OnNetworkDespawn()
+	{
+		base.OnNetworkDespawn();
+		_instance = null;
+	}
+
+	public NetworkVariable<int> OnlineTurns =
+		new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+	public NetworkList<int> OnlineScores =
 		new(new List<int>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-	public NetworkList<ulong> PlayersID
+	public NetworkList<ulong> OnlinePlayersID
 		= new(new List<ulong>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-	public NetworkList<FixedString64Bytes> PlayersNameIdentification
+	public NetworkList<FixedString64Bytes> OnlinePlayersNameIdentification
 		= new(new List<FixedString64Bytes>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+	public void SetLocalPlayerInfo()
+	{
+		HoldForLocalChange(NetworkManager.Singleton.LocalClientId).Forget();
+	}
+
+	private async UniTask HoldForLocalChange(ulong owner)
+	{
+		await UniTask.WaitUntil(() => OnlinePlayersID.IndexOf(owner) != -1);
+		PlayerIndex = OnlinePlayersID.IndexOf(owner);
+	}
+
+	#endregion
+
+	#region Solo
+
+	public int SoloTurns = 1;
+	public List<int> SoloScores = new();
+	public List<string> SoloNames = new();
+
+	#endregion
 
 	public int PlayerIndex
 	{
@@ -48,8 +76,8 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		get
 		{
-			if (PlayersID.Count == 0) return -1;
-			return Turns.Value % PlayersID.Count;
+			if (OnlinePlayersID.Count == 0) return -1;
+			return OnlineTurns.Value % OnlinePlayersID.Count;
 		}
 	}
 
@@ -57,19 +85,42 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		get
 		{
-			if (PlayerIndex == -1 || PlayersNameIdentification.Count == 0) return "none";
-			return PlayersNameIdentification[PlayerIndex].ToString();
+			if (NetworkManager.Singleton != null)
+			{
+				if (PlayerIndex == -1 || OnlinePlayersNameIdentification.Count == 0) return "none";
+				return OnlinePlayersNameIdentification[PlayerIndex].ToString();
+			}
+			else
+			{
+				if (SoloNames.Count == 0) return "none";
+				else return SoloNames[0];
+			}
 		}
 	}
 
-	public int GlobalTurn => Turns.Value;
+	public int GlobalTurn
+	{
+		get
+		{
+			if (NetworkManager.Singleton != null) return OnlineTurns.Value;
+			else return SoloTurns;
+		}
+	}
 
 	public int LocalPlayerTurn
 	{
 		get
 		{
-			if (PlayersID.Count == 0) return -1;
-			return Mathf.CeilToInt((float)(Turns.Value + 1) / PlayersID.Count);
+			if (NetworkManager.Singleton != null)
+			{
+				if (OnlinePlayersID.Count == 0) return -1;
+				return Mathf.CeilToInt((float)(OnlineTurns.Value + 1) / OnlinePlayersID.Count);
+			}
+			else
+			{
+				if (SoloNames.Count == 0) return -1;
+				return Mathf.CeilToInt((float)(SoloTurns + 1) / SoloNames.Count);
+			}
 		}
 	}
 
@@ -77,8 +128,16 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		get
 		{
-			if (PlayersID.Count == 0) return false;
-			return Mathf.CeilToInt((float)(Turns.Value + 1) / PlayersID.Count) % 3 == 0;
+			if (NetworkManager.Singleton != null)
+			{
+			if (OnlinePlayersID.Count == 0) return false;
+			return Mathf.CeilToInt((float)(OnlineTurns.Value + 1) / OnlinePlayersID.Count) % 3 == 0;
+			}
+			else
+			{
+				if (SoloNames.Count == 0) return false;
+				return Mathf.CeilToInt((float)(SoloTurns + 1) / SoloNames.Count) % 3 == 0;
+			}
 		}
 	}
 
@@ -86,39 +145,57 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		get
 		{
-			if (Scores.Count == 0) return 0;
-			return Scores[PlayerIndex];
+			if (NetworkManager.Singleton != null)
+			{
+				if (OnlineScores.Count == 0) return 0;
+				return OnlineScores[PlayerIndex];
+			}
+			else
+			{
+				if (SoloScores.Count == 0) return 0;
+				return SoloScores[0];
+			}
+		}
+	}
+
+	public void ResetManager()
+	{
+		if (NetworkManager.Singleton != null)
+		{
+			PlayerIndex = -1;
+			OnlineTurns.Value = 0;
+			OnlineScores.Clear();
+			OnlinePlayersID.Clear();
+			OnlinePlayersNameIdentification.Clear();
+		}
+		else
+		{
+			SoloTurns = 0;
+			SoloScores.Clear();
+			SoloNames.Clear();
 		}
 	}
 
 	public void SetPlayerInfo(ulong ID, string name)
 	{
-		//UnityEngine.Debug.Log(name);
-		Scores.Add(0);
-		PlayersID.Add(ID);
-		PlayersNameIdentification.Add(name);
-	}
-
-	public void SetLocalPlayerInfo()
-	{
-		HoldForLocalChange(NetworkManager.Singleton.LocalClientId).Forget();
-	}
-
-	private async UniTask HoldForLocalChange(ulong owner)
-	{
-		await UniTask.WaitUntil(() => PlayersID.IndexOf(owner) != -1);
-		PlayerIndex = PlayersID.IndexOf(owner);
-	}
-
-	public override void OnNetworkDespawn()
-	{
-		base.OnNetworkDespawn();
-		_instance = null;
+		if (NetworkManager.Singleton != null)
+		{
+			OnlineScores.Add(0);
+			OnlinePlayersID.Add(ID);
+			OnlinePlayersNameIdentification.Add(name);
+		}
+		else
+		{
+			SoloScores.Add(0);
+			SoloNames.Add(name);
+		}
 	}
 
 	public string GetInfo()
 	{
 		return $"{nameof(GameManager)}: \n" +
+			$"{nameof(GlobalTurn)}: {GlobalTurn} \n" +
+			$"{nameof(LocalPlayerTurn)}: {LocalPlayerTurn} \n" +
 			$"{nameof(PlayerIndexTurn)}: {PlayerIndexTurn} \n \n" +
 			$"{nameof(PlayerIndex)}: {PlayerIndex} \n" +
 			$"{nameof(PlayerName)}: {PlayerName} \n" +
