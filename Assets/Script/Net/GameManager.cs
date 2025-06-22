@@ -93,6 +93,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 
 	public void SetPlayerInfo(ulong ID, string name)
 	{
+		//UnityEngine.Debug.Log(name);
 		Scores.Add(0);
 		PlayersID.Add(ID);
 		PlayersNameIdentification.Add(name);
@@ -100,7 +101,6 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 
 	public void SetLocalPlayerInfo()
 	{
-		UnityEngine.Debug.Log("fuck");
 		HoldForLocalChange(NetworkManager.Singleton.LocalClientId).Forget();
 	}
 
@@ -108,17 +108,6 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		await UniTask.WaitUntil(() => PlayersID.IndexOf(owner) != -1);
 		PlayerIndex = PlayersID.IndexOf(owner);
-	}
-
-	private void Update()
-	{
-		UnityEngine.Debug.Log($"{nameof(GameManager)}: \n" +
-			$"{nameof(Turns)}: {Turns.Value} \n" +
-			$"{nameof(PlayerIndexTurn)}: {PlayerIndexTurn} \n \n" +
-			$"{nameof(PlayerIndex)}: {PlayerIndex} \n" +
-			$"{nameof(PlayerName)}: {PlayerName} \n" +
-			$"{nameof(FlagTurn)}: {FlagTurn}"
-			);
 	}
 
 	public override void OnNetworkDespawn()

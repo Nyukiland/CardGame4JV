@@ -170,7 +170,6 @@ namespace CardGame.Net
 				if (instance.Key == OwnerClientId)
 					continue;
 
-				UnityEngine.Debug.Log("t");
 				_manager.SetPlayerInfo(instance.Value.OwnerClientId, "Client" + _manager.PlayersID.Count);
 
 				instance.Value.SetUpOnClientRPC(instance.Value.OwnerClientId);
