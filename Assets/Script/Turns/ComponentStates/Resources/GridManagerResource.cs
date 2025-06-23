@@ -99,55 +99,72 @@ namespace CardGame.Turns
             if (y - 1 >= 0) _grid[x, y - 1].gameObject.SetActive(true);
         }
 
-		public int GetPlacementConnectionCount(TileData tileData, Vector2Int pos)
-		{
-			int connections = 0;
+        public int GetPlacementConnectionCount(TileData tileData, Vector2Int pos)
+        {
+            int connections = 0;
 
-			ZoneData[] myZones = tileData.Zones;
+            ZoneData[] myZones = tileData.Zones;
 
-			(GridManagerResource grid, TileVisu neighbor, TileData neighborData) = (this, null, null);
+            // Nord vs Sud
+            TileVisu northNeighbor = GetTile(new Vector2Int(pos.x, pos.y + 1));
+            if (northNeighbor != null)
+            {
+                TileData northData = northNeighbor.TileData;
+                if (northData != null)
+                {
+                    if (myZones[0].environment != northData.Zones[2].environment)
+                        return 0;
 
-			// Nord vs sud
-			neighbor = grid.GetTile(new Vector2Int(pos.x, pos.y + 1));
-			if (neighbor != null && (neighborData = neighbor.TileData) != null)
-			{
-				if (myZones[0].environment != neighborData.Zones[2].environment)
-					return 0;
-				connections++;
-			}
+                    connections++;
+                }
+            }
 
-			// Est vs Ouest
-			neighbor = grid.GetTile(new Vector2Int(pos.x + 1, pos.y));
-			if (neighbor != null && (neighborData = neighbor.TileData) != null)
-			{
-				if (myZones[1].environment != neighborData.Zones[3].environment)
-					return 0;
-				connections++;
-			}
+            // Est vs Ouest
+            TileVisu eastNeighbor = GetTile(new Vector2Int(pos.x + 1, pos.y));
+            if (eastNeighbor != null)
+            {
+                TileData eastData = eastNeighbor.TileData;
+                if (eastData != null)
+                {
+                    if (myZones[1].environment != eastData.Zones[3].environment)
+                        return 0;
 
-			// Sud vs Nord
-			neighbor = grid.GetTile(new Vector2Int(pos.x, pos.y - 1));
-			if (neighbor != null && (neighborData = neighbor.TileData) != null)
-			{
-				if (myZones[2].environment != neighborData.Zones[0].environment)
-					return 0;
-				connections++;
-			}
+                    connections++;
+                }
+            }
 
-			// Ouest vs est
-			neighbor = grid.GetTile(new Vector2Int(pos.x - 1, pos.y));
-			if (neighbor != null && (neighborData = neighbor.TileData) != null)
-			{
-				if (myZones[3].environment != neighborData.Zones[1].environment)
-					return 0;
-				connections++;
-			}
+            // Sud vs Nord
+            TileVisu southNeighbor = GetTile(new Vector2Int(pos.x, pos.y - 1));
+            if (southNeighbor != null)
+            {
+                TileData southData = southNeighbor.TileData;
+                if (southData != null)
+                {
+                    if (myZones[2].environment != southData.Zones[0].environment)
+                        return 0;
 
-			//Debug.Log($"Placement valide avec {connections}");
-			return connections;
-		}
+                    connections++;
+                }
+            }
 
-		public override void OnDisable()
+            // Ouest vs Est
+            TileVisu westNeighbor = GetTile(new Vector2Int(pos.x - 1, pos.y));
+            if (westNeighbor != null)
+            {
+                TileData westData = westNeighbor.TileData;
+                if (westData != null)
+                {
+                    if (myZones[3].environment != westData.Zones[1].environment)
+                        return 0;
+
+                    connections++;
+                }
+            }
+
+            return connections;
+        }
+
+        public override void OnDisable()
         {
             if (Storage.CheckInstance()) Storage.Instance.Delete(this);
         }
