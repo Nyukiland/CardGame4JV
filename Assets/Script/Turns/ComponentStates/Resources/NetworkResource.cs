@@ -47,8 +47,17 @@ namespace CardGame.Turns
 		{
 			NetCommunication netCom = null;
 
-			await UniTask.WaitUntil(() =>
-				NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom));
+			int increment = 0;
+
+			while (true)
+			{
+				NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom);
+
+				if (netCom != null || increment >= 300) break;
+				increment++;
+
+				await UniTask.Yield();
+			}
 
 			NetCom = netCom;
 

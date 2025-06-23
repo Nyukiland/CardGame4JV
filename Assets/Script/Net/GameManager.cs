@@ -14,8 +14,11 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			if (_instance == null)
 			{
 				GameManager instance = FindFirstObjectByType<GameManager>();
-				instance ??= new GameObject(typeof(GameManager).Name).AddComponent<GameManager>();
-				instance.gameObject.AddComponent<NetworkObject>();
+				if (instance == null)
+				{
+					instance = new GameObject(typeof(GameManager).Name).AddComponent<GameManager>();
+					instance.gameObject.AddComponent<NetworkObject>();
+				}
 				_instance = instance;
 			}
 
@@ -85,7 +88,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		get
 		{
-			if (NetworkManager.Singleton != null)
+			if (IsNetCurrentlyActive())
 			{
 				if (PlayerIndex == -1 || OnlinePlayersNameIdentification.Count == 0) return "none";
 				return OnlinePlayersNameIdentification[PlayerIndex].ToString();
@@ -102,7 +105,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		get
 		{
-			if (NetworkManager.Singleton != null) return OnlineTurns.Value;
+			if (IsNetCurrentlyActive()) return OnlineTurns.Value;
 			else return SoloTurns;
 		}
 	}
@@ -111,7 +114,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		get
 		{
-			if (NetworkManager.Singleton != null)
+			if (IsNetCurrentlyActive())
 			{
 				if (OnlinePlayersID.Count == 0) return -1;
 				return Mathf.CeilToInt((float)(OnlineTurns.Value + 1) / OnlinePlayersID.Count);
@@ -128,7 +131,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		get
 		{
-			if (NetworkManager.Singleton != null)
+			if (IsNetCurrentlyActive())
 			{
 			if (OnlinePlayersID.Count == 0) return false;
 			return Mathf.CeilToInt((float)(OnlineTurns.Value + 1) / OnlinePlayersID.Count) % 3 == 0;
@@ -145,7 +148,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		get
 		{
-			if (NetworkManager.Singleton != null)
+			if (IsNetCurrentlyActive())
 			{
 				if (OnlineScores.Count == 0) return 0;
 				return OnlineScores[PlayerIndex];
@@ -160,7 +163,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 
 	public void ResetManager()
 	{
-		if (NetworkManager.Singleton != null)
+		if (IsNetCurrentlyActive())
 		{
 			PlayerIndex = -1;
 			OnlineTurns.Value = 0;
@@ -178,7 +181,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 
 	public void SetPlayerInfo(ulong ID, string name)
 	{
-		if (NetworkManager.Singleton != null)
+		if (IsNetCurrentlyActive())
 		{
 			OnlineScores.Add(0);
 			OnlinePlayersID.Add(ID);
@@ -189,6 +192,11 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			SoloScores.Add(0);
 			SoloNames.Add(name);
 		}
+	}
+
+	public bool IsNetCurrentlyActive()
+	{
+		return NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening;
 	}
 
 	public string GetInfo()
