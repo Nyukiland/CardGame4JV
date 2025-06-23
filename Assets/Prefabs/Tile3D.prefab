@@ -317,6 +317,7 @@ MonoBehaviour:
   _grey: {fileID: 2100000, guid: aed5c34cfc5c60f4bbc608523e0fd6a6, type: 2}
   _black: {fileID: 2100000, guid: 03666876bf12a3840ad1719360cf9662, type: 2}
   _yellow: {fileID: 2100000, guid: 7cd7570c7c10c224a869c0fad9d87912, type: 2}
+  _purple: {fileID: 2100000, guid: a39bbc86eba180b49a66bee2b6a233d0, type: 2}
 --- !u!65 &3792996417808844489
 BoxCollider:
   m_ObjectHideFlags: 0

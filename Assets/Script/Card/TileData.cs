@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace CardGame.Card
 {
     public class TileData
@@ -10,6 +12,8 @@ namespace CardGame.Card
         /// <summary> Sens des aiguilles d'une montre : 0 = nord, 1 = est, 2 = sud, 3 = ouest </summary>
         public ZoneData[] Zones { get; private set; }
 
+        public int OwnerPlayerIndex { get; set; } = -1; // C'est l'index du joueur dans la liste de OnlinePlayersID 
+        public bool HasFlag { get; set; } = false;
 
         public void InitTile(TileSettings tileSettingsRef)
         {
@@ -21,6 +25,8 @@ namespace CardGame.Card
             Zones[2] = TileSettings.SouthZone;
             Zones[3] = TileSettings.WestZone;
 
+            OwnerPlayerIndex = -1;
+            HasFlag = false;
         }
 
         public void RotateTile()

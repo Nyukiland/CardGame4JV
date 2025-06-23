@@ -45,10 +45,10 @@ namespace CardGame.Turns
 
 			TileVisu tempTile = _moveTile.CurrentTile;
 			_moveTile.CurrentTile = null;
+            tempTile.ResetValidityVisual();
 
-			if (_zoneHolder.IsInHand(position))
+            if (_zoneHolder.IsInHand(position))
 			{
-				tempTile.ResetValidityVisual();
 				_zoneHolder.GiveTileToHand(tempTile.gameObject);
 				return;
 			}
@@ -56,7 +56,7 @@ namespace CardGame.Turns
 			Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
 			TileVisu targetTile = _gridManager.GetTile(pos);
 
-			tempTile.ResetValidityVisual();
+			
 			if (targetTile != null && targetTile.TileData == null)
 			{
 				int connectionCount = _gridManager.GetPlacementConnectionCount(tempTile.TileData, pos);
@@ -67,7 +67,16 @@ namespace CardGame.Turns
 					return;
 				}
 
-				_gridManager.SetTile(tempTile.TileData, pos);
+                tempTile.TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex; // On donne l'index du joueur a la tile
+
+                if (GameManager.Instance.FlagTurn)
+				{
+                    tempTile.TileData.HasFlag = true;
+                    targetTile.AddFlagVisual(); // On add le visuel flag manuellement, car filer la data suffit pas a faire ca
+                }
+				//else { Debug.Log($"Was not flag turn, as it's turn {GameManager.Instance.LocalPlayerTurn}"); }
+
+                _gridManager.SetTile(tempTile.TileData, pos);
 				_sender.SendInfoTilePlaced(tempTile.TileData, pos);
 
 				if (!_sender.SendTurnFinished())
@@ -79,7 +88,8 @@ namespace CardGame.Turns
 				}
 
 				TilePlaced = true;
-				GameObject.Destroy(tempTile.gameObject);
+
+                GameObject.Destroy(tempTile.gameObject);
 			}
 			else
 			{

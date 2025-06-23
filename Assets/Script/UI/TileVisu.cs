@@ -36,6 +36,8 @@ namespace CardGame.UI
         private Material _black; // Not valid
         [SerializeField]
         private Material _yellow; // valid
+        [SerializeField]
+        private Material _purple; // flag
 
         public TileData TileData { get; set; }
 
@@ -117,6 +119,11 @@ namespace CardGame.UI
         public void ChangeValidityVisual(bool isValid)
         {
             _visuValidity.material = isValid ? _yellow : _black;
+        }
+
+        public void AddFlagVisual()
+        {
+			_visuValidity.material = _purple;
         }
 
         public void ResetValidityVisual()
