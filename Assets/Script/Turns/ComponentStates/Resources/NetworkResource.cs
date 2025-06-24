@@ -23,7 +23,7 @@ namespace CardGame.Turns
 
 		public bool IsFinished
 		{
-			get; 
+			get;
 			set;
 		}
 
@@ -32,10 +32,10 @@ namespace CardGame.Turns
 			base.Init(owner);
 
 			_createHand = owner.GetStateComponent<CreateHandAbility>();
-            _grid = owner.GetStateComponent<GridManagerResource>();
+			_grid = owner.GetStateComponent<GridManagerResource>();
 
-            GetNetComForThisClientAsync().Forget();
-
+			if (GameManager.Instance.IsNetCurrentlyActive())
+				GetNetComForThisClientAsync().Forget();
 		}
 
 		public bool IsNetActive()

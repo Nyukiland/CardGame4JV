@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using CardGame.StateMachine;
 using UnityEngine;
+using CardGame.Utility;
 
 namespace CardGame.Turns
 {
@@ -30,6 +31,7 @@ namespace CardGame.Turns
 		private async UniTask WaitStart()
 		{
 			await UniTask.Delay(200);
+			await UniTask.WaitUntil(() => Storage.Instance.GetElement<DrawPile>().AllTileSettings.Count != 0);
 
 			if (_net.IsNetActive())
 			{
