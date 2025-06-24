@@ -2,6 +2,7 @@ using CardGame.Card;
 using CardGame.StateMachine;
 using CardGame.UI;
 using CardGame.Utility;
+using System.Collections.Generic;
 using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -22,6 +23,8 @@ namespace CardGame.Turns
         public int Height => _height;
 
         private TileVisu[,] _grid;
+
+		public List<Vector2Int> SurroundingTilePos { get; private set; } = new();
 
         public override void Init(Controller owner)
         {
@@ -72,7 +75,6 @@ namespace CardGame.Turns
         {
             if (x > _width - 1 || x < 0 || y > _height - 1 || y < 0) return false;
 
-
             TileVisu tileVisu = _grid[x, y];
             //if (tileVisu != null) return false; TODO > Ca BUG
 
@@ -90,10 +92,21 @@ namespace CardGame.Turns
 
         private void ActivateSurroundingTiles(int x, int y)
         {
-            if (x + 1 <= _width - 1) _grid[x + 1, y].gameObject.SetActive(true);
-            if (x - 1 >= 0) _grid[x - 1, y].gameObject.SetActive(true);
-            if (y + 1 <= _height - 1 ) _grid[x, y + 1].gameObject.SetActive(true);
-            if (y - 1 >= 0) _grid[x, y - 1].gameObject.SetActive(true);
+			if (SurroundingTilePos.Contains(new(x, y))) 
+				SurroundingTilePos.Remove(new(x, y));
+
+            if (x + 1 <= _width - 1) ActivateTile(x+1, y);
+            if (x - 1 >= 0) ActivateTile(x - 1, y);
+			if (y + 1 <= _height - 1 ) ActivateTile(x, y +1);
+			if (y - 1 >= 0) ActivateTile(x, y - 1);
+
+			void ActivateTile(int x, int y)
+			{
+				_grid[x, y].gameObject.SetActive(true);
+
+				if (!SurroundingTilePos.Contains(new(x, y)))
+					SurroundingTilePos.Add(new(x, y));
+			}
         }
 
         public int GetPlacementConnectionCount(TileData tileData, Vector2Int pos)

@@ -1,7 +1,7 @@
-using CardGame.Card;
+using Cysharp.Threading.Tasks;
 using CardGame.StateMachine;
 using CardGame.Utility;
-using Cysharp.Threading.Tasks;
+using CardGame.Card;
 using UnityEngine;
 
 namespace CardGame.Turns
@@ -51,22 +51,38 @@ namespace CardGame.Turns
 				return;
 			}
 
-			bool hasValidPosition = false;
-			while (hasValidPosition == false)
+			TileData tileData = new();
+			tileData.InitTile(tileSettings);
+			tileData.OwnerPlayerIndex = 1;
+			tileData.HasFlag = GameManager.Instance.FlagTurn;
+
+			Vector2Int tilePlaced = new(-100, -100);
+			foreach (Vector2Int pos in _grid.SurroundingTilePos)
 			{
-				int xPosition = Random.Range(0, _grid.Width - 1);
-				int yPosition = Random.Range(0, _grid.Height - 1);
+				for (int i = 0; i < 4; i++)
+				{
+					if (_grid.GetPlacementConnectionCount(tileData, pos) != 0)
+					{
+						tilePlaced = pos;
+						break;
+					}
+					else
+					{
+						tileData.RotateTile();
+					}
+				}
 
-				if (_grid.GetTile(xPosition, yPosition).TileData != null) continue;
-
-				TileData tileData = new();
-				tileData.InitTile(tileSettings);
-				tileData.OwnerPlayerIndex = 1;
-				tileData.HasFlag = GameManager.Instance.FlagTurn;
-				_grid.SetTile(tileData, xPosition, yPosition);
-				hasValidPosition = true;
+				if (tilePlaced != new Vector2Int(-100, -100)) break;
 			}
 
+			if (tilePlaced == new Vector2Int(-100, -100))
+			{
+				UnityEngine.Debug.LogWarning($"[{nameof(AutoPlayAbility)}] Failed to place tile due to no valid placement");
+			}
+			else
+			{
+				_grid.SetTile(tileData, tilePlaced);
+			}
 
 			GameManager.Instance.SoloTurns++;
 			IsFinished = true;
