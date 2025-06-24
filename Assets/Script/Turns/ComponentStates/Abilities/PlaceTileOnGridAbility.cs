@@ -74,12 +74,15 @@ namespace CardGame.Turns
                     tempTile.TileData.HasFlag = true;
                     targetTile.AddFlagVisual(); // On add le visuel flag manuellement, car filer la data suffit pas a faire ca
                 }
-				//else { Debug.Log($"Was not flag turn, as it's turn {GameManager.Instance.LocalPlayerTurn}"); }
+                //else { Debug.Log($"Was not flag turn, as it's turn {GameManager.Instance.LocalPlayerTurn}"); }
 
                 _gridManager.SetTile(tempTile.TileData, pos);
 				_sender.SendInfoTilePlaced(tempTile.TileData, pos);
 
-				if (!_sender.SendTurnFinished())
+				targetTile.SetNewOwner(); // On set l'owner de la tile
+
+
+                if (!_sender.SendTurnFinished())
 				{
 					for (int i = 0; i < connectionCount; i++)
 					{

@@ -5,31 +5,31 @@ using UnityEngine;
 
 namespace CardGame.UI
 {
-	public class TileVisu : MonoBehaviour
-	{
+    public class TileVisu : MonoBehaviour
+    {
         [SerializeField]
         private MeshRenderer _visuValidity;
         [SerializeField]
-		private MeshRenderer _visuNorth;
-		[SerializeField]
-		private MeshRenderer _visuSouth;
-		[SerializeField]
-		private MeshRenderer _visuEast;
-		[SerializeField]
-		private MeshRenderer _visuWest;
-		[SerializeField]
-		private MeshRenderer _visuCenter;
+        private MeshRenderer _visuNorth;
+        [SerializeField]
+        private MeshRenderer _visuSouth;
+        [SerializeField]
+        private MeshRenderer _visuEast;
+        [SerializeField]
+        private MeshRenderer _visuWest;
+        [SerializeField]
+        private MeshRenderer _visuCenter;
 
-		[Space(10)]
+        [Space(10)]
 
-		[SerializeField]
-		private Material _red;
-		[SerializeField]
-		private Material _green;
-		[SerializeField]
-		private Material _blue;
-		[SerializeField]
-		private Material _white;
+        [SerializeField]
+        private Material _red;
+        [SerializeField]
+        private Material _green;
+        [SerializeField]
+        private Material _blue;
+        [SerializeField]
+        private Material _white;
         [SerializeField]
         private Material _grey; // default
         [SerializeField]
@@ -39,37 +39,41 @@ namespace CardGame.UI
         [SerializeField]
         private Material _purple; // flag
 
+        [Space(10)]
+
+        [SerializeField] private TMPro.TextMeshPro _ownerTextMeshPro;
         public TileData TileData { get; set; }
 
         private void Start()
         {
-			UpdateTile(TileData);
+            UpdateTile(TileData);
+            _ownerTextMeshPro.text = "";
         }
 
         public void UpdateTile(TileData data)
-		{
-			TileData = data;
-			UpdateVisu();
-		}
+        {
+            TileData = data;
+            UpdateVisu();
+        }
 
-		public void ChangeParent(Transform parent)
-		{
-			gameObject.transform.SetParent(parent);
-		}
+        public void ChangeParent(Transform parent)
+        {
+            gameObject.transform.SetParent(parent);
+        }
 
-		private void UpdateVisu()
-		{
-			List<ZoneData> zones = new();
+        private void UpdateVisu()
+        {
+            List<ZoneData> zones = new();
 
-			if (TileData == null)
-			{
+            if (TileData == null)
+            {
                 _visuNorth.enabled = false;
                 _visuSouth.enabled = false;
                 _visuEast.enabled = false;
                 _visuWest.enabled = false;
                 _visuCenter.enabled = false;
 
-				return;
+                return;
             }
 
             _visuNorth.enabled = true;
@@ -96,34 +100,29 @@ namespace CardGame.UI
             //temp
             _visuCenter.enabled = false;
 
-			for (int i = 0; i < zones.Count - 1; i++)
-			{
-				if (!zones[i].isOpen)
-					continue;
+            for (int i = 0; i < zones.Count - 1; i++)
+            {
+                if (!zones[i].isOpen)
+                    continue;
 
-				for (int j = i + 1; j < zones.Count; j++)
-				{
-					if (!zones[j].isOpen)
-						continue;
+                for (int j = i + 1; j < zones.Count; j++)
+                {
+                    if (!zones[j].isOpen)
+                        continue;
 
-					if (zones[i].environment == zones[j].environment)
-					{
-						_visuCenter.enabled = true;
-						_visuCenter.material = GetMaterialForType(zones[i].environment);
-						return;
-					}
-				}
-			}
-		}
+                    if (zones[i].environment == zones[j].environment)
+                    {
+                        _visuCenter.enabled = true;
+                        _visuCenter.material = GetMaterialForType(zones[i].environment);
+                        return;
+                    }
+                }
+            }
+        }
 
         public void ChangeValidityVisual(bool isValid)
         {
             _visuValidity.material = isValid ? _yellow : _black;
-        }
-
-        public void AddFlagVisual()
-        {
-			_visuValidity.material = _purple;
         }
 
         public void ResetValidityVisual()
@@ -131,21 +130,33 @@ namespace CardGame.UI
             _visuValidity.material = _grey;
         }
 
-        private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
-		{
-			switch (type)
-			{
-				case ENVIRONEMENT_TYPE.Forest:
-					return _green;
-				case ENVIRONEMENT_TYPE.Snow:
-					return _white;
-				case ENVIRONEMENT_TYPE.Lava:
-					return _red;
-				case ENVIRONEMENT_TYPE.River:
-					return _blue;
-			}
+        public void AddFlagVisual()
+        {
+            _visuValidity.material = _purple;
+        }
 
-			return null;
-		}
-	}
+        public void SetNewOwner()
+        {
+            TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex;
+            _ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : ""; // le joueur owner
+            Debug.Log($"Second show, Played tile by player {GameManager.Instance.PlayerIndex}");
+            Debug.Log($"{GameManager.Instance.GetInfo()}");
+        }
+        private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
+        {
+            switch (type)
+            {
+                case ENVIRONEMENT_TYPE.Forest:
+                    return _green;
+                case ENVIRONEMENT_TYPE.Snow:
+                    return _white;
+                case ENVIRONEMENT_TYPE.Lava:
+                    return _red;
+                case ENVIRONEMENT_TYPE.River:
+                    return _blue;
+            }
+
+            return null;
+        }
+    }
 }
