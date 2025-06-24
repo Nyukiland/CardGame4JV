@@ -77,9 +77,9 @@ namespace CardGame.Turns
                 //else { Debug.Log($"Was not flag turn, as it's turn {GameManager.Instance.LocalPlayerTurn}"); }
 
                 _gridManager.SetTile(tempTile.TileData, pos);
+				targetTile.SetNewOwner(); // On set l'owner de la tile
 				_sender.SendInfoTilePlaced(tempTile.TileData, pos);
 
-				targetTile.SetNewOwner(); // On set l'owner de la tile
 
 
                 if (!_sender.SendTurnFinished())

@@ -80,8 +80,10 @@ namespace CardGame.Net
 			}
 
 			// Create and initialize TileData
-			TileData tile = new TileData();
+			TileData tile = new ();
 			tile.InitTile(matchingSettings);
+			tile.HasFlag = data.HasFlag;
+			tile.OwnerPlayerIndex = data.PlayerOwner;
 
 			// Rotate to match received rotation count
 			for (int i = 0; i < data.TileRotationCount; i++)

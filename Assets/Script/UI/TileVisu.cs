@@ -63,7 +63,9 @@ namespace CardGame.UI
 
         private void UpdateVisu()
         {
-            List<ZoneData> zones = new();
+			if (TileData != null) _ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : "";
+
+			List<ZoneData> zones = new();
 
             if (TileData == null)
             {
@@ -138,7 +140,7 @@ namespace CardGame.UI
         public void SetNewOwner()
         {
             TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex;
-            _ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : ""; // le joueur owner
+            //_ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : ""; // le joueur owner
             Debug.Log($"Second show, Played tile by player {GameManager.Instance.PlayerIndex}");
             Debug.Log($"{GameManager.Instance.GetInfo()}");
         }
