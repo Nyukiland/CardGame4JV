@@ -61,9 +61,10 @@ namespace CardGame.Turns
 		public override void Update(float deltaTime)
 		{
 			base.Update(deltaTime);
-			if (!_net.IsNetActive() && _autoPlayAbility.IsFinished)
+			if (!_net.IsNetActive())
 			{
-				Controller.SetState<PlaceTileCombinedState>();
+				if (_autoPlayAbility.IsFinished)
+					Controller.SetState<PlaceTileCombinedState>();
 			}
 			else if (_net.IsFinished)
 			{
