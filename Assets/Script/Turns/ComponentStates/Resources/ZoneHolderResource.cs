@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardGame.StateMachine;
+using DG.Tweening;
 using UnityEngine;
 
 namespace CardGame.Turns
@@ -80,7 +81,7 @@ namespace CardGame.Turns
 				// On evite juste la division par 0 s'il n'y a qu'une carte
                 float t = count > 1 ? (float)i / (count - 1) : 0.5f; 
                 Vector3 pos = Vector3.Lerp(pos1, pos2, t);
-				_tileInHand[i].transform.position = pos + (Camera.main.transform.forward * 2);
+				_tileInHand[i].transform.DOMove(pos + (Camera.main.transform.forward * 2), 0.2f);
 			}
 		}
 	}
