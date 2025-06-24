@@ -31,15 +31,23 @@ namespace CardGame.Turns
 			base.OnEnable();
 		}
 
-		public void GenerateTiles(int count)
-		{
-			for (int i = 0; i < count; i++)
-			{
-				CreateTile(_pile.AllTileSettings[Random.Range(0, _pile.AllTileSettings.Count)]);
-			}
-		}
+        public void GenerateTiles(int count)
+        {
+            if (_pile.AllTileSettings == null || _pile.AllTileSettings.Count == 0)
+            {
+                Debug.LogError("DrawPile.AllTileSettings is empty or null");
+                return;
+            }
 
-		public void CreateTile(TileSettings settings)
+            for (int i = 0; i < count; i++)
+            {
+                int index = Random.Range(0, _pile.AllTileSettings.Count);
+                CreateTile(_pile.AllTileSettings[index]);
+            }
+        }
+
+
+        public void CreateTile(TileSettings settings)
 		{
 			GameObject temp = GameObject.Instantiate(_prefab);
 			TileData data = new();

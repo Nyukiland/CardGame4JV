@@ -490,7 +490,7 @@ MonoBehaviour:
   _green: {fileID: 2100000, guid: 0f0df524c1cb272499f1aea6b04c1339, type: 2}
   _blue: {fileID: 2100000, guid: 5f630b35d7f2f1b4c86a46921d82eaae, type: 2}
   _white: {fileID: 2100000, guid: 604771eb075b1474ba1bf43289fe3e6d, type: 2}
-  _grey: {fileID: 2100000, guid: aed5c34cfc5c60f4bbc608523e0fd6a6, type: 2}
+  _grey: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   _black: {fileID: 2100000, guid: 03666876bf12a3840ad1719360cf9662, type: 2}
   _yellow: {fileID: 2100000, guid: 7cd7570c7c10c224a869c0fad9d87912, type: 2}
   _purple: {fileID: 2100000, guid: a39bbc86eba180b49a66bee2b6a233d0, type: 2}

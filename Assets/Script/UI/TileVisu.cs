@@ -63,7 +63,6 @@ namespace CardGame.UI
 
         private void UpdateVisu()
         {
-			if (TileData != null) _ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : "";
 
 			List<ZoneData> zones = new();
 
@@ -77,6 +76,9 @@ namespace CardGame.UI
 
                 return;
             }
+
+            _ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : "";
+            _visuValidity.material = TileData.HasFlag ? _purple : _grey; 
 
             _visuNorth.enabled = true;
             _visuSouth.enabled = true;
@@ -132,18 +134,12 @@ namespace CardGame.UI
             _visuValidity.material = _grey;
         }
 
-        public void AddFlagVisual()
-        {
-            _visuValidity.material = _purple;
-        }
+        //public void SetNewOwner()
+        //{
+        //    Debug.Log($"Second show, Played tile by player {GameManager.Instance.PlayerIndex}");
+        //    Debug.Log($"{GameManager.Instance.GetInfo()}");
+        //}
 
-        public void SetNewOwner()
-        {
-            TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex;
-            //_ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : ""; // le joueur owner
-            Debug.Log($"Second show, Played tile by player {GameManager.Instance.PlayerIndex}");
-            Debug.Log($"{GameManager.Instance.GetInfo()}");
-        }
         private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
         {
             switch (type)

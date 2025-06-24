@@ -68,19 +68,10 @@ namespace CardGame.Turns
 				}
 
                 tempTile.TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex; // On donne l'index du joueur a la tile
-
-                if (GameManager.Instance.FlagTurn)
-				{
-                    tempTile.TileData.HasFlag = true;
-                    targetTile.AddFlagVisual(); // On add le visuel flag manuellement, car filer la data suffit pas a faire ca
-                }
-                //else { Debug.Log($"Was not flag turn, as it's turn {GameManager.Instance.LocalPlayerTurn}"); }
+                tempTile.TileData.HasFlag = GameManager.Instance.FlagTurn; // Check si flag turn
 
                 _gridManager.SetTile(tempTile.TileData, pos);
-				targetTile.SetNewOwner(); // On set l'owner de la tile
-				_sender.SendInfoTilePlaced(tempTile.TileData, pos);
-
-
+                _sender.SendInfoTilePlaced(tempTile.TileData, pos);
 
                 if (!_sender.SendTurnFinished())
 				{
