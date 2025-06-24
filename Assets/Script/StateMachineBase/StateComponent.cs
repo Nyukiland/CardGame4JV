@@ -70,7 +70,7 @@ namespace CardGame.StateMachine
 
 		public string DisplayInfoController()
 		{
-			if (!Enabled) return "";
+			if (DisplayInfo() == "") return "";
 
 			return $"--{GetType().Name} \n" + DisplayInfo();
 		}

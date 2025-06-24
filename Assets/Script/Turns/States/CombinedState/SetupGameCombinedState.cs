@@ -10,6 +10,7 @@ namespace CardGame.Turns
 		private SendInfoAbility _sender;
 		private NetworkResource _net;
 		private CreateHandAbility _createHandAbility;
+		private AutoPlayAbility _autoPlay;
 
 		public SetupGameCombinedState()
 		{
@@ -23,6 +24,7 @@ namespace CardGame.Turns
 			GetStateComponent(ref _net);
 			GetStateComponent(ref _sender);
 			GetStateComponent(ref _createHandAbility);
+			GetStateComponent(ref _autoPlay, false);
 
 
 			WaitStart().Forget();
@@ -46,6 +48,7 @@ namespace CardGame.Turns
 				GameManager.Instance.SetPlayerInfo(1111, "Player");
 				GameManager.Instance.SetPlayerInfo(2222, "Bot");
 				_createHandAbility.GenerateTiles(_createHandAbility.CountCard);
+				_autoPlay.GenerateTheoreticalHand(_createHandAbility.CountCard);
 			}
 		}
 	}

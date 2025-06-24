@@ -67,8 +67,7 @@ namespace CardGame.Turns
 
         public TileVisu GetTile(Vector2Int arrayCoordinates)
         {
-            if (arrayCoordinates.x > _width - 1 || arrayCoordinates.x < 0 || arrayCoordinates.y > _height - 1 || arrayCoordinates.y < 0) return null;
-            return _grid[arrayCoordinates.x, arrayCoordinates.y];
+            return GetTile(arrayCoordinates.x, arrayCoordinates.y);
         }
 
         public bool SetTile(TileData tile, int x, int y)
@@ -115,63 +114,45 @@ namespace CardGame.Turns
 
             ZoneData[] myZones = tileData.Zones;
 
-            // Nord vs Sud
-            TileVisu northNeighbor = GetTile(new Vector2Int(pos.x, pos.y + 1));
-            if (northNeighbor != null)
-            {
-                TileData northData = northNeighbor.TileData;
-                if (northData != null)
-                {
-                    if (myZones[0].environment != northData.Zones[2].environment)
-                        return 0;
+			// Nord vs Sud
+			int? result = CheckNeighborValidity(pos.x, pos.y + 1, 0, 2);
+			if (result == 0) return 0;
+			else if (result == 1) connections++;
 
-                    connections++;
-                }
-            }
+			// Est vs Ouest
+			result = CheckNeighborValidity(pos.x + 1, pos.y, 1, 3);
+			if (result == 0) return 0;
+			else if (result == 1) connections++;
 
-            // Est vs Ouest
-            TileVisu eastNeighbor = GetTile(new Vector2Int(pos.x + 1, pos.y));
-            if (eastNeighbor != null)
-            {
-                TileData eastData = eastNeighbor.TileData;
-                if (eastData != null)
-                {
-                    if (myZones[1].environment != eastData.Zones[3].environment)
-                        return 0;
+			// Sud vs Nord
+			result = CheckNeighborValidity(pos.x, pos.y - 1, 2, 0);
+			if (result == 0) return 0;
+			else if (result == 1) connections++;
 
-                    connections++;
-                }
-            }
-
-            // Sud vs Nord
-            TileVisu southNeighbor = GetTile(new Vector2Int(pos.x, pos.y - 1));
-            if (southNeighbor != null)
-            {
-                TileData southData = southNeighbor.TileData;
-                if (southData != null)
-                {
-                    if (myZones[2].environment != southData.Zones[0].environment)
-                        return 0;
-
-                    connections++;
-                }
-            }
-
-            // Ouest vs Est
-            TileVisu westNeighbor = GetTile(new Vector2Int(pos.x - 1, pos.y));
-            if (westNeighbor != null)
-            {
-                TileData westData = westNeighbor.TileData;
-                if (westData != null)
-                {
-                    if (myZones[3].environment != westData.Zones[1].environment)
-                        return 0;
-
-                    connections++;
-                }
-            }
+			// Ouest vs Est
+			result = CheckNeighborValidity(pos.x - 1, pos.y, 3, 1);
+			if (result == 0) return 0;
+			else if (result == 1) connections++;
 
             return connections;
+
+			int? CheckNeighborValidity(int x, int y, int myZone, int otherZone)
+			{
+				TileVisu neighbor = GetTile(new Vector2Int(x, y));
+				if (neighbor != null)
+				{
+					TileData data = neighbor.TileData;
+					if (data != null)
+					{
+						if (myZones[myZone].environment != data.Zones[otherZone].environment)
+							return 0;
+
+						return 1;
+					}
+				}
+
+				return null;
+			}
         }
 
 		public int GetPlacementConnectionCount(Vector2Int pos)
