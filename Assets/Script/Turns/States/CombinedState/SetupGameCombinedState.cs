@@ -35,9 +35,9 @@ namespace CardGame.Turns
 
 			if (_net.IsNetActive())
 			{
-				Controller.SetState<NextPlayerCombinedState>();
 				await UniTask.Delay(100);
 				_sender.AskForSetUp();
+				Controller.SetState<NextPlayerCombinedState>();
 			}
 			else
 			{

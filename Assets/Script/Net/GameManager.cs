@@ -131,16 +131,8 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		get
 		{
-			if (IsNetCurrentlyActive())
-			{
-			if (OnlinePlayersID.Count == 0) return false;
-			return Mathf.CeilToInt((float)(OnlineTurns.Value + 1) / OnlinePlayersID.Count) % 3 == 0;
-			}
-			else
-			{
-				if (SoloNames.Count == 0) return false;
-				return Mathf.CeilToInt((float)(SoloTurns + 1) / SoloNames.Count) % 3 == 0;
-			}
+			if (LocalPlayerTurn == -1) return false;
+			return LocalPlayerTurn % 3 == 0;
 		}
 	}
 
@@ -173,6 +165,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 		else
 		{
+			PlayerIndex = 0;
 			SoloTurns = 0;
 			SoloScores.Clear();
 			SoloNames.Clear();

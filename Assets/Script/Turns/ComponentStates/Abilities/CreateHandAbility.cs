@@ -41,8 +41,7 @@ namespace CardGame.Turns
 
             for (int i = 0; i < count; i++)
             {
-                int index = Random.Range(0, _pile.AllTileSettings.Count);
-                CreateTile(_pile.AllTileSettings[index]);
+                CreateTile(_pile.GetTileFromDrawPile());
             }
         }
 

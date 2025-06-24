@@ -60,6 +60,17 @@ namespace CardGame
 			}
 		}
 
+		public TileSettings GetTileFromDrawPile()
+		{
+			if (_tileInDrawPile.Count == 0) return null;
+
+			int index = Random.Range(0, _tileInDrawPile.Count);
+			TileSettings settings = _tileInDrawPile[index];
+			_tileInDrawPile.RemoveAt(index);
+
+			return settings;
+		}
+
 		public int GetTileIDFromDrawPile()
 		{
 			if (_tileInDrawPile.Count == 0) return -1;
@@ -70,9 +81,22 @@ namespace CardGame
 			return settings.IdCode;
 		}	
 
-		public void DiscardTile(TileSettings settings) 
+		public TileSettings GetTileFromID(int settingsID)
 		{
-			_tileInDrawPile.Add(settings);
+			foreach (TileSettings setting in AllTileSettings)
+			{
+				if (setting.IdCode == settingsID)
+				{
+					return setting;
+				}
+			}
+
+			return null;
+		}
+
+		public void DiscardTile(int settingsID) 
+		{
+			_tileInDrawPile.Add(GetTileFromID(settingsID));
 		}
     }
 }

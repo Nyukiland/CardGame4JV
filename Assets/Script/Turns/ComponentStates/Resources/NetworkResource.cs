@@ -96,16 +96,7 @@ namespace CardGame.Turns
 
 		private void UpdateHand(int ID)
 		{
-			TileSettings tileSettings = null;
-
-			foreach (TileSettings setting in _drawPile.AllTileSettings)
-			{
-				if (setting.IdCode == ID)
-				{
-					tileSettings = setting;
-					break;
-				}
-			}
+			TileSettings tileSettings = _drawPile.GetTileFromID(ID);
 
 			_createHand.CreateTile(tileSettings);
 		}

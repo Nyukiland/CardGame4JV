@@ -16,12 +16,14 @@ namespace CardGame.Turns
 		private RectTransform _discardArea;
 
 		private MoveTileAbility _moveTile;
+		private SendInfoAbility _sendInfo;
 		private ZoneHolderResource _holderResource;
 
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
 			_moveTile = owner.GetStateComponent<MoveTileAbility>();
+			_sendInfo = owner.GetStateComponent<SendInfoAbility>();
 			_holderResource = owner.GetStateComponent<ZoneHolderResource>();
 
 			_discardArea.gameObject.SetActive(false);
@@ -54,7 +56,13 @@ namespace CardGame.Turns
 				return;
 			}
 
-			_drawPile.DiscardTile(tile.TileData.TileSettings);
+			int tileId = tile.TileData.TileSettings.IdCode;
+
+			if (!_sendInfo.SendDiscardTile(tileId))
+			{
+				_drawPile.DiscardTile(tile.TileData.TileSettings.IdCode);
+			}
+
 			GameObject.Destroy(tile.gameObject);
 		}
 

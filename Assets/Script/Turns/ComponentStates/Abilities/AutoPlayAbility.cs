@@ -43,26 +43,13 @@ namespace CardGame.Turns
 			await UniTask.WaitForSeconds(_waitSec);
 			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
 
-			// Tire une tuile dans la pile
-			int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
-			if (tileId == -1)
+			TileSettings tileSettings = drawPile.GetTileFromDrawPile();
+
+			if (tileSettings == null)
 			{
 				Owner.SetState<PlaceTileCombinedState>();
 				return;
 			}
-
-			// Cherche la tuile dans les possibilités pour avoir les datas associés
-			TileSettings tileSettings = null;
-
-			foreach (TileSettings setting in drawPile.AllTileSettings)
-			{
-				if (setting.IdCode == tileId)
-				{
-					tileSettings = setting;
-					break;
-				}
-			}
-
 
 			bool hasValidPosition = false;
 			while (hasValidPosition == false)
@@ -74,6 +61,8 @@ namespace CardGame.Turns
 
 				TileData tileData = new();
 				tileData.InitTile(tileSettings);
+				tileData.OwnerPlayerIndex = 1;
+				tileData.HasFlag = GameManager.Instance.FlagTurn;
 				_grid.SetTile(tileData, xPosition, yPosition);
 				hasValidPosition = true;
 			}

@@ -60,6 +60,12 @@ namespace CardGame.Net
 				SendTilePlacedServerRPC(data);
 		}
 
+		public void SendDiscard(int ID)
+		{
+			if (IsLocalPlayer)
+				SendDiscardTileServerRPC(ID);
+		}
+
 		public void SendGrid(DataToSendList dataList)
 		{
 			if (IsLocalPlayer)
@@ -105,11 +111,25 @@ namespace CardGame.Net
 
 			ForEachOtherClient(senderClientId, x => x.DistributeTilePlacedClientRPC(data));
 
-			int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
-			if (tileId == -1) return;
+			TileData tileData = NetUtility.FromDataToTile(data, Storage.Instance.GetElement<DrawPile>().AllTileSettings);
+
+			int connectionCount = Storage.Instance.GetElement<GridManagerResource>()
+				.GetPlacementConnectionCount(tileData, data.Position);
 
 			Instances.TryGetValue(senderClientId, out NetCommunication instance);
-			instance.GiveNewTileInHandClientRPC(tileId);
+
+			for (int i = 0; i < connectionCount; i++)
+			{
+				int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
+				if (tileId == -1) return;
+				instance.GiveNewTileInHandClientRPC(tileId);
+			}
+		}
+
+		[ServerRpc (RequireOwnership = false)]
+		public void SendDiscardTileServerRPC(int ID)
+		{
+			Storage.Instance.GetElement<DrawPile>().DiscardTile(ID);
 		}
 
 		[ServerRpc(RequireOwnership = false)]

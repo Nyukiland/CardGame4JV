@@ -28,12 +28,9 @@ namespace CardGame.Turns
             _grid = new TileVisu[_width, _height];
 
             GenerateGrid();
-        }
 
-        public override void OnEnable()
-        {
-            Storage.Instance.Register(this);
-        }
+			Storage.Instance.Register(this);
+		}
 
         private void GenerateGrid()
         {
@@ -164,7 +161,12 @@ namespace CardGame.Turns
             return connections;
         }
 
-        public override void OnDisable()
+		public int GetPlacementConnectionCount(Vector2Int pos)
+		{
+			return GetPlacementConnectionCount(_grid[pos.x, pos.y].TileData, pos);
+		}
+
+		public override void OnDisable()
         {
             if (Storage.CheckInstance()) Storage.Instance.Delete(this);
         }
