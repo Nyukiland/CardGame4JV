@@ -8,6 +8,9 @@ namespace CardGame.Turns
 {
 	public class MoveTileAbility : Ability
 	{
+		[SerializeField]
+		private LayerMask _layerTile;
+
 		private GridManagerResource _gridManager;
 		private SendInfoAbility _sender;
 		private ZoneHolderResource _handResource;
@@ -30,7 +33,7 @@ namespace CardGame.Turns
 
 		public void PickCard(Vector2 position)
 		{
-			if (Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100))
+			if (Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100, _layerTile))
 			{
 				if (hit.collider.GetComponentInParent<TileVisu>() is TileVisu visu)
 				{

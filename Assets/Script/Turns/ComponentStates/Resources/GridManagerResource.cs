@@ -3,8 +3,6 @@ using CardGame.StateMachine;
 using CardGame.UI;
 using CardGame.Utility;
 using System.Collections.Generic;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace CardGame.Turns
@@ -79,6 +77,8 @@ namespace CardGame.Turns
 
             // On va passer les données de la tuile, désactiver le collider et rendre le GameObject visible
             tileVisu.UpdateTile(tile);
+			tileVisu.GetComponent<BoxCollider>().enabled = false;
+			tileVisu.SetTileLayerGrid(true);
             tileVisu.gameObject.SetActive(true);
             ActivateSurroundingTiles(x, y);
             return true;

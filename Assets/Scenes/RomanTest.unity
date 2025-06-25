@@ -864,6 +864,9 @@ MonoBehaviour:
       type: {class: MoveTileAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
+        _layerTile:
+          serializedVersion: 2
+          m_Bits: 8
     - rid: 542522248351187037
       type: {class: NetworkResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
@@ -919,6 +922,9 @@ MonoBehaviour:
       type: {class: RotateTileAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
+        _layerTile:
+          serializedVersion: 2
+          m_Bits: 8
 --- !u!4 &1973094708
 Transform:
   m_ObjectHideFlags: 0

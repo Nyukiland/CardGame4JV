@@ -1,5 +1,4 @@
 using CardGame.Card;
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +6,13 @@ namespace CardGame.UI
 {
     public class TileVisu : MonoBehaviour
     {
+		[SerializeField]
+		private string _layerGrid;
+		[SerializeField]
+		private string _layerHand;
+
+        [Space(10)]
+
         [SerializeField]
         private MeshRenderer _visuValidity;
         [SerializeField]
@@ -156,5 +162,11 @@ namespace CardGame.UI
 
             return null;
         }
+
+		public void SetTileLayerGrid(bool isOnGrid)
+		{
+			if (isOnGrid) gameObject.layer = LayerMask.NameToLayer(_layerGrid);
+			else gameObject.layer = LayerMask.NameToLayer(_layerHand);
+		}
     }
 }

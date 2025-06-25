@@ -480,6 +480,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84e32e9e58dd63b4da0103a4a6a20b26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _layerGrid: OnGrid
+  _layerHand: InHand
   _visuValidity: {fileID: 2044671600432917660}
   _visuNorth: {fileID: 5530492997107037540}
   _visuSouth: {fileID: 21062780206533642}
