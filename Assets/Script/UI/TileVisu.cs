@@ -50,6 +50,8 @@ namespace CardGame.UI
         [SerializeField] private TMPro.TextMeshPro _ownerTextMeshPro;
         public TileData TileData { get; set; }
 
+		public Vector2 PositionOnGrid { get;  private set; }
+
         private void Start()
         {
             UpdateTile(TileData);
@@ -168,5 +170,7 @@ namespace CardGame.UI
 			if (isOnGrid) gameObject.layer = LayerMask.NameToLayer(_layerGrid);
 			else gameObject.layer = LayerMask.NameToLayer(_layerHand);
 		}
+
+		public void SetTilePosOnGrid(Vector2 pos) => PositionOnGrid = pos;
     }
 }

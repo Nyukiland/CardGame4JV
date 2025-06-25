@@ -15,11 +15,12 @@ namespace CardGame.Turns
 		public NetCommunication NetCom { get; private set; }
 
 		private CreateHandAbility _createHand;
+		private TauntShakeTileAbility _tauntShakeTile;
+		private GridManagerResource _grid;
 
 		[SerializeField]
 		private DrawPile _drawPile;
 
-		private GridManagerResource _grid;
 
 		public bool IsFinished
 		{
@@ -32,6 +33,7 @@ namespace CardGame.Turns
 			base.Init(owner);
 
 			_createHand = owner.GetStateComponent<CreateHandAbility>();
+			_tauntShakeTile = owner.GetStateComponent<TauntShakeTileAbility>();
 			_grid = owner.GetStateComponent<GridManagerResource>();
 
 			if (GameManager.Instance.IsNetCurrentlyActive())
@@ -68,6 +70,8 @@ namespace CardGame.Turns
 				NetCom.GridUpdated += UpdateGrid;
 				NetCom.TileForHand += UpdateHand;
 				NetCom.SendYourTurn += GoMyTurn;
+				NetCom.SendTauntShake += ShakeTile;
+
 			}
 		}
 
@@ -80,6 +84,9 @@ namespace CardGame.Turns
 				NetCom.TileMoved -= UpdateTileInMovement;
 				NetCom.TilePlaced -= UpdateGridPlaced;
 				NetCom.GridUpdated -= UpdateGrid;
+				NetCom.TileForHand -= UpdateHand;
+				NetCom.SendYourTurn -= GoMyTurn;
+				NetCom.SendTauntShake -= ShakeTile;
 			}
 		}
 
@@ -117,6 +124,11 @@ namespace CardGame.Turns
 		private void GoMyTurn()
 		{
 			IsFinished = true;
+		}
+
+		private void ShakeTile(Vector2 pos)
+		{
+			_tauntShakeTile.ShakeTileVisu(_grid.GetTile(Vector2Int.CeilToInt(pos)));
 		}
 	}
 }

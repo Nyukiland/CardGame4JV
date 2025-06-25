@@ -77,7 +77,8 @@ namespace CardGame.Turns
 
             // On va passer les données de la tuile, désactiver le collider et rendre le GameObject visible
             tileVisu.UpdateTile(tile);
-			tileVisu.GetComponent<BoxCollider>().enabled = false;
+			tileVisu.GetComponent<BoxCollider>().enabled = true;
+			tileVisu.SetTilePosOnGrid(new(x, y));
 			tileVisu.SetTileLayerGrid(true);
             tileVisu.gameObject.SetActive(true);
             ActivateSurroundingTiles(x, y);

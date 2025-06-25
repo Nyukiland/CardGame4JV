@@ -13,6 +13,7 @@ namespace CardGame.Turns
 		public PlaceTileCombinedState()
 		{
             AddSubState(new MoveTileSubState());
+            AddSubState(new TauntSubState());
         }
 
         public override void OnEnter()
