@@ -1,119 +1,144 @@
-using CardGame.Card;
-using CardGame.StateMachine;
-using CardGame.UI;
-using CardGame.Utility;
 using System.Collections.Generic;
+using CardGame.StateMachine;
+using CardGame.Utility;
+using CardGame.Card;
+using CardGame.UI;
+using DG.Tweening;
 using UnityEngine;
 
 namespace CardGame.Turns
 {
-    public class GridManagerResource : Resource
-    {
-        [Header("Grid")]
-        [SerializeField] private int _width;
-        [SerializeField] private int _height;
-        [SerializeField] private GameObject _gridContainer;
-        [Header("Tiles")]
-        [SerializeField] private GameObject _tilePrefab;
-        [SerializeField] private TileSettings _startingTileSettings;
+	public class GridManagerResource : Resource
+	{
+		[Header("Grid")]
+		[SerializeField] private int _width;
+		[SerializeField] private int _height;
+		[SerializeField] private GameObject _gridContainer;
+		[Header("Tiles")]
+		[SerializeField] private GameObject _tilePrefab;
+		[SerializeField] private TileSettings _startingTileSettings;
 
-        public int Width => _width;
-        public int Height => _height;
+		public int Width => _width;
+		public int Height => _height;
 
-        private TileVisu[,] _grid;
+		private TileVisu[,] _grid;
 
 		public List<Vector2Int> SurroundingTilePos { get; private set; } = new();
 
-        public override void Init(Controller owner)
-        {
-            _grid = new TileVisu[_width, _height];
+		public override void Init(Controller owner)
+		{
+			_grid = new TileVisu[_width, _height];
 
-            GenerateGrid();
+			GenerateGrid();
 
 			Storage.Instance.Register(this);
 		}
 
-        private void GenerateGrid()
-        {
-            for (int x = 0; x < _width; x++)
-            {
-                for (int y = 0; y < _height; y++)
-                {
-                    GameObject instantiatedTile = GameObject.Instantiate(_tilePrefab, _gridContainer.transform);
-                    instantiatedTile.GetComponent<BoxCollider>().enabled = false;
-                    _grid[x, y] = instantiatedTile.GetComponent<TileVisu>();
-                    instantiatedTile.name = $"Tile_{x}_{y}";
+		private void GenerateGrid()
+		{
+			for (int x = 0; x < _width; x++)
+			{
+				for (int y = 0; y < _height; y++)
+				{
+					GameObject instantiatedTile = GameObject.Instantiate(_tilePrefab, _gridContainer.transform);
+					instantiatedTile.GetComponent<BoxCollider>().enabled = false;
+					_grid[x, y] = instantiatedTile.GetComponent<TileVisu>();
+					instantiatedTile.name = $"Tile_{x}_{y}";
 
-                    instantiatedTile.transform.position = new Vector2(x, y);
-                    instantiatedTile.SetActive(false);
-                }
-            }
+					instantiatedTile.transform.position = new Vector2(x, y);
+					instantiatedTile.SetActive(false);
+				}
+			}
 
-            // Set StartingTile in the midle of the grid :
-            TileData tileData = new();
-            tileData.InitTile(_startingTileSettings);
-            SetTile(tileData, _width / 2, _height / 2);
+			// Set StartingTile in the midle of the grid :
+			TileData tileData = new();
+			tileData.InitTile(_startingTileSettings);
+			SetTile(tileData, _width / 2, _height / 2);
 
-            Camera.main.transform.position = new Vector3(_width / 2, _height / 2, Camera.main.transform.position.z);
-        }
+			Camera.main.transform.position = new Vector3(_width / 2, _height / 2, Camera.main.transform.position.z);
+		}
 
-        public TileVisu GetTile(int x, int y)
-        {
-            if (x > _width - 1 || x < 0 || y > _height - 1 || y < 0) return null;
-            return _grid[x, y];
-        }
+		public TileVisu GetTile(int x, int y)
+		{
+			if (x > _width - 1 || x < 0 || y > _height - 1 || y < 0) return null;
+			return _grid[x, y];
+		}
 
-        public TileVisu GetTile(Vector2Int arrayCoordinates)
-        {
-            return GetTile(arrayCoordinates.x, arrayCoordinates.y);
-        }
+		public TileVisu GetTile(Vector2Int arrayCoordinates)
+		{
+			return GetTile(arrayCoordinates.x, arrayCoordinates.y);
+		}
 
-        public bool SetTile(TileData tile, int x, int y)
-        {
-            if (x > _width - 1 || x < 0 || y > _height - 1 || y < 0) return false;
+		public bool SetTile(TileData tile, int x, int y)
+		{
+			if (x > _width - 1 || x < 0 || y > _height - 1 || y < 0) return false;
 
-            TileVisu tileVisu = _grid[x, y];
-            //if (tileVisu != null) return false; TODO > Ca BUG
+			TileVisu tileVisu = _grid[x, y];
+			//if (tileVisu != null) return false; TODO > Ca BUG
 
-            // On va passer les données de la tuile, désactiver le collider et rendre le GameObject visible
-            tileVisu.UpdateTile(tile);
+			// On va passer les données de la tuile, désactiver le collider et rendre le GameObject visible
+			tileVisu.UpdateTile(tile);
 			tileVisu.GetComponent<BoxCollider>().enabled = true;
 			tileVisu.SetTilePosOnGrid(new(x, y));
 			tileVisu.SetTileLayerGrid(true);
-            tileVisu.gameObject.SetActive(true);
-            ActivateSurroundingTiles(x, y);
-            return true;
-        }
+			tileVisu.gameObject.SetActive(true);
+			ActivateSurroundingTiles(x, y);
+			PlayTileEffect(tileVisu);
+			return true;
+		}
 
-        public bool SetTile(TileData tile, Vector2Int arrayCoordinates)
-        {
-            return SetTile(tile, arrayCoordinates.x, arrayCoordinates.y);
-        }
+		public bool SetTile(TileData tile, Vector2Int arrayCoordinates)
+		{
+			return SetTile(tile, arrayCoordinates.x, arrayCoordinates.y);
+		}
 
-        private void ActivateSurroundingTiles(int x, int y)
-        {
-			if (SurroundingTilePos.Contains(new(x, y))) 
+		private void ActivateSurroundingTiles(int x, int y)
+		{
+			if (SurroundingTilePos.Contains(new(x, y)))
 				SurroundingTilePos.Remove(new(x, y));
 
-            if (x + 1 <= _width - 1) ActivateTile(x+1, y);
-            if (x - 1 >= 0) ActivateTile(x - 1, y);
-			if (y + 1 <= _height - 1 ) ActivateTile(x, y +1);
+			if (x + 1 <= _width - 1) ActivateTile(x + 1, y);
+			if (x - 1 >= 0) ActivateTile(x - 1, y);
+			if (y + 1 <= _height - 1) ActivateTile(x, y + 1);
 			if (y - 1 >= 0) ActivateTile(x, y - 1);
 
 			void ActivateTile(int x, int y)
 			{
 				_grid[x, y].gameObject.SetActive(true);
 
-				if (!SurroundingTilePos.Contains(new(x, y)))
+				if (!SurroundingTilePos.Contains(new(x, y)) && GetTile(x, y).TileData == null)
+				{
 					SurroundingTilePos.Add(new(x, y));
+					PlaySurroundingTileEffect(_grid[x, y]);
+				}
 			}
-        }
+		}
 
-        public int GetPlacementConnectionCount(TileData tileData, Vector2Int pos)
-        {
-            int connections = 0;
+		public void PlayTileEffect(TileVisu visu)
+		{
+			visu.transform.localScale = Vector3.zero;
+			visu.transform.rotation = Quaternion.identity;
 
-            ZoneData[] myZones = tileData.Zones;
+			visu.transform.DOScale(Vector3.one, 0.5f)
+				.SetEase(Ease.OutBack);
+
+			visu.transform.DORotate(new Vector3(0, 0, 360), 0.5f, RotateMode.FastBeyond360)
+				.SetEase(Ease.OutCubic);
+		}
+
+		public void PlaySurroundingTileEffect(TileVisu visu)
+		{
+			visu.transform.localScale = Vector3.zero;
+
+			visu.transform.DORotate(new Vector3(0, 180, 0), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutBack);
+			visu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+		}
+
+		public int GetPlacementConnectionCount(TileData tileData, Vector2Int pos)
+		{
+			int connections = 0;
+
+			ZoneData[] myZones = tileData.Zones;
 
 			// Nord vs Sud
 			int? result = CheckNeighborValidity(pos.x, pos.y + 1, 0, 2);
@@ -135,7 +160,7 @@ namespace CardGame.Turns
 			if (result == 0) return 0;
 			else if (result == 1) connections++;
 
-            return connections;
+			return connections;
 
 			int? CheckNeighborValidity(int x, int y, int myZone, int otherZone)
 			{
@@ -154,7 +179,7 @@ namespace CardGame.Turns
 
 				return null;
 			}
-        }
+		}
 
 		public int GetPlacementConnectionCount(Vector2Int pos)
 		{
@@ -162,8 +187,8 @@ namespace CardGame.Turns
 		}
 
 		public override void OnDisable()
-        {
-            if (Storage.CheckInstance()) Storage.Instance.Delete(this);
-        }
-    }
+		{
+			if (Storage.CheckInstance()) Storage.Instance.Delete(this);
+		}
+	}
 }
