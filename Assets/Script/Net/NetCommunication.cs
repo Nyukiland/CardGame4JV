@@ -23,7 +23,7 @@ namespace CardGame.Net
 		public delegate void SendTileForHandEvent(int tileId);
 		public event SendTileForHandEvent TileForHand;
 
-		public delegate void SendTauntShakeEvent(Vector2 pos);
+		public delegate void SendTauntShakeEvent(Vector2 pos, bool special);
 		public event SendTauntShakeEvent SendTauntShake;
 
 		public delegate void TransmitValidation();
@@ -75,10 +75,10 @@ namespace CardGame.Net
 				SendGridServerRPC(dataList);
 		}
 
-		public void SendTauntShakeNet(Vector2 pos)
+		public void SendTauntShakeNet(Vector2 pos, bool special)
 		{
 			if (IsLocalPlayer)
-				SendTauntShakeServerRPC(pos);
+				SendTauntShakeServerRPC(pos, special);
 		}
 
 		public void TurnFinished()
@@ -178,11 +178,11 @@ namespace CardGame.Net
 		}
 
 		[ServerRpc(RequireOwnership = false)]
-		public void SendTauntShakeServerRPC(Vector2 pos, ServerRpcParams rpcParams = default)
+		public void SendTauntShakeServerRPC(Vector2 pos, bool special, ServerRpcParams rpcParams = default)
 		{
 			ulong senderClientId = rpcParams.Receive.SenderClientId;
 
-			ForEachOtherClient(senderClientId, x => x.CallTauntShakeClientRPC(pos));
+			ForEachOtherClient(senderClientId, x => x.CallTauntShakeClientRPC(pos, special));
 		}
 
 		[ServerRpc(RequireOwnership = true)]
@@ -249,9 +249,9 @@ namespace CardGame.Net
 		}
 
 		[ClientRpc(RequireOwnership = false)]
-		public void CallTauntShakeClientRPC(Vector2 pos)
+		public void CallTauntShakeClientRPC(Vector2 pos, bool special)
 		{
-			SendTauntShake?.Invoke(pos);
+			SendTauntShake?.Invoke(pos, special);
 		}
 
 		[ClientRpc(RequireOwnership = false)]

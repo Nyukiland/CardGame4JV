@@ -13,6 +13,9 @@ namespace CardGame.Turns
 		[SerializeField, Min(0)]
 		private float _duration = 0.1f;
 
+		[SerializeField, Min(0)]
+		private float _specialRotDuration = 0.3f;
+
 		[SerializeField]
 		private Vector2 _shakeStrength = new(0.05f, 0.05f);
 
@@ -21,6 +24,9 @@ namespace CardGame.Turns
 
 		[SerializeField]
 		private Vector2 _scaleDown = new(-0.4f, -0.4f);
+
+		[SerializeField, Range(0, 1)]
+		private float _probaSpecial;
 
 		private SendInfoAbility _sendInfo;
 
@@ -36,17 +42,34 @@ namespace CardGame.Turns
 			{
 				if (hit.collider.GetComponentInParent<TileVisu>() is TileVisu visu)
 				{
-					_sendInfo.SendTauntShake(visu.PositionOnGrid);
+					bool special = Random.Range(0f, 1f) < _probaSpecial;
 
-					ShakeTileVisu(visu);
+					_sendInfo.SendTauntShake(visu.PositionOnGrid, special);
+
+					ShakeTileVisu(visu, special);
 				}
 			}
 		}
 
-		public void ShakeTileVisu(TileVisu tile)
+		public void ShakeTileVisu(TileVisu tile, bool special)
 		{
-			tile.transform.DOShakePosition(_duration, _shakeStrength, _shakeIntensity);
-			tile.transform.DOPunchScale(_scaleDown, _duration);
+			Sequence seq = DOTween.Sequence();
+
+			if (!special)
+			{
+				seq.Append(tile.transform.DOShakePosition(_duration, _shakeStrength, _shakeIntensity));
+				seq.Join(tile.transform.DOPunchScale(_scaleDown, _duration));
+			}
+			else
+			{
+				tile.transform.rotation = Quaternion.identity;
+
+				seq.Append(tile.transform.DOPunchScale(_scaleDown, _duration));
+				seq.AppendInterval(0.02f);
+				seq.Append(tile.transform.DORotate(new Vector3(0, 0, 360), _specialRotDuration, RotateMode.FastBeyond360).SetEase(Ease.OutBack));
+			}
+
+			seq.Play();
 		}
 	}
 }

@@ -119,19 +119,24 @@ namespace CardGame.Turns
 			visu.transform.localScale = Vector3.zero;
 			visu.transform.rotation = Quaternion.identity;
 
-			visu.transform.DOScale(Vector3.one, 0.5f)
-				.SetEase(Ease.OutBack);
+			Sequence seq = DOTween.Sequence();
 
-			visu.transform.DORotate(new Vector3(0, 0, 360), 0.5f, RotateMode.FastBeyond360)
-				.SetEase(Ease.OutCubic);
+			seq.Append(visu.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack));
+			seq.Join(visu.transform.DORotate(new Vector3(0, 0, 360), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.OutCubic));
+
+			seq.Play();
 		}
 
 		public void PlaySurroundingTileEffect(TileVisu visu)
 		{
 			visu.transform.localScale = Vector3.zero;
 
-			visu.transform.DORotate(new Vector3(0, 180, 0), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutBack);
-			visu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+			Sequence seq = DOTween.Sequence();
+
+			seq.Append(visu.transform.DORotate(new Vector3(0, 360, 0), 0.3f, RotateMode.FastBeyond360).SetEase(Ease.OutBack));
+			seq.Join(visu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack));
+
+			seq.Play();
 		}
 
 		public int GetPlacementConnectionCount(TileData tileData, Vector2Int pos)

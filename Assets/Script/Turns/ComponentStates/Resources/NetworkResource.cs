@@ -126,9 +126,9 @@ namespace CardGame.Turns
 			IsFinished = true;
 		}
 
-		private void ShakeTile(Vector2 pos)
+		private void ShakeTile(Vector2 pos, bool special)
 		{
-			_tauntShakeTile.ShakeTileVisu(_grid.GetTile(Vector2Int.CeilToInt(pos)));
+			_tauntShakeTile.ShakeTileVisu(_grid.GetTile(Vector2Int.CeilToInt(pos)), special);
 		}
 	}
 }

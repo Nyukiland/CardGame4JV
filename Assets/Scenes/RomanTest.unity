@@ -912,6 +912,11 @@ MonoBehaviour:
         _layerTile:
           serializedVersion: 2
           m_Bits: 64
+        _duration: 0.1
+        _shakeStrength: {x: 0.05, y: 0.05}
+        _shakeIntensity: 20
+        _scaleDown: {x: -0.4, y: -0.4}
+        _probaSpecial: 1
     - rid: 4835484058177241183
       type: {class: GridManagerResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:

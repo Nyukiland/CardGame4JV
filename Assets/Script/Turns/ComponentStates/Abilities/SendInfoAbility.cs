@@ -47,10 +47,10 @@ namespace CardGame.Turns
 			return true;
 		}
 
-		public void SendTauntShake(Vector2 pos)
+		public void SendTauntShake(Vector2 pos, bool special)
 		{
 			if (!_net.IsNetActive()) return;
-			_net.NetCom.SendTauntShakeNet(pos);
+			_net.NetCom.SendTauntShakeNet(pos, special);
 		}
 
 		public bool SendTurnFinished()
