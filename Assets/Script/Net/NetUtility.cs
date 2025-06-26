@@ -6,7 +6,8 @@ namespace CardGame.Net
 {
 	public static class NetUtility
 	{
-		private const string Digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		private const string Digits = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+		private static int Length => Digits.Length;
 
 		//byte shift
 		//je comprend bof à chaque fois mais trust the process
@@ -40,7 +41,7 @@ namespace CardGame.Net
 			);
 		}
 
-		//use 36 symbol (letter + number)
+		//use N symbol (letter + number)
 		//transform the number into a code
 
 		private static string Encode(ulong value)
@@ -48,24 +49,30 @@ namespace CardGame.Net
 			string result = "";
 
 			if (value == 0)
-				return "0";
+				return Digits[0].ToString();
 
 			while (value > 0)
 			{
-				result = Digits[(int)(value % 36)] + result;
-				value /= 36;
+				result = Digits[(int)(value % (ulong)Length)] + result;
+				value /= (ulong)Length;
 			}
+
 			return result;
 		}
 
 		private static ulong Decode(string input)
 		{
 			ulong result = 0;
+
 			foreach (char c in input.ToUpperInvariant())
 			{
-				result *= 36;
-				result += (ulong)Digits.IndexOf(c);
+				int index = Digits.IndexOf(c);
+				if (index == -1)
+					throw new Exception($"Invalid character in code: {c}");
+
+				result = result * (ulong)Length + (ulong)index;
 			}
+
 			return result;
 		}
 
