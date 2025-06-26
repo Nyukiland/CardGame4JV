@@ -9,6 +9,8 @@ namespace CardGame.Turns
 {
 	public class AutoPlayAbility : Ability
 	{
+		private readonly Vector2Int InvalidPosition = new (-100, -100);
+
 		private GridManagerResource _grid;
 		private DrawPile _drawPile;
 
@@ -40,6 +42,14 @@ namespace CardGame.Turns
 		{
 			base.OnEnable();
 			GameManager.Instance.SoloTurns++;
+
+			if (_tilesInHand.Count == 0)
+			{
+				GameManager.Instance.SoloTurns++;
+				IsFinished = true;
+				return;
+			}
+
 			AutoPlay().Forget();
 		}
 
@@ -65,61 +75,76 @@ namespace CardGame.Turns
 			}
 		}
 
-		//need to split that in multiple unitask and await them
 		private async UniTask AutoPlay()
 		{
 			await UniTask.WaitForSeconds(_waitSec);
 
-			if (_tilesInHand.Count == 0)
-			{
-				Owner.SetState<PlaceTileCombinedState>();
-				return;
-			}
+			(TileData tileData, Vector2Int tilePlaced, int connection) = await FindTilePlacement();
 
-			//----------------------------------------
-			//find card placement
-			//fun triple loop
-			Vector2Int tilePlaced = new(-100, -100);
-			TileData tileData = null;
-			int connection = 0;
+			await PlayTile(tileData, tilePlaced, connection);
+			await EndPlay();
+		}
+
+		private async UniTask<(TileData tileData, Vector2Int tilePlaced, int connection)> FindTilePlacement()
+		{
+			await UniTask.Yield();
+
+			Vector2Int bestPosition = InvalidPosition;
+			TileData bestTile = null;
+			int bestConnection = 0;
+			int bestRotation;
+
 			foreach (TileData tile in _tilesInHand)
 			{
+				bestRotation = tile.TileRotationCount;
+
 				foreach (Vector2Int pos in _grid.SurroundingTilePos)
 				{
 					for (int i = 0; i < 4; i++)
 					{
-						connection = _grid.GetPlacementConnectionCount(tile, pos);
-						if (connection != 0)
-						{
-							tileData = tile;
-							tilePlaced = pos;
-							break;
-						}
-						else
-						{
-							tile.RotateTile();
-						}
-					}
+						int currentConnection = _grid.GetPlacementConnectionCount(tile, pos);
 
-					if (tilePlaced != new Vector2Int(-100, -100)) break;
+						if (currentConnection > bestConnection)
+						{
+							bestConnection = currentConnection;
+							bestTile = tile;
+							bestPosition = pos;
+
+							bestRotation = tile.TileRotationCount;
+						}
+
+						tile.RotateTile(); 
+					}
 				}
 
-				if (tilePlaced != new Vector2Int(-100, -100)) break;
+				if (bestTile == tile)
+					while (tile.TileRotationCount != bestRotation) tile.RotateTile();
 			}
 
-			//-------------------------
-			//actually play the tile
-			if (tilePlaced == new Vector2Int(-100, -100))
+			return (bestTile, bestPosition, bestConnection);
+		}
+
+
+		private async UniTask PlayTile(TileData tileData, Vector2Int tilePlaced, int connection)
+		{
+			await UniTask.Yield();
+
+			if (tilePlaced == InvalidPosition)
 			{
-				UnityEngine.Debug.LogWarning($"[{nameof(AutoPlayAbility)}] Failed to place tile due to no valid placement");
+				Debug.LogWarning($"[{nameof(AutoPlayAbility)}] Failed to place tile due to no valid placement");
+				return;
 			}
-			else
-			{
-				tileData.HasFlag = GameManager.Instance.FlagTurn;
-				_grid.SetTile(tileData, tilePlaced);
-				_tilesInHand.Remove(tileData);
-				GenerateTheoreticalHand(connection);
-			}
+
+			tileData.HasFlag = GameManager.Instance.FlagTurn;
+			_grid.SetTile(tileData, tilePlaced);
+			_tilesInHand.Remove(tileData);
+
+			GenerateTheoreticalHand(connection);
+		}
+
+		private async UniTask EndPlay()
+		{
+			await UniTask.Yield();
 
 			GameManager.Instance.SoloTurns++;
 			IsFinished = true;
