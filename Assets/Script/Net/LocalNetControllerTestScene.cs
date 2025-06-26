@@ -200,7 +200,7 @@ namespace CardGame.Net
 			}
 		}
 
-		public void TogglePublicSearch(bool isOn)
+		public override void TogglePublicSearch(bool isOn)
 		{
 			if (isOn)
 				_lanSearch.StartListening();

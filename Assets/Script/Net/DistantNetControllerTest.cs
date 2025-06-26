@@ -18,7 +18,9 @@ namespace CardGame.Net
 	public class DistantNetControllerTest : NetControllerParentTest
 	{
 		private string _lobbyId;
-		private CancellationTokenSource _heartbeatTokenSource;
+		private bool _publicSearchOn;
+		private CancellationTokenSource _heartbeatCancelationToken;
+		private CancellationTokenSource _publicSearchCancelationToken;
 
 		protected override void Start()
 		{
@@ -45,7 +47,31 @@ namespace CardGame.Net
 		public override void StopHosting()
 		{
 			base.StopHosting();
-			_heartbeatTokenSource?.Cancel();
+
+			StopHostingAsynch().Forget();
+		}
+
+		private async UniTask StopHostingAsynch()
+		{
+			if (_heartbeatCancelationToken != null)
+			{
+				_heartbeatCancelationToken.Cancel();
+				_heartbeatCancelationToken.Dispose();
+				_heartbeatCancelationToken = null;
+			}
+
+			if (!string.IsNullOrEmpty(_lobbyId))
+			{
+				try
+				{
+					await LobbyService.Instance.DeleteLobbyAsync(_lobbyId);
+				}
+				catch (LobbyServiceException e)
+				{
+					Debug.LogWarning($"[{nameof(DistantNetControllerTest)}] Failed to delete lobby: {e.Message}");
+				}
+				_lobbyId = null;
+			}
 		}
 
 		public override void StartHost()
@@ -60,43 +86,39 @@ namespace CardGame.Net
 			if (string.IsNullOrEmpty(_gameName.text)) return;
 			_joinPassword = _passwordField.text;
 
-			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(_maxPlayer-1);
+			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(_maxPlayer - 1);
 			_joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-			UnityEngine.Debug.Log(_joinCode);
 
-			//if (_toggleHost.isOn)
-			//{
-			//	CreateLobbyOptions createOptions = new()
-			//	{
-			//		IsPrivate = !_toggleHost.isOn,
-			//		Data = new Dictionary<string, DataObject>
-			//	{
-			//		{ "relayJoinCode", new DataObject(DataObject.VisibilityOptions.Member, _joinCode) },
-			//		{ "password", new DataObject(DataObject.VisibilityOptions.Private, _passwordField.text) }
-			//	}
-			//	};
+			if (_toggleHost.isOn)
+			{
+				CreateLobbyOptions createOptions = new()
+				{
+					IsPrivate = false,
+					Data = new Dictionary<string, DataObject>
+					{
+						{ "relayJoinCode", new DataObject(DataObject.VisibilityOptions.Public, _joinCode) },
+						{ "password", new DataObject(DataObject.VisibilityOptions.Private, _joinPassword) }
+					}
+				};
 
-			//	Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(_gameName.text, _maxPlayer, createOptions);
-			//	_lobbyId = lobby.Id;
-			//}
+				Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(_gameName.text, _maxPlayer, createOptions);
+				_lobbyId = lobby.Id;
+
+				_heartbeatCancelationToken = new CancellationTokenSource();
+				_ = HeartbeatLobby(_heartbeatCancelationToken.Token);
+			}
 
 			_transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
 			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
 			NetworkManager.Singleton.StartHost();
 
 			await GetNetComForThisClientAsync();
-
-			//if (_toggleHost.isOn)
-			//{
-			//	_heartbeatTokenSource = new CancellationTokenSource();
-			//	_ = HeartbeatLobby(_heartbeatTokenSource.Token);
-			//}
 		}
 
 		public override void JoinGame(string code = null)
 		{
 			base.JoinGame();
-			JoinGameAsynch().Forget();
+			JoinGameAsynch(code).Forget();
 		}
 
 		private async UniTask JoinGameAsynch(string code = null)
@@ -106,11 +128,6 @@ namespace CardGame.Net
 
 			try
 			{
-				UnityEngine.Debug.Log(code);
-
-				//Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code);
-				//_joinCode = lobby.Data["relayJoinCode"].Value;
-
 				JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(code);
 				_transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
 
@@ -133,7 +150,7 @@ namespace CardGame.Net
 				while (!token.IsCancellationRequested && NetworkManager.Singleton.IsHost)
 				{
 					await LobbyService.Instance.SendHeartbeatPingAsync(_lobbyId);
-					await UniTask.Delay(15000);
+					await UniTask.Delay(15000, cancellationToken: token);
 				}
 			}
 			catch (OperationCanceledException)
@@ -142,17 +159,58 @@ namespace CardGame.Net
 			}
 		}
 
-		public async UniTask RefreshPublicLobbies()
+		public override void TogglePublicSearch(bool isOn)
 		{
-			QueryResponse result = await LobbyService.Instance.QueryLobbiesAsync();
-			List<PublicSessionVisu> sessions = _publicSessionVerticalLayout.GetComponentsInChildren<PublicSessionVisu>().ToList();
-			foreach (PublicSessionVisu s in sessions) Destroy(s.gameObject);
-
-			foreach (Lobby lobby in result.Results)
+			if (_publicSearchOn && !isOn)
 			{
-				PublicSessionVisu visu = Instantiate(_displayPublic, _publicSessionVerticalLayout.transform).GetComponent<PublicSessionVisu>();
-				visu.SetUpVisu(lobby.Name, lobby.LobbyCode, this);
+				if (_publicSearchCancelationToken != null)
+				{
+					_publicSearchCancelationToken.Cancel();
+					_publicSearchCancelationToken.Dispose();
+					_publicSearchCancelationToken = null;
+				}
+			}
+			else if (!_publicSearchOn && isOn)
+			{
+				_publicSearchCancelationToken = new CancellationTokenSource();
+				RefreshPublicLobbies(_publicSearchCancelationToken.Token).Forget();
+			}
+
+			_publicSearchOn = isOn;
+		}
+
+		public async UniTask RefreshPublicLobbies(CancellationToken token)
+		{
+			try
+			{
+				while (!token.IsCancellationRequested)
+				{
+					QueryResponse result = await LobbyService.Instance.QueryLobbiesAsync();
+
+					List<PublicSessionVisu> sessions = _publicSessionVerticalLayout.GetComponentsInChildren<PublicSessionVisu>().ToList();
+					foreach (PublicSessionVisu s in sessions)
+						UnityEngine.Object.Destroy(s.gameObject);
+
+					foreach (Lobby lobby in result.Results)
+					{
+						lobby.Data.TryGetValue("relayJoinCode", out DataObject dataObject);
+						PublicSessionVisu visu = UnityEngine.Object.Instantiate(_displayPublic, _publicSessionVerticalLayout.transform)
+							.GetComponent<PublicSessionVisu>();
+						visu.SetUpVisu(lobby.Name, dataObject.Value, this);
+					}
+
+					await UniTask.Delay(2000, cancellationToken: token);
+				}
+			}
+			catch (OperationCanceledException)
+			{
+				//exit on cancel
+			}
+			catch (Exception ex)
+			{
+				Debug.LogError($"Error refreshing lobbies: {ex.Message}");
 			}
 		}
+
 	}
 }

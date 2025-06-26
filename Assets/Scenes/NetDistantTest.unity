@@ -336,7 +336,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1352410950}
+        m_TargetAssemblyTypeName: CardGame.Net.DistantNetControllerTest, Assembly-CSharp
+        m_MethodName: TogglePublicSearch
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 0
 --- !u!1 &139686821
 GameObject:
@@ -2697,6 +2709,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _netCommunication: {fileID: 0}
+  _displayPublic: {fileID: 5517502184698046060, guid: 75282f85b0baf2c47add13a6bbb1982c, type: 3}
+  _maxPlayer: 4
   _netComText: {fileID: 1760060558}
   _receivedInfo: {fileID: 611764647}
   _passwordField: {fileID: 287902978}
@@ -2704,8 +2718,6 @@ MonoBehaviour:
   _gameName: {fileID: 1965660251}
   _toggleHost: {fileID: 1438860544}
   _publicSessionVerticalLayout: {fileID: 1825492406}
-  _displayPublic: {fileID: 5517502184698046060, guid: 75282f85b0baf2c47add13a6bbb1982c, type: 3}
-  _maxPlayer: 4
 --- !u!1 &1369387020
 GameObject:
   m_ObjectHideFlags: 0

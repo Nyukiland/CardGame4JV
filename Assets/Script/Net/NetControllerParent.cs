@@ -52,6 +52,8 @@ namespace CardGame.Net
 		public virtual void StartHost() { }
 		public virtual void JoinGame(string code = null) { }
 
+		public virtual void TogglePublicSearch(bool isOn) { }
+
 		protected virtual void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 		{
 			FastBufferReader reader = new(request.Payload, Allocator.None);
