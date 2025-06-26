@@ -1,7 +1,8 @@
-using CardGame.Card;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using CardGame.StateMachine;
 using CardGame.Utility;
-using Cysharp.Threading.Tasks;
+using CardGame.Card;
 using UnityEngine;
 
 namespace CardGame.Turns
@@ -9,65 +10,124 @@ namespace CardGame.Turns
 	public class AutoPlayAbility : Ability
 	{
 		private GridManagerResource _grid;
+		private DrawPile _drawPile;
 
 		[SerializeField]
 		private float _waitSec = 2f;
 
-        public override void Init(Controller owner)
-        {
-            base.Init(owner);
-            _grid = Owner.GetStateComponent<GridManagerResource>();
-        }
+		[SerializeField]
+		private List<TileData> _tilesInHand = new();
 
-        public override void OnEnable()
-        {
-            base.OnEnable();
-            AutoPlay().Forget();
-        }
+		public bool IsFinished
+		{
+			get;
+			private set;
+		}
 
-        private async UniTask AutoPlay()
-        {
-            await UniTask.WaitForSeconds(_waitSec);
-            DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
+		public override void Init(Controller owner)
+		{
+			base.Init(owner);
+			_grid = Owner.GetStateComponent<GridManagerResource>();
+		}
 
-            // Tire une tuile dans la pile
-            int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
-            if (tileId == -1)
-            {
-                Owner.SetState<PlaceTileCombinedState>();
-                return;
-            }
+		public override void LateInit()
+		{
+			base.LateInit();
+			_drawPile = Storage.Instance.GetElement<DrawPile>();
+		}
 
-            // Cherche la tuile dans les possibilités pour avoir les datas associés
-            TileSettings tileSettings = null;
+		public override void OnEnable()
+		{
+			base.OnEnable();
+			GameManager.Instance.SoloTurns++;
+			AutoPlay().Forget();
+		}
 
-            foreach (TileSettings setting in drawPile.AllTileSettings)
-            {
-                if (setting.IdCode == tileId)
-                {
-                    tileSettings = setting;
-                    break;
-                }
-            }
+		public override void OnDisable()
+		{
+			base.OnDisable();
+			IsFinished = false;
+		}
 
+		public void GenerateTheoreticalHand(int count)
+		{
+			for (int i = 0; i < count; i++)
+			{
+				TileSettings tileSettings = _drawPile.GetTileFromDrawPile();
 
-            bool hasValidPosition = false;
-            while(hasValidPosition == false)
-            {
-                int xPosition = Random.Range(0, _grid.Width - 1);
-                int yPosition = Random.Range(0, _grid.Height - 1);
+				if (tileSettings == null) return;
 
-                if (_grid.GetTile(xPosition, yPosition).TileData != null) continue;
+				TileData tileData = new();
+				tileData.InitTile(tileSettings);
+				tileData.OwnerPlayerIndex = 1;
 
-                TileData tileData = new();
-                tileData.InitTile(tileSettings);
-                _grid.SetTile(tileData, xPosition, yPosition);
-                hasValidPosition = true;
-            }
+				_tilesInHand.Add(tileData);
+			}
+		}
 
+		//need to split that in multiple unitask and await them
+		private async UniTask AutoPlay()
+		{
+			await UniTask.WaitForSeconds(_waitSec);
 
+			if (_tilesInHand.Count == 0)
+			{
+				Owner.SetState<PlaceTileCombinedState>();
+				return;
+			}
 
-            Owner.SetState<PlaceTileCombinedState>();
-        }
-    }
+			//----------------------------------------
+			//find card placement
+			//fun triple loop
+			Vector2Int tilePlaced = new(-100, -100);
+			TileData tileData = null;
+			int connection = 0;
+			foreach (TileData tile in _tilesInHand)
+			{
+				foreach (Vector2Int pos in _grid.SurroundingTilePos)
+				{
+					for (int i = 0; i < 4; i++)
+					{
+						connection = _grid.GetPlacementConnectionCount(tile, pos);
+						if (connection != 0)
+						{
+							tileData = tile;
+							tilePlaced = pos;
+							break;
+						}
+						else
+						{
+							tile.RotateTile();
+						}
+					}
+
+					if (tilePlaced != new Vector2Int(-100, -100)) break;
+				}
+
+				if (tilePlaced != new Vector2Int(-100, -100)) break;
+			}
+
+			//-------------------------
+			//actually play the tile
+			if (tilePlaced == new Vector2Int(-100, -100))
+			{
+				UnityEngine.Debug.LogWarning($"[{nameof(AutoPlayAbility)}] Failed to place tile due to no valid placement");
+			}
+			else
+			{
+				tileData.HasFlag = GameManager.Instance.FlagTurn;
+				_grid.SetTile(tileData, tilePlaced);
+				_tilesInHand.Remove(tileData);
+				GenerateTheoreticalHand(connection);
+			}
+
+			GameManager.Instance.SoloTurns++;
+			IsFinished = true;
+		}
+
+		public override string DisplayInfo()
+		{
+			return $"Tile in hand: {_tilesInHand.Count} \n";
+		}
+	}
 }

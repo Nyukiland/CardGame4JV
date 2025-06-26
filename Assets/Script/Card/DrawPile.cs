@@ -20,14 +20,20 @@ namespace CardGame
 			AsyncAwake().Forget();
 		}
 
-		private async UniTask AsyncAwake()
-		{
-			await LoadTiles();
-			
-			_tileInDrawPile = new(AllTileSettings);
-		}
+        private async UniTask AsyncAwake()
+        {
+            await LoadTiles();
 
-		private void OnEnable()
+
+            _tileInDrawPile = new List<TileSettings>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                _tileInDrawPile.AddRange(AllTileSettings);
+            }
+        }
+
+        private void OnEnable()
 		{
 			Storage.Instance.Register(this);
 		}
@@ -54,14 +60,43 @@ namespace CardGame
 			}
 		}
 
+		public TileSettings GetTileFromDrawPile()
+		{
+			if (_tileInDrawPile.Count == 0) return null;
+
+			int index = Random.Range(0, _tileInDrawPile.Count);
+			TileSettings settings = _tileInDrawPile[index];
+			_tileInDrawPile.RemoveAt(index);
+
+			return settings;
+		}
+
 		public int GetTileIDFromDrawPile()
 		{
 			if (_tileInDrawPile.Count == 0) return -1;
-			int index = Random.Range(0, _tileInDrawPile.Count - 1);
-			TileSettings settings = _tileInDrawPile[index];
+            int index = Random.Range(0, _tileInDrawPile.Count);
+            TileSettings settings = _tileInDrawPile[index];
 			_tileInDrawPile.RemoveAt(index);
 
 			return settings.IdCode;
 		}	
+
+		public TileSettings GetTileFromID(int settingsID)
+		{
+			foreach (TileSettings setting in AllTileSettings)
+			{
+				if (setting.IdCode == settingsID)
+				{
+					return setting;
+				}
+			}
+
+			return null;
+		}
+
+		public void DiscardTile(int settingsID) 
+		{
+			_tileInDrawPile.Add(GetTileFromID(settingsID));
+		}
     }
 }

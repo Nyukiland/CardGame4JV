@@ -39,6 +39,20 @@ namespace CardGame.Turns
 			_net.NetCom.SendTilePlaced(new DataToSend(send, pos));
 		}
 
+		public bool SendDiscardTile(int ID)
+		{
+			if (!_net.IsNetActive()) return false;
+
+			_net.NetCom.SendDiscard(ID);
+			return true;
+		}
+
+		public void SendTauntShake(Vector2 pos, bool special)
+		{
+			if (!_net.IsNetActive()) return;
+			_net.NetCom.SendTauntShakeNet(pos, special);
+		}
+
 		public bool SendTurnFinished()
 		{
 			if (!_net.IsNetActive()) return false;

@@ -15,21 +15,29 @@ namespace CardGame.Turns
 		public NetCommunication NetCom { get; private set; }
 
 		private CreateHandAbility _createHand;
+		private TauntShakeTileAbility _tauntShakeTile;
+		private GridManagerResource _grid;
 
 		[SerializeField]
 		private DrawPile _drawPile;
 
-		private GridManagerResource _grid;
+
+		public bool IsFinished
+		{
+			get;
+			set;
+		}
 
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
 
 			_createHand = owner.GetStateComponent<CreateHandAbility>();
-            _grid = owner.GetStateComponent<GridManagerResource>();
+			_tauntShakeTile = owner.GetStateComponent<TauntShakeTileAbility>();
+			_grid = owner.GetStateComponent<GridManagerResource>();
 
-            GetNetComForThisClientAsync().Forget();
-
+			if (GameManager.Instance.IsNetCurrentlyActive())
+				GetNetComForThisClientAsync().Forget();
 		}
 
 		public bool IsNetActive()
@@ -41,8 +49,17 @@ namespace CardGame.Turns
 		{
 			NetCommunication netCom = null;
 
-			await UniTask.WaitUntil(() =>
-				NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom));
+			int increment = 0;
+
+			while (true)
+			{
+				NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom);
+
+				if (netCom != null || increment >= 300) break;
+				increment++;
+
+				await UniTask.Yield();
+			}
 
 			NetCom = netCom;
 
@@ -53,6 +70,8 @@ namespace CardGame.Turns
 				NetCom.GridUpdated += UpdateGrid;
 				NetCom.TileForHand += UpdateHand;
 				NetCom.SendYourTurn += GoMyTurn;
+				NetCom.SendTauntShake += ShakeTile;
+
 			}
 		}
 
@@ -65,6 +84,9 @@ namespace CardGame.Turns
 				NetCom.TileMoved -= UpdateTileInMovement;
 				NetCom.TilePlaced -= UpdateGridPlaced;
 				NetCom.GridUpdated -= UpdateGrid;
+				NetCom.TileForHand -= UpdateHand;
+				NetCom.SendYourTurn -= GoMyTurn;
+				NetCom.SendTauntShake -= ShakeTile;
 			}
 		}
 
@@ -81,16 +103,7 @@ namespace CardGame.Turns
 
 		private void UpdateHand(int ID)
 		{
-			TileSettings tileSettings = null;
-
-			foreach (TileSettings setting in _drawPile.AllTileSettings)
-			{
-				if (setting.IdCode == ID)
-				{
-					tileSettings = setting;
-					break;
-				}
-			}
+			TileSettings tileSettings = _drawPile.GetTileFromID(ID);
 
 			_createHand.CreateTile(tileSettings);
 		}
@@ -110,7 +123,12 @@ namespace CardGame.Turns
 
 		private void GoMyTurn()
 		{
-			Owner.SetState<PlaceTileCombinedState>();
+			IsFinished = true;
+		}
+
+		private void ShakeTile(Vector2 pos, bool special)
+		{
+			_tauntShakeTile.ShakeTileVisu(_grid.GetTile(Vector2Int.CeilToInt(pos)), special);
 		}
 	}
 }

@@ -1,68 +1,92 @@
 using CardGame.Card;
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CardGame.UI
 {
-	public class TileVisu : MonoBehaviour
-	{
+    public class TileVisu : MonoBehaviour
+    {
+		[SerializeField]
+		private string _layerGrid;
+		[SerializeField]
+		private string _layerHand;
+
+        [Space(10)]
+
         [SerializeField]
         private MeshRenderer _visuValidity;
         [SerializeField]
-		private MeshRenderer _visuNorth;
-		[SerializeField]
-		private MeshRenderer _visuSouth;
-		[SerializeField]
-		private MeshRenderer _visuEast;
-		[SerializeField]
-		private MeshRenderer _visuWest;
-		[SerializeField]
-		private MeshRenderer _visuCenter;
+        private MeshRenderer _visuNorth;
+        [SerializeField]
+        private MeshRenderer _visuSouth;
+        [SerializeField]
+        private MeshRenderer _visuEast;
+        [SerializeField]
+        private MeshRenderer _visuWest;
+        [SerializeField]
+        private MeshRenderer _visuCenter;
 
-		[Space(10)]
+        [Space(10)]
 
-		[SerializeField]
-		private Material _red;
-		[SerializeField]
-		private Material _green;
-		[SerializeField]
-		private Material _blue;
-		[SerializeField]
-		private Material _white;
+        [SerializeField]
+        private Material _red;
+        [SerializeField]
+        private Material _green;
+        [SerializeField]
+        private Material _blue;
+        [SerializeField]
+        private Material _white;
+        [SerializeField]
+        private Material _grey; // default
+        [SerializeField]
+        private Material _black; // Not valid
+        [SerializeField]
+        private Material _yellow; // valid
+        [SerializeField]
+        private Material _purple; // flag
 
-		public TileData TileData { get; set; }
+        [Space(10)]
+
+        [SerializeField] private TMPro.TextMeshPro _ownerTextMeshPro;
+        public TileData TileData { get; set; }
+
+		public Vector2 PositionOnGrid { get;  private set; }
 
         private void Start()
         {
-			UpdateTile(TileData);
+            UpdateTile(TileData);
+            _ownerTextMeshPro.text = "";
         }
 
         public void UpdateTile(TileData data)
-		{
-			TileData = data;
-			UpdateVisu();
-		}
+        {
+            TileData = data;
+            UpdateVisu();
+        }
 
-		public void ChangeParent(Transform parent)
-		{
-			gameObject.transform.SetParent(parent);
-		}
+        public void ChangeParent(Transform parent)
+        {
+            gameObject.transform.SetParent(parent);
+        }
 
-		private void UpdateVisu()
-		{
+        private void UpdateVisu()
+        {
+
 			List<ZoneData> zones = new();
 
-			if (TileData == null)
-			{
+            if (TileData == null)
+            {
                 _visuNorth.enabled = false;
                 _visuSouth.enabled = false;
                 _visuEast.enabled = false;
                 _visuWest.enabled = false;
                 _visuCenter.enabled = false;
 
-				return;
+                return;
             }
+
+            _ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : "";
+            _visuValidity.material = TileData.HasFlag ? _purple : _grey; 
 
             _visuNorth.enabled = true;
             _visuSouth.enabled = true;
@@ -88,46 +112,65 @@ namespace CardGame.UI
             //temp
             _visuCenter.enabled = false;
 
-			for (int i = 0; i < zones.Count - 1; i++)
-			{
-				if (!zones[i].isOpen)
-					continue;
+            for (int i = 0; i < zones.Count - 1; i++)
+            {
+                if (!zones[i].isOpen)
+                    continue;
 
-				for (int j = i + 1; j < zones.Count; j++)
-				{
-					if (!zones[j].isOpen)
-						continue;
+                for (int j = i + 1; j < zones.Count; j++)
+                {
+                    if (!zones[j].isOpen)
+                        continue;
 
-					if (zones[i].environment == zones[j].environment)
-					{
-						_visuCenter.enabled = true;
-						_visuCenter.material = GetMaterialForType(zones[i].environment);
-						return;
-					}
-				}
-			}
-		}
-
-		public void ChangeValidityVisual(bool isValid)
-		{
-			_visuValidity.material = isValid ? _green : _red;
+                    if (zones[i].environment == zones[j].environment)
+                    {
+                        _visuCenter.enabled = true;
+                        _visuCenter.material = GetMaterialForType(zones[i].environment);
+                        return;
+                    }
+                }
+            }
         }
 
-		private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
-		{
-			switch (type)
-			{
-				case ENVIRONEMENT_TYPE.Forest:
-					return _green;
-				case ENVIRONEMENT_TYPE.Snow:
-					return _white;
-				case ENVIRONEMENT_TYPE.Lava:
-					return _red;
-				case ENVIRONEMENT_TYPE.River:
-					return _blue;
-			}
+        public void ChangeValidityVisual(bool isValid)
+        {
+            _visuValidity.material = isValid ? _yellow : _black;
+        }
 
-			return null;
+        public void ResetValidityVisual()
+        {
+            _visuValidity.material = _grey;
+        }
+
+        //public void SetNewOwner()
+        //{
+        //    Debug.Log($"Second show, Played tile by player {GameManager.Instance.PlayerIndex}");
+        //    Debug.Log($"{GameManager.Instance.GetInfo()}");
+        //}
+
+        private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
+        {
+            switch (type)
+            {
+                case ENVIRONEMENT_TYPE.Forest:
+                    return _green;
+                case ENVIRONEMENT_TYPE.Snow:
+                    return _white;
+                case ENVIRONEMENT_TYPE.Lava:
+                    return _red;
+                case ENVIRONEMENT_TYPE.River:
+                    return _blue;
+            }
+
+            return null;
+        }
+
+		public void SetTileLayerGrid(bool isOnGrid)
+		{
+			if (isOnGrid) gameObject.layer = LayerMask.NameToLayer(_layerGrid);
+			else gameObject.layer = LayerMask.NameToLayer(_layerHand);
 		}
-	}
+
+		public void SetTilePosOnGrid(Vector2 pos) => PositionOnGrid = pos;
+    }
 }

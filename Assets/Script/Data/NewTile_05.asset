@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: NewTile_05
   m_EditorClassIdentifier: 
   _northZone:
-    environment: 0
+    environment: 1
     isOpen: 0
   _eastZone:
-    environment: 0
-    isOpen: 0
+    environment: 3
+    isOpen: 1
   _southZone:
-    environment: 0
-    isOpen: 0
+    environment: 3
+    isOpen: 1
   _westZone:
-    environment: 0
-    isOpen: 0
+    environment: 3
+    isOpen: 1
   _cardEffect: []
   _cardFeedback: []
   references:

@@ -23,7 +23,7 @@ MonoBehaviour:
     isOpen: 1
   _westZone:
     environment: 1
-    isOpen: 0
+    isOpen: 1
   _cardEffect: []
   _cardFeedback: []
   references:

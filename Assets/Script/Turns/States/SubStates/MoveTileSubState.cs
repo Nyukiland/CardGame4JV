@@ -43,17 +43,10 @@ namespace CardGame.Turns
             {
                 //Debug.Log("End touching");
 
-                bool wasHolding = _isHolding;
                 _cancelToken?.Cancel();
                 _cancelToken = null;
 
-                if (wasHolding)
-                {
-                    //Debug.Log("End Holding -> Release");
-                    Vector2 currentPos = Controller.GetActionValue<Vector2>("TouchPos");
-                    _moveCardAbility.ReleaseCard(currentPos);
-                }
-                else
+                if (!_isHolding)
                 {
                     //Debug.Log("Tap detected -> Rotate");
                     _rotateCardAbility.RotateCard(_startPos);

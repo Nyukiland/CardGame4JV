@@ -8,14 +8,20 @@ namespace CardGame.Turns
 {
 	public class MoveTileAbility : Ability
 	{
+		[SerializeField]
+		private LayerMask _layerTile;
+
 		private GridManagerResource _gridManager;
 		private SendInfoAbility _sender;
 		private ZoneHolderResource _handResource;
-		private CreateHandAbility _createHand;
 
-		private TileVisu _currentTile;
+		public TileVisu CurrentTile
+		{
+			get;
+			set;
+		}
 
-		public bool CanPlaceOnGrid { get; set; } = false;
+        public bool CanPlaceOnGrid { get; set; } = false;
 
 		public override void Init(Controller owner)
 		{
@@ -23,82 +29,50 @@ namespace CardGame.Turns
 			_handResource = owner.GetStateComponent<ZoneHolderResource>();
 			_sender = owner.GetStateComponent<SendInfoAbility>();
             _gridManager = owner.GetStateComponent<GridManagerResource>();
-			_createHand = owner.GetStateComponent<CreateHandAbility>();
         }
 
 		public void PickCard(Vector2 position)
 		{
-			if (Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100))
+			if (Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100, _layerTile))
 			{
 				if (hit.collider.GetComponentInParent<TileVisu>() is TileVisu visu)
 				{
 					_handResource.RemoveTileFromHand(visu.gameObject);
-					_currentTile = visu;
+					CurrentTile = visu;
 				}
 			}
 		}
 
-		public void MoveCard(Vector2 position)
-		{
-			if (_currentTile == null)
-				return;
+        public void MoveCard(Vector2 position)
+        {
+            if (CurrentTile == null)
+                return;
 
-			Vector3 pos = Camera.main.ScreenToWorldPoint(position);
-			pos = Vector3Int.FloorToInt(pos);
-			pos += Camera.main.transform.forward * 2;
+            // Deplacement de la tuile
+            Vector3 pos = Camera.main.ScreenToWorldPoint(position);
+            pos = Vector3Int.FloorToInt(pos);
+            pos += Camera.main.transform.forward * 2;
+            CurrentTile.transform.position = pos;
 
-			_currentTile.transform.position = pos;
-		}
+            // Verification de sa validity
+            if (!CanPlaceOnGrid || _handResource.IsInHand(position)) //on fait rien quand c'est dans la main ou si on ne peut pas la placer
+            {
+                CurrentTile.ResetValidityVisual();
+                return;
+            }
 
-		public void ReleaseCard(Vector2 position)
-		{
-			if (_currentTile == null)
-				return;
+            Vector2Int gridPos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
+            TileVisu target = _gridManager.GetTile(gridPos);
 
-			if (_handResource.IsInHand(position))
-			{
-				_handResource.GiveTileToHand(_currentTile.gameObject);
-				return;
-			}
-
-			Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
-
-			if (CanPlaceOnGrid && _gridManager.GetTile(pos) != null && _gridManager.GetTile(pos).TileData == null)
-			{
-				_gridManager.SetTile(_currentTile.TileData, pos);
-
-				_sender.SendInfoTilePlaced(_currentTile.TileData, pos);
-				if (!_sender.SendTurnFinished())
-				{
-					SoloDrawCard();
-				}
-
-				Owner.SetState<NextPlayerCombinedState>();
-
-				GameObject.Destroy(_currentTile.gameObject);
-			}
-			else 
-				_handResource.GiveTileToHand(_currentTile.gameObject);
-		}
-
-		private void SoloDrawCard()
-		{
-			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
-
-			int tileId = drawPile.GetTileIDFromDrawPile();
-			if (tileId == -1) return;
-
-			TileSettings tileSettings = null;
-			foreach (TileSettings setting in drawPile.AllTileSettings)
-			{
-				if (setting.IdCode == tileId)
-				{
-					tileSettings = setting;
-					break;
-				}
-			}
-
-			_createHand.CreateTile(tileSettings);
-		}
-	}
+            if (target == null || target.TileData != null)
+            {
+                CurrentTile.ChangeValidityVisual(false); // noir
+            }
+            else
+            {
+                int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
+                CurrentTile.ChangeValidityVisual(connections > 0); // jaune si > 0, sinon noir
+            }
+        }
+    }
 }
