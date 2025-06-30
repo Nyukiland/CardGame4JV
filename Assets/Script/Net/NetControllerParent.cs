@@ -53,14 +53,22 @@ namespace CardGame.Net
 
 		protected virtual void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 		{
-			FastBufferReader reader = new(request.Payload, Allocator.None);
+			if (request.ClientNetworkId == NetworkManager.Singleton.LocalClientId)
+			{
+				response.Approved = true;
+				response.CreatePlayerObject = true;
+				response.Pending = false;
+				return;
+			}
+
+			using FastBufferReader reader = new(request.Payload, Allocator.Temp);
 			reader.ReadValueSafe(out FixedString32Bytes receivedPassword);
 
 			if (NetworkManager.Singleton.ConnectedClients.Count > 4)
 			{
 				response.Approved = false;
 				response.Pending = false;
-				Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Connection rejected: game is full.", this);
+				Debug.LogWarning($"[{nameof(NetControllerParent)}] Connection rejected: game is full.", this);
 				return;
 			}
 
@@ -72,7 +80,7 @@ namespace CardGame.Net
 			else
 			{
 				response.Approved = false;
-				Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Connection rejected: wrong password", this);
+				Debug.LogWarning($"[{nameof(NetControllerParent)}] Connection rejected: wrong password", this);
 			}
 
 			response.Pending = false;
