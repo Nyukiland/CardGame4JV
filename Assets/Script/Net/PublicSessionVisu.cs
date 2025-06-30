@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CardGame.Net
 {
@@ -7,6 +8,8 @@ namespace CardGame.Net
 	{
 		[SerializeField]
 		private TextMeshProUGUI _textName, _textCode;
+
+		[SerializeField] private Button _connectButton;
 
 		public string GameName { private set; get; }
 		private string _code;
@@ -22,11 +25,12 @@ namespace CardGame.Net
 			_code = code;
 
 			_testLinkUI = link;
+			_connectButton.onClick.AddListener(JoinSession);
 		}
 
 		public void JoinSession()
 		{
-			_testLinkUI.JoinGame(_code);
+			// _testLinkUI.JoinGame(_code);
 		}
 		
 		// Used only for tests

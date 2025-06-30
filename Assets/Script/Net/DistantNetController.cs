@@ -1,22 +1,24 @@
-using Unity.Services.Lobbies.Models;
-using Unity.Services.Authentication;
-using Unity.Services.Relay.Models;
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using Unity.Services.Lobbies;
-using Unity.Services.Relay;
-using Unity.Services.Core;
-using Unity.Collections;
-using System.Threading;
-using Unity.Netcode;
-using System.Linq;
-using UnityEngine;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using CardGame.UI;
+using Cysharp.Threading.Tasks;
+using Unity.Collections;
+using Unity.Netcode;
+using Unity.Services.Authentication;
+using Unity.Services.Core;
+using Unity.Services.Lobbies;
+using Unity.Services.Lobbies.Models;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
+using UnityEngine;
 
 namespace CardGame.Net
 {
-	public class DistantNetControllerTest : NetControllerParentTest
+	public class DistantNetController : NetControllerParent
 	{
+		[SerializeField] private NetworkUI _networkUI;
 		private string _lobbyId;
 		private bool _publicSearchOn;
 		private CancellationTokenSource _heartbeatCancellationToken;
@@ -25,9 +27,29 @@ namespace CardGame.Net
 		protected override void Start()
 		{
 			base.Start();
+			_networkUI.TogglePublicEvent += TogglePublicSearch;
+			_networkUI.StartHostEvent += StartHost;
+			_networkUI.JoinGameEvent += JoinGame;
+			_networkUI.UnhostEvent += StopHosting;
+			_networkUI.CopyCodeEvent += CopyJoinCode;
+			_networkUI.QuitGameEvent += DisconnectFromGame;
+			_networkUI.PlayGameEvent += LaunchGame;
+			_networkUI.ToggleDistantEvent += ToggleDistant;
 
 			//should be called by a button later
 			Launch();
+		}
+
+		private void OnDestroy()
+		{
+			_networkUI.TogglePublicEvent -= TogglePublicSearch;
+			_networkUI.StartHostEvent -= StartHost;
+			_networkUI.JoinGameEvent -= JoinGame;
+			_networkUI.UnhostEvent -= StopHosting;
+			_networkUI.CopyCodeEvent -= CopyJoinCode;
+			_networkUI.QuitGameEvent -= DisconnectFromGame;
+			_networkUI.PlayGameEvent -= LaunchGame;
+			_networkUI.ToggleDistantEvent -= ToggleDistant;
 		}
 
 		protected override void Launch()
@@ -63,6 +85,9 @@ namespace CardGame.Net
 				_heartbeatCancellationToken.Dispose();
 				_heartbeatCancellationToken = null;
 			}
+			
+			NetworkManager.Singleton.OnConnectionEvent -= CallOnConnect;
+			NetworkManager.Singleton.OnClientDisconnectCallback -= CallOnDisconnect;
 
 			if (!string.IsNullOrEmpty(_lobbyId))
 			{
@@ -72,7 +97,7 @@ namespace CardGame.Net
 				}
 				catch (LobbyServiceException e)
 				{
-					Debug.LogWarning($"[{nameof(DistantNetControllerTest)}] Failed to delete lobby: {e.Message}");
+					Debug.LogWarning($"[{nameof(DistantNetController)}] Failed to delete lobby: {e.Message}");
 				}
 				_lobbyId = null;
 			}
@@ -80,7 +105,7 @@ namespace CardGame.Net
 
 		protected override void StartHost()
 		{
-			if (!_isDistant) return;
+			if (!_isDistant) return;	
 			
 			base.StartHost();
 
@@ -91,13 +116,13 @@ namespace CardGame.Net
 		{
 			if (!_isDistant) return;
 			
-			if (string.IsNullOrEmpty(_gameName.text)) return;
-			_joinPassword = _passwordField.text;
+			if (string.IsNullOrEmpty(_networkUI.PlayerName)) return;
+			_joinPassword = _networkUI.Password;
 
 			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(_maxPlayer - 1);
 			_joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-			if (_toggleHost.isOn)
+			if (_networkUI.IsPublicShown)
 			{
 				CreateLobbyOptions createOptions = new()
 				{
@@ -109,13 +134,16 @@ namespace CardGame.Net
 					}
 				};
 
-				Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(_gameName.text, _maxPlayer, createOptions);
+				Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(_networkUI.PlayerName, _maxPlayer, createOptions);
 				_lobbyId = lobby.Id;
 
 				_heartbeatCancellationToken = new CancellationTokenSource();
 				_ = HeartbeatLobby(_heartbeatCancellationToken.Token);
 			}
 
+			NetworkManager.Singleton.OnConnectionEvent += CallOnConnect;
+			NetworkManager.Singleton.OnClientDisconnectCallback += CallOnDisconnect;
+			
 			_transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
 			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
 			NetworkManager.Singleton.StartHost();
@@ -123,7 +151,14 @@ namespace CardGame.Net
 			await GetNetComForThisClientAsync();
 		}
 
-		public override void JoinGame(string code = null)
+		private void JoinGame()
+		{
+			if (!_isDistant) return;
+			
+			JoinGame(null);
+		}
+		
+		public override void JoinGame(string code)
 		{
 			if (!_isDistant) return;
 			
@@ -135,7 +170,7 @@ namespace CardGame.Net
 		{
 			if (!_isDistant) return;
 			
-			if (string.IsNullOrEmpty(code)) code = _connectCode.text;
+			if (string.IsNullOrEmpty(code)) code = _networkUI.Code;
 			if (string.IsNullOrEmpty(code)) return;
 
 			try
@@ -144,7 +179,7 @@ namespace CardGame.Net
 				_transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
 
 				FastBufferWriter writer = new(32, Allocator.Temp);
-				writer.WriteValueSafe(new FixedString32Bytes(_passwordField.text));
+				writer.WriteValueSafe(new FixedString32Bytes(_networkUI.Password));
 				NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
 
 				SafeConnectAsync().Forget();
@@ -205,14 +240,14 @@ namespace CardGame.Net
 				{
 					QueryResponse result = await LobbyService.Instance.QueryLobbiesAsync();
 
-					List<PublicSessionVisu> sessions = _publicSessionVerticalLayout.GetComponentsInChildren<PublicSessionVisu>().ToList();
+					List<PublicSessionVisu> sessions = _networkUI.PublicHostsContainer.GetComponentsInChildren<PublicSessionVisu>().ToList();
 					foreach (PublicSessionVisu s in sessions)
 						Destroy(s.gameObject);
 
 					foreach (Lobby lobby in result.Results)
 					{
 						lobby.Data.TryGetValue("relayJoinCode", out DataObject dataObject);
-						PublicSessionVisu visu = UnityEngine.Object.Instantiate(_displayPublicPrefab, _publicSessionVerticalLayout.transform)
+						PublicSessionVisu visu = Instantiate(_displayPublicPrefab, _networkUI.PublicHostsContainer.transform)
 							.GetComponent<PublicSessionVisu>();
 						visu.SetUpVisu(lobby.Name, dataObject.Value, this);
 					}
@@ -230,5 +265,42 @@ namespace CardGame.Net
 			}
 		}
 
+		protected override void DisconnectFromGame()
+		{
+			if (!_isDistant) return;
+			
+			base.DisconnectFromGame();
+		}
+		
+		protected override void LaunchGame()
+		{
+			if (!_isDistant) return;
+			
+			if (_publicSearchCancellationToken != null)
+			{
+				_publicSearchCancellationToken.Cancel();
+				_publicSearchCancellationToken.Dispose();
+				_publicSearchCancellationToken = null;
+			}
+			
+			if (_heartbeatCancellationToken != null)
+			{
+				_heartbeatCancellationToken.Cancel();
+				_heartbeatCancellationToken.Dispose();
+				_heartbeatCancellationToken = null;
+			}
+			
+			_netCommunication.LoadScene(_sceneName);
+		}
+		
+		private void CallOnConnect(NetworkManager arg1, ConnectionEventData arg2)
+		{
+			_networkUI.UpdateAfterHost();
+		}
+
+		private void CallOnDisconnect(ulong obj)
+		{
+			_networkUI.UpdateAfterHost();
+		}
 	}
 }

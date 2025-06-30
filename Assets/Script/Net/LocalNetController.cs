@@ -6,7 +6,6 @@ using CardGame.UI;
 using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,8 +16,6 @@ namespace CardGame.Net
         [SerializeField, Disable] private LanSearchBeacon _lanSearch;
 
         [SerializeField] private NetworkUI _networkUI;
-        
-        [SerializeField] private string _sceneName;
                 
         #region Unity Methods
 
@@ -27,17 +24,18 @@ namespace CardGame.Net
 			base.Start();
             _networkUI.TogglePublicEvent += TogglePublicSearch;
             _networkUI.StartHostEvent += StartHost;
-            _networkUI.JoinGameEvent += ()=>JoinGame();
+            _networkUI.JoinGameEvent += JoinGame;
             _networkUI.UnhostEvent += StopHosting;
             _networkUI.CopyCodeEvent += CopyJoinCode;
             _networkUI.QuitGameEvent += DisconnectFromGame;
 			_networkUI.PlayGameEvent += LaunchGame;
+			_networkUI.ToggleDistantEvent += ToggleDistant;
 
 			//should be moved 
 			Launch();
 		}
 
-		public override void Launch()
+        protected override void Launch()
 		{
 			base.Launch();
 			_lanSearch = GetComponent<LanSearchBeacon>();
@@ -53,19 +51,22 @@ namespace CardGame.Net
             
             _networkUI.TogglePublicEvent -= TogglePublicSearch;
             _networkUI.StartHostEvent -= StartHost;
-            _networkUI.JoinGameEvent -= ()=>JoinGame();
+            _networkUI.JoinGameEvent -= JoinGame;
             _networkUI.UnhostEvent -= StopHosting;
             _networkUI.CopyCodeEvent -= CopyJoinCode;
             _networkUI.QuitGameEvent -= DisconnectFromGame;
 			_networkUI.PlayGameEvent -= LaunchGame;
+			_networkUI.ToggleDistantEvent -= ToggleDistant;
         }
         
         #endregion
         
         #region Connection
 
-		public override void StartHost()
+		protected override void StartHost()
 		{
+			if (_isDistant) return;
+			
 			if (string.IsNullOrEmpty(_networkUI.SessionName)) return;
 
 			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
@@ -136,7 +137,14 @@ namespace CardGame.Net
 			}
 		}
 
-		public override void JoinGame(string joinCode = default)
+		private void JoinGame()
+		{
+			if (_isDistant) return;
+			
+			JoinGame(null);
+		}
+
+		public override void JoinGame(string joinCode)
 		{
 			if (string.IsNullOrEmpty(joinCode)) joinCode = _networkUI.Code;
 
@@ -156,8 +164,10 @@ namespace CardGame.Net
 			SafeConnectAsync().Forget();
 		}
 
-		public override void StopHosting()
+		protected override void StopHosting()
 		{
+			if (_isDistant) return;
+			
 			if (_netCommunication == null || !_netCommunication.IsHost) return;
 
 			NetworkManager.Singleton.OnConnectionEvent -= CallOnConnect;
@@ -170,8 +180,10 @@ namespace CardGame.Net
 			DisconnectLogic();
 		}
 
-		public override void DisconnectFromGame()
+		protected override void DisconnectFromGame()
 		{
+			if (_isDistant) return;
+			
 			base.DisconnectFromGame();
 
 			DisconnectLogic();
@@ -230,13 +242,15 @@ namespace CardGame.Net
 
 			foreach (LanSearchBeacon.BeaconDataWithIP data in listToUse)
 			{
-				PublicSessionVisu session = Instantiate(_displayPublic, _networkUI.PublicHostsContainer.transform).GetComponent<PublicSessionVisu>();
+				PublicSessionVisu session = Instantiate(_displayPublicPrefab, _networkUI.PublicHostsContainer.transform).GetComponent<PublicSessionVisu>();
 				session.SetUpVisu(data.gameName, data.joinCode, this);
 			}
 		}
 
-		private void TogglePublicSearch(bool isOn)
+		protected override void TogglePublicSearch(bool isOn)
 		{
+			if (_isDistant) return;
+				
 			if (isOn)
 				_lanSearch.StartListening();
 			else
@@ -279,19 +293,14 @@ namespace CardGame.Net
 			};
 		}
 
-		private void CopyJoinCode(string code)
-		{
-			if (string.IsNullOrEmpty(code)) return;
-
-			CopyHandler.CopyToClipboard(code);
-		}
-
 		#endregion
 
 		#region Solo
 
-		private void LaunchGame()
+		protected override void LaunchGame()
 		{
+			if (_isDistant) return;
+			
 			if (NetworkManager.Singleton.ConnectedClients.Count <= 1)
 			{
 				SceneManager.LoadScene(_sceneName, LoadSceneMode.Additive);

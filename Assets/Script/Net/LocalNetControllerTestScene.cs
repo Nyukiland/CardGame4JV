@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
+using System.Linq;
+using System.Net;
 using System.Net.Sockets;
+using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
-using System.Linq;
 using UnityEngine;
-using System.Net;
 
 namespace CardGame.Net
 {
@@ -22,7 +22,7 @@ namespace CardGame.Net
 			Launch();
 		}
 
-		public override void Launch()
+		protected override void Launch()
 		{
 			base.Launch();
 			_lanSearch = GetComponent<LanSearchBeacon>();
@@ -40,8 +40,10 @@ namespace CardGame.Net
 
 		#region Connection
 
-		public override void StartHost()
+		protected override void StartHost()
 		{
+			if (_isDistant) return;
+			
 			if (string.IsNullOrEmpty(_gameName.text)) return;
 
 			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
@@ -64,7 +66,7 @@ namespace CardGame.Net
 
 			if (selectedPort > maxPort)
 			{
-				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] No available ports found in the specified range.", this);
+				Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] No available ports found in the specified range.", this);
 				return;
 			}
 
@@ -81,9 +83,11 @@ namespace CardGame.Net
 
 		private void OnClientDisconnected(ulong clientId)
 		{
+			if (_isDistant) return;
+			
 			if (clientId == NetworkManager.Singleton.LocalClientId) return;
 
-			UnityEngine.Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Client {clientId} disconnected.");
+			Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Client {clientId} disconnected.");
 		}
 
 		private bool IsPortAvailable(string ip, int port)
@@ -101,8 +105,10 @@ namespace CardGame.Net
 			}
 		}
 
-		public override void JoinGame(string joinCode = default)
+		public override void JoinGame(string joinCode = null)
 		{
+			if (_isDistant) return;
+			
 			string password = _passwordField.text;
 			if (string.IsNullOrEmpty(joinCode)) joinCode = _connectCode.text;
 
@@ -120,16 +126,20 @@ namespace CardGame.Net
 			SafeConnectAsync().Forget();
 		}
 
-		public override void StopHosting()
+		protected override void StopHosting()
 		{
+			if (_isDistant) return;
+			
 			base.StopHosting();
 			_lanSearch.StopBroadcast();
 
 			DisconnectLogic();
 		}
 
-		public override void DisconnectFromGame()
+		protected override void DisconnectFromGame()
 		{
+			if (_isDistant) return;
+			
 			base.DisconnectFromGame();
 
 			DisconnectLogic();
@@ -137,6 +147,8 @@ namespace CardGame.Net
 
 		private void DisconnectLogic()
 		{
+			if (_isDistant) return;
+			
 			base.DisconnectFromGame();
 			
 			TogglePublicSearch(false);
@@ -160,6 +172,8 @@ namespace CardGame.Net
 
 		protected override async UniTask SafeConnectAsync()
 		{
+			if (_isDistant) return;
+			
 			await base.SafeConnectAsync();
 
 			if (!NetworkManager.Singleton.ShutdownInProgress) TogglePublicSearch(false);
@@ -171,6 +185,8 @@ namespace CardGame.Net
 
 		private void UpdateConnectionList(List<LanSearchBeacon.BeaconDataWithIP> listData)
 		{
+			if (_isDistant) return;
+			
 			List<LanSearchBeacon.BeaconDataWithIP> listToUse = new(listData);
 			List<string> gameNames = listToUse.Select(x => x.gameName).ToList();
 			List<PublicSessionVisu> sessions = _publicSessionVerticalLayout.GetComponentsInChildren<PublicSessionVisu>().ToList();
@@ -195,13 +211,15 @@ namespace CardGame.Net
 
 			foreach (LanSearchBeacon.BeaconDataWithIP data in listToUse)
 			{
-				PublicSessionVisu session = Instantiate(_displayPublic, _publicSessionVerticalLayout.transform).GetComponent<PublicSessionVisu>();
+				PublicSessionVisu session = Instantiate(_displayPublicPrefab, _publicSessionVerticalLayout.transform).GetComponent<PublicSessionVisu>();
 				session.SetUpVisu(data.gameName, data.joinCode, this);
 			}
 		}
 
-		public override void TogglePublicSearch(bool isOn)
+		protected override void TogglePublicSearch(bool isOn)
 		{
+			if (_isDistant) return;
+			
 			if (isOn)
 				_lanSearch.StartListening();
 			else

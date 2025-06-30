@@ -21,6 +21,10 @@ namespace CardGame.UI
 
 		[Header("BeforeHost")]
 		[SerializeField] private GameObject _beforeHostGameObject;
+		[SerializeField] private Button _hostDistantButton;
+		[SerializeField] private Image _hostDistantButtonImage;
+		[SerializeField] private Button _hostLocalButton;
+		[SerializeField] private Image _hostLocalButtonImage;
 		[SerializeField] private TMP_InputField _sessionNameInput;
 		[SerializeField] private TMP_InputField _passwordInputHost;
 		[SerializeField] private Toggle _publicHostToggle;
@@ -41,6 +45,10 @@ namespace CardGame.UI
 
 		[Header("BeforeClient")]
 		[SerializeField] private GameObject _beforeClientGameObject;
+		[SerializeField] private Button _clientDistantButton;
+		[SerializeField] private Image _clientDistantButtonImage;
+		[SerializeField] private Button _clientLocalButton;
+		[SerializeField] private Image _clientLocalButtonImage;
 		[SerializeField] private TMP_InputField _playerNameInput;
 		[SerializeField] private TMP_InputField _codeInput;
 		[SerializeField] private TMP_InputField _passwordInputClient;
@@ -68,23 +76,19 @@ namespace CardGame.UI
 		// Events
 		public StringEvent CopyCodeEvent;
 		public BoolEvent TogglePublicEvent;
-		public Action StartHostEvent;
-		public Action JoinGameEvent;
-		public Action UnhostEvent;
-		public Action QuitGameEvent;
-		public Action PlayGameEvent;
+		public BoolEvent ToggleDistantEvent;
+		public SingleEvent StartHostEvent;
+		public SingleEvent JoinGameEvent;
+		public SingleEvent UnhostEvent;
+		public SingleEvent QuitGameEvent;
+		public SingleEvent PlayGameEvent;
 
 		// Delegates
+		public delegate void SingleEvent();
 		public delegate void StringEvent(string stringEvent);
 		public delegate void BoolEvent(bool boolEvent);
 
 		#endregion
-
-		private void Start()
-		{
-			Screen.autorotateToPortrait = false;
-			Screen.autorotateToPortraitUpsideDown = false;
-		}
 
 		#region Unity Methods
 
@@ -93,6 +97,13 @@ namespace CardGame.UI
 		[SerializeField] private TextMeshProUGUI _passwordTest;
 		[SerializeField] private TextMeshProUGUI _sessionNameTest;
 		[SerializeField] private TextMeshProUGUI _playerNameTest;
+
+		private void Start()
+		{
+			Screen.autorotateToPortrait = false;
+			Screen.autorotateToPortraitUpsideDown = false;
+		}
+		
 		private void Update()
 		{
 			_codeTest.text = "Code : " + Code;
@@ -115,6 +126,10 @@ namespace CardGame.UI
 			_connectButton.onClick.AddListener(CallJoinGameEvent);
 			_quitGameButton.onClick.AddListener(QuitClientGame);
 			_clientBackButton.onClick.AddListener(OpenMainMenu);
+			_hostDistantButton.onClick.AddListener(ToggleDistantHost);
+			_hostLocalButton.onClick.AddListener(ToggleLocalHost);
+			_clientDistantButton.onClick.AddListener(ToggleDistantClient);
+			_clientLocalButton.onClick.AddListener(ToggleLocalClient);
 
 			// Inputs fields
 			_sessionNameInput.onEndEdit.AddListener(UpdateHostInputs);
@@ -146,6 +161,10 @@ namespace CardGame.UI
 			_connectButton.onClick.RemoveListener(CallJoinGameEvent);
 			_quitGameButton.onClick.RemoveListener(QuitClientGame);
 			_clientBackButton.onClick.RemoveListener(OpenMainMenu);
+			_hostDistantButton.onClick.RemoveListener(ToggleDistantHost);
+			_hostLocalButton.onClick.RemoveListener(ToggleLocalHost);
+			_clientDistantButton.onClick.RemoveListener(ToggleDistantClient);
+			_clientLocalButton.onClick.RemoveListener(ToggleLocalClient);
 
 			// Inputs fields
 			_sessionNameInput.onEndEdit.RemoveListener(UpdateHostInputs);
@@ -163,18 +182,20 @@ namespace CardGame.UI
 
 		#region Update Visuals
 
-		public void UpdateHostInputs(string inputString)
+		private void UpdateHostInputs(string inputString)
 		{
 			UpdateBeforeHost();
 		}
 
-		public void UpdateClientInputs(string inputString)
+		private void UpdateClientInputs(string inputString)
 		{
 			UpdateBeforeClient();
 		}
 
-		public void UpdateBeforeHost()
+		private void UpdateBeforeHost()
 		{
+			ToggleDistantHost();
+				
 			if (string.IsNullOrEmpty(_sessionNameInput.text))
 			{
 				_hostButtonGrey.gameObject.SetActive(true);
@@ -203,8 +224,10 @@ namespace CardGame.UI
 			}
 		}
 
-		public void UpdateBeforeClient()
+		private void UpdateBeforeClient()
 		{
+			ToggleDistantClient();
+				
 			_publicHostsContainer.SetActive(IsPublicShown);
 			if (string.IsNullOrEmpty(_playerNameInput.text) || string.IsNullOrEmpty(_codeInput.text))
 			{
@@ -216,6 +239,36 @@ namespace CardGame.UI
 				_connectButtonGrey.gameObject.SetActive(false);
 				_connectButton.interactable = true;
 			}
+		}
+
+		private void ToggleDistantHost()
+		{
+			ToggleDistantEvent?.Invoke(true);
+			ToggleButtons(_hostDistantButtonImage, _hostLocalButtonImage);
+		}
+
+		private void ToggleLocalHost()
+		{
+			ToggleDistantEvent?.Invoke(false);
+			ToggleButtons(_hostLocalButtonImage, _hostDistantButtonImage);
+		}
+
+		private void ToggleDistantClient()
+		{
+			ToggleDistantEvent?.Invoke(true);
+			ToggleButtons(_clientDistantButtonImage, _clientLocalButtonImage);
+		}
+
+		private void ToggleLocalClient()
+		{
+			ToggleDistantEvent?.Invoke(false);
+			ToggleButtons(_clientLocalButtonImage, _clientDistantButtonImage);
+		}
+
+		private void ToggleButtons(Image onButtonImage, Image offButtonImage)
+		{
+			onButtonImage.color = Color.green;
+			offButtonImage.color = Color.white;
 		}
 
 		#endregion
@@ -256,7 +309,7 @@ namespace CardGame.UI
 			UpdateBeforeClient();
 		}
 
-		public void OpenAfterClient()
+		private void OpenAfterClient()
 		{
 			OpenPanel(_afterClientGameObject, CurrentScreen.AfterClient);
 		}
@@ -342,6 +395,7 @@ namespace CardGame.UI
 				Password = _passwordInputClient.text;
 
 			JoinGameEvent?.Invoke();
+			OpenAfterClient();
 		}
 
 		private void CallUnhostEvent()

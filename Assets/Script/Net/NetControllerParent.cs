@@ -1,24 +1,24 @@
-using Unity.Netcode.Transports.UTP;
 using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
 namespace CardGame.Net
 {
 	public abstract class NetControllerParent : MonoBehaviour
 	{
-		[SerializeField, Disable]
-		protected NetCommunication _netCommunication;
+		[SerializeField, Disable] protected NetCommunication _netCommunication;
 
-		[SerializeField]
-		protected GameObject _displayPublic;
+		[SerializeField] protected GameObject _displayPublicPrefab;
+        
+		[SerializeField] protected string _sceneName;
 
-		[SerializeField, LockUser]
-		protected int _maxPlayer = 4;
+		[SerializeField, LockUser] protected int _maxPlayer = 4;
 
 		protected string _joinPassword;
 		protected string _joinCode;
+		protected bool _isDistant;
 
 		protected UnityTransport _transport;
 
@@ -27,20 +27,17 @@ namespace CardGame.Net
 			_transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
 		}
 
-		public virtual void Launch()
-		{
-
-		}
+		protected virtual void Launch() { }
 
 		//call when you stop using this mode
-		public virtual void StopHosting()
+		protected virtual void StopHosting()
 		{
 			if (_netCommunication == null || !_netCommunication.IsHost) return;
 
 			NetworkManager.Singleton.Shutdown();
 		}
 
-		public virtual void DisconnectFromGame()
+		protected virtual void DisconnectFromGame()
 		{
 			if (_netCommunication == null || !_netCommunication.IsClient) return;
 
@@ -49,10 +46,10 @@ namespace CardGame.Net
 
 		#region Connection
 
-		public virtual void StartHost() { }
-		public virtual void JoinGame(string code = null) { }
+		protected virtual void StartHost() { }
+		public virtual void JoinGame(string code) { }
 
-		public virtual void TogglePublicSearch(bool isOn) { }
+		protected virtual void TogglePublicSearch(bool isOn) { }
 
 		protected virtual void ApproveConnection(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 		{
@@ -63,7 +60,7 @@ namespace CardGame.Net
 			{
 				response.Approved = false;
 				response.Pending = false;
-				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Connection rejected: game is full.", this);
+				Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Connection rejected: game is full.", this);
 				return;
 			}
 
@@ -75,7 +72,7 @@ namespace CardGame.Net
 			else
 			{
 				response.Approved = false;
-				UnityEngine.Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Connection rejected: wrong password", this);
+				Debug.LogWarning($"[{nameof(LocalNetControllerTestScene)}] Connection rejected: wrong password", this);
 			}
 
 			response.Pending = false;
@@ -132,12 +129,19 @@ namespace CardGame.Net
 			_netCommunication = netCom;
 		}
 
-		public virtual void CopyJoinCode()
+		protected virtual void CopyJoinCode(string code)
 		{
 			if (!string.IsNullOrEmpty(_joinCode))
 				CopyHandler.CopyToClipboard(_joinCode);
 		}
 
+		protected virtual void ToggleDistant(bool isDistant)
+		{
+			_isDistant = isDistant;
+		}
+
 		#endregion
+
+		protected virtual void LaunchGame() { }
 	}
 }
