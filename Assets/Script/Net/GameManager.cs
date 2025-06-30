@@ -172,6 +172,24 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 	}
 
+	public void AddScore(int score, int index = -1)
+	{
+		if (IsNetCurrentlyActive())
+		{
+			if (index == -1)
+				OnlineScores[PlayerIndex] += score;
+			else
+				OnlineScores[index] += score;
+		}
+		else
+		{
+			if (index == -1)
+				OnlineScores[0] += score;
+			else
+				OnlineScores[index] += score;
+		}
+	}
+
 	public void SetPlayerInfo(ulong ID, string name)
 	{
 		if (IsNetCurrentlyActive())
