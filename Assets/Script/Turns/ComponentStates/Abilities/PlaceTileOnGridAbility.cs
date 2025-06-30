@@ -10,6 +10,8 @@ namespace CardGame.Turns
 		[SerializeField]
 		private DrawPile _drawPile;
 
+		private Plane _planeForCast = new(Vector3.forward, new Vector3(0, 0, -0.15f));
+
 		private MoveTileAbility _moveTile;
 		private ZoneHolderResource _zoneHolder;
 		private GridManagerResource _gridManager;
@@ -53,10 +55,12 @@ namespace CardGame.Turns
 				return;
 			}
 
-			Vector2Int pos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
+			Ray ray = Camera.main.ScreenPointToRay(position);
+			_planeForCast.Raycast(ray, out float dist);
+			Vector2Int pos = Vector2Int.FloorToInt(ray.GetPoint(dist));
+
 			TileVisu targetTile = _gridManager.GetTile(pos);
 
-			
 			if (targetTile != null && targetTile.TileData == null)
 			{
 				int connectionCount = _gridManager.GetPlacementConnectionCount(tempTile.TileData, pos);

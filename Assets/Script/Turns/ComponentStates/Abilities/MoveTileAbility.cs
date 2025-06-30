@@ -11,6 +11,8 @@ namespace CardGame.Turns
 		[SerializeField]
 		private LayerMask _layerTile;
 
+		private Plane _planeForCast = new(Vector3.forward, new Vector3(0, 0, -0.15f));
+
 		private GridManagerResource _gridManager;
 		private SendInfoAbility _sender;
 		private ZoneHolderResource _handResource;
@@ -21,15 +23,15 @@ namespace CardGame.Turns
 			set;
 		}
 
-        public bool CanPlaceOnGrid { get; set; } = false;
+		public bool CanPlaceOnGrid { get; set; } = false;
 
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
 			_handResource = owner.GetStateComponent<ZoneHolderResource>();
 			_sender = owner.GetStateComponent<SendInfoAbility>();
-            _gridManager = owner.GetStateComponent<GridManagerResource>();
-        }
+			_gridManager = owner.GetStateComponent<GridManagerResource>();
+		}
 
 		public void PickCard(Vector2 position)
 		{
@@ -43,36 +45,37 @@ namespace CardGame.Turns
 			}
 		}
 
-        public void MoveCard(Vector2 position)
-        {
-            if (CurrentTile == null)
-                return;
+		public void MoveCard(Vector2 position)
+		{
+			if (CurrentTile == null)
+				return;
 
-            // Deplacement de la tuile
-            Vector3 pos = Camera.main.ScreenToWorldPoint(position);
-            pos = Vector3Int.FloorToInt(pos);
-            pos += Camera.main.transform.forward * 2;
-            CurrentTile.transform.position = pos;
+			// Deplacement de la tuile
+			Ray ray = Camera.main.ScreenPointToRay(position);
+			_planeForCast.Raycast(ray, out float dist);
+			Vector3 pos = ray.GetPoint(dist);
+			pos = Vector3Int.FloorToInt(pos);
+			CurrentTile.transform.position = pos;
 
-            // Verification de sa validity
-            if (!CanPlaceOnGrid || _handResource.IsInHand(position)) //on fait rien quand c'est dans la main ou si on ne peut pas la placer
-            {
-                CurrentTile.ResetValidityVisual();
-                return;
-            }
+			// Verification de sa validity
+			if (!CanPlaceOnGrid || _handResource.IsInHand(position)) //on fait rien quand c'est dans la main ou si on ne peut pas la placer
+			{
+				CurrentTile.ResetValidityVisual();
+				return;
+			}
 
-            Vector2Int gridPos = Vector2Int.FloorToInt(Camera.main.ScreenToWorldPoint(position));
-            TileVisu target = _gridManager.GetTile(gridPos);
+			Vector2Int gridPos = Vector2Int.FloorToInt(pos);
+			TileVisu target = _gridManager.GetTile(gridPos);
 
-            if (target == null || target.TileData != null)
-            {
-                CurrentTile.ChangeValidityVisual(false); // noir
-            }
-            else
-            {
-                int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
-                CurrentTile.ChangeValidityVisual(connections > 0); // jaune si > 0, sinon noir
-            }
-        }
-    }
+			if (target == null || target.TileData != null)
+			{
+				CurrentTile.ChangeValidityVisual(false); // noir
+			}
+			else
+			{
+				int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
+				CurrentTile.ChangeValidityVisual(connections > 0); // jaune si > 0, sinon noir
+			}
+		}
+	}
 }

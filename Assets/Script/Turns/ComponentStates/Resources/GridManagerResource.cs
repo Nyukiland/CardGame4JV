@@ -55,7 +55,7 @@ namespace CardGame.Turns
 			tileData.InitTile(_startingTileSettings);
 			SetTile(tileData, _width / 2, _height / 2);
 
-			Camera.main.transform.position = new Vector3(_width / 2, _height / 2, Camera.main.transform.position.z);
+			Camera.main.transform.position = new Vector3(_width / 2, (_height / 2) - 5.5f, Camera.main.transform.position.z);
 		}
 
 		public TileVisu GetTile(int x, int y)
