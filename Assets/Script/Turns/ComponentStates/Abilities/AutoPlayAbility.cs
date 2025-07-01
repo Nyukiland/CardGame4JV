@@ -72,7 +72,7 @@ namespace CardGame.Turns
 
 			if (_tilesInHand.Count == 0)
 			{
-				Owner.SetState<PlaceTileCombinedState>();
+				IsFinished = true;
 				return;
 			}
 
