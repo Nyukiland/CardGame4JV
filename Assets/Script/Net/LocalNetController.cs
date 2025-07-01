@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using Cysharp.Threading.Tasks;
+using Unity.Android.Gradle.Manifest;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -60,8 +61,17 @@ namespace CardGame.Net
         
         #region Connection
 
-		protected override void StartHost()
-		{
+        protected override void StartHost()
+        {
+	        if (_isDistant) return;
+			
+	        base.StartHost();
+
+	        StartHostAsync().Forget();
+        }
+
+        private async UniTask StartHostAsync()
+        {
 			if (_isDistant) return;
 			
 			if (string.IsNullOrEmpty(_networkUI.SessionName)) return;
@@ -99,7 +109,9 @@ namespace CardGame.Net
 
 			NetworkManager.Singleton.OnConnectionEvent += CallOnConnect;
 			NetworkManager.Singleton.OnClientDisconnectCallback += CallOnDisconnect;
-			GetNetComForThisClientAsync().Forget();
+			await GetNetComForThisClientAsync();
+			
+			_networkUI.UpdateCodeAfterHost();
 		}
 
 		private void CallOnConnect(NetworkManager arg1, ConnectionEventData arg2)
@@ -143,6 +155,8 @@ namespace CardGame.Net
 
 		public override void JoinGame(string joinCode)
 		{
+			if (_isDistant) return;
+			
 			if (string.IsNullOrEmpty(joinCode)) joinCode = _networkUI.Code;
 
 			//if still empty return
@@ -159,6 +173,8 @@ namespace CardGame.Net
 			NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
 
 			SafeConnectAsync().Forget();
+
+			_networkUI.OpenAfterClient();
 		}
 
 		protected override void StopHosting()
@@ -206,6 +222,7 @@ namespace CardGame.Net
 		{
 			await base.SafeConnectAsync();
 			if (!NetworkManager.Singleton.ShutdownInProgress) TogglePublicSearch(false);
+			_networkUI.ToggleInputBlock(false);
 		}
 
 		#endregion

@@ -65,7 +65,7 @@ namespace CardGame.UI
 		public string Code { get; set; } = "No code found";
 		public string Password { get; set; } = "No password found";
 		public string SessionName { get; set; } = "No session name found";
-		public bool IsPublicShown { get; private set; }
+		public bool IsPublicShown { get; private set; } = true;
 
 		// private variables
 		private CurrentScreen _currentScreen;
@@ -189,6 +189,7 @@ namespace CardGame.UI
 		private void UpdateBeforeHost()
 		{
 			ToggleDistant(_isDistant);
+			TogglePublicGames(IsPublicShown);
 				
 			if (string.IsNullOrEmpty(_sessionNameInput.text))
 			{
@@ -221,6 +222,7 @@ namespace CardGame.UI
 		private void UpdateBeforeClient()
 		{
 			ToggleDistant(_isDistant);
+			TogglePublicGames(IsPublicShown);
 				
 			_publicHostsContainer.SetActive(IsPublicShown);
 			if (string.IsNullOrEmpty(_codeInput.text))
@@ -287,6 +289,14 @@ namespace CardGame.UI
 			_sessionNameText.text = SessionName;
 			_codeText.text = Code;
 			_passwordText.text = Password;
+			
+			_inputBlocker.SetActive(true);
+		}
+
+		public void UpdateCodeAfterHost()
+		{
+			_codeText.text = Code;
+			_inputBlocker.SetActive(false);
 		}
 
 		private void OpenBeforeClient()
@@ -296,7 +306,7 @@ namespace CardGame.UI
 			UpdateBeforeClient();
 		}
 
-		private void OpenAfterClient()
+		public void OpenAfterClient()
 		{
 			OpenPanel(_afterClientGameObject, CurrentScreen.AfterClient);
 		}
@@ -325,10 +335,11 @@ namespace CardGame.UI
 				_currentScreen = nextScreen;
 			}
 		}
-
+		
 		private void TogglePublicGames(bool toggle)
 		{
 			IsPublicShown = toggle;
+			Debug.Log($"toggle = {toggle}");
 
 			if (_currentScreen == CurrentScreen.BeforeHost)
 			{

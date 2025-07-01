@@ -14,7 +14,7 @@ namespace CardGame.Net
 		public string GameName { private set; get; }
 		private string _code;
 
-		private NetControllerParent _testLinkUI;
+		private NetControllerParent _netController;
 		
 		public void SetUpVisu(string name, string code, NetControllerParent link)
 		{
@@ -24,13 +24,13 @@ namespace CardGame.Net
 			GameName = name;
 			_code = code;
 
-			_testLinkUI = link;
+			_netController = link;
 			_connectButton.onClick.AddListener(JoinSession);
 		}
 
 		public void JoinSession()
 		{
-			// _testLinkUI.JoinGame(_code);
+			_netController.JoinGame(_code);
 		}
 		
 		// Used only for tests

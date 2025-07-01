@@ -123,7 +123,7 @@ namespace CardGame.Net
 			await GetNetComForThisClientAsync();
 		}
 
-		public override void JoinGame(string code = null)
+		public override void JoinGame(string code)
 		{
 			if (!_isDistant) return;
 			

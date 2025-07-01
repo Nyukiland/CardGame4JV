@@ -147,6 +147,8 @@ namespace CardGame.Net
 			NetworkManager.Singleton.StartHost();
 
 			await GetNetComForThisClientAsync();
+			
+			_networkUI.UpdateCodeAfterHost();
 		}
 
 		private void JoinGame()
@@ -160,6 +162,8 @@ namespace CardGame.Net
 		{
 			if (!_isDistant) return;
 			
+			_networkUI.ToggleInputBlock(true);
+			
 			base.JoinGame(code);
 			JoinGameAsync(code).Forget();
 		}
@@ -170,6 +174,8 @@ namespace CardGame.Net
 			
 			if (string.IsNullOrEmpty(code)) code = _networkUI.Code;
 			if (string.IsNullOrEmpty(code)) return;
+			
+			_networkUI.OpenAfterClient();
 
 			try
 			{
@@ -186,6 +192,8 @@ namespace CardGame.Net
 			{
 				Debug.LogError($"Failed to join relay: {e.Message}");
 			}
+			
+			_networkUI.ToggleInputBlock(false);
 		}
 
 		private async UniTask HeartbeatLobby(CancellationToken token)
