@@ -1,4 +1,5 @@
 using CardGame.Card;
+using CardGame.Net;
 using CardGame.StateMachine;
 using CardGame.UI;
 using CardGame.Utility;
@@ -34,7 +35,10 @@ namespace CardGame.Turns
 		{
 			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
 			drawPile.OnTilesLoaded += GenerateGrid;
+		}
 
+		public override void OnEnable()
+		{
 			Storage.Instance.Register(this);
 		}
 
@@ -63,13 +67,10 @@ namespace CardGame.Turns
 			tileData.InitTile(_startingTileSettings);
 			SetTile(tileData, _width / 2, _height / 2);
 
-			// Tiles bonus
-			GenerateBonusTiles();
-
 			Camera.main.transform.position = new Vector3(_width / 2, (_height / 2) - 5, Camera.main.transform.position.z);
 		}
 
-		private void GenerateBonusTiles()
+		public void GenerateBonusTiles()
 		{
 			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
 
@@ -196,12 +197,11 @@ namespace CardGame.Turns
 		public void PlayTileEffect(TileVisu visu)
 		{
 			visu.transform.localScale = Vector3.zero;
-			visu.transform.rotation = Quaternion.identity;
 
 			Sequence seq = DOTween.Sequence();
 
 			seq.Append(visu.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack));
-			seq.Join(visu.transform.DORotate(new Vector3(0, 0, 360), 0.5f, RotateMode.FastBeyond360).SetEase(Ease.OutCubic));
+			seq.Join(visu.transform.DOShakeRotation(0.5f, 50, 10, 80, true));
 
 			seq.Play();
 		}
@@ -267,7 +267,7 @@ namespace CardGame.Turns
 
 		public int CheckNeighborTileLinked(Vector2Int pos) // Ca sert surtout dans le cas des tiles bonus, on l'utilise surtout pour check si > 0;
 		{
-			TileVisu tile = new();
+			TileVisu tile = null;
 			int total = 0;
 
 			tile = GetTile(pos.x - 1, pos.y); // a gauche
@@ -291,7 +291,7 @@ namespace CardGame.Turns
 
 		public void SetNeighborBonusTileLinked(Vector2Int pos) 
 		{
-			TileVisu tile = new();
+			TileVisu tile = null;
 
 			tile = GetTile(pos.x - 1, pos.y); // a gauche
 			if (tile != null && tile.TileData != null && tile.TileData.TileSettings.PoolIndex != 0)
@@ -322,7 +322,6 @@ namespace CardGame.Turns
 			}
 		}
 
-
 		public int GetPlacementConnectionCount(Vector2Int pos)
 		{
 			return GetPlacementConnectionCount(_grid[pos.x, pos.y].TileData, pos);
@@ -331,6 +330,23 @@ namespace CardGame.Turns
 		public override void OnDisable()
 		{
 			if (Storage.CheckInstance()) Storage.Instance.Delete(this);
+		}
+
+		//For the net (not recommended outside of specific net use)
+		public DataToSendList GetListOfPlacedTile()
+		{
+			DataToSendList list = new();
+
+			foreach (TileVisu tile in _grid)
+			{
+				if (tile.TileData == null) continue;
+
+				Vector2Int pos = new((int)tile.transform.position.x, (int)tile.transform.position.y);
+				DataToSend data = new (tile.TileData, pos);
+				list.DataList.Add(data);
+			}
+
+			return list;
 		}
 	}
 }

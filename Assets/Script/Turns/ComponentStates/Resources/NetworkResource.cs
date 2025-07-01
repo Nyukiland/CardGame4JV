@@ -65,7 +65,6 @@ namespace CardGame.Turns
 
 			if (NetCom != null)
 			{
-				NetCom.TileMoved += UpdateTileInMovement;
 				NetCom.TilePlaced += UpdateGridPlaced;
 				NetCom.GridUpdated += UpdateGrid;
 				NetCom.TileForHand += UpdateHand;
@@ -81,18 +80,12 @@ namespace CardGame.Turns
 
 			if (NetCom != null)
 			{
-				NetCom.TileMoved -= UpdateTileInMovement;
 				NetCom.TilePlaced -= UpdateGridPlaced;
 				NetCom.GridUpdated -= UpdateGrid;
 				NetCom.TileForHand -= UpdateHand;
 				NetCom.SendYourTurn -= GoMyTurn;
 				NetCom.SendTauntShake -= ShakeTile;
 			}
-		}
-
-		private void UpdateTileInMovement(DataToSend data)
-		{
-			TileData tileReceived = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
 		}
 
 		private void UpdateGridPlaced(DataToSend data)
@@ -113,6 +106,12 @@ namespace CardGame.Turns
 			foreach (DataToSend data in dataList.DataList)
 			{
 				TileData tile = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
+
+				UnityEngine.Debug.Log(tile);
+				UnityEngine.Debug.Log(data);
+				UnityEngine.Debug.Log(_grid);
+
+				if (tile == null) continue;
 
 				if (_grid.GetTile(data.Position.x, data.Position.y).TileData == tile)
 					continue;
