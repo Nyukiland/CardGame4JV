@@ -13,7 +13,7 @@ namespace CardGame.Turns
 
         public NextPlayerCombinedState()
         {
-			AddSubState(new MoveTileSubState());
+			AddSubState(new MoveTileSubState(true));
 			AddSubState(new TauntSubState());
 		}
 

@@ -3,6 +3,7 @@ using CardGame.Utility;
 using CardGame.UI;
 using UnityEngine;
 using CardGame.Card;
+using DG.Tweening;
 
 namespace CardGame.Turns
 {
@@ -34,6 +35,11 @@ namespace CardGame.Turns
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
 		}
 
+		public bool QuickCheckRay(Vector2 position)
+		{
+			return Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100, _layerTile);
+		}
+
 		public void PickCard(Vector2 position)
 		{
 			if (Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100, _layerTile))
@@ -58,7 +64,8 @@ namespace CardGame.Turns
 			_planeForCast.Raycast(ray, out float dist);
 			Vector3 pos = ray.GetPoint(dist);
 			pos = Vector3Int.FloorToInt(pos);
-			CurrentTile.transform.position = pos;
+
+			CurrentTile.transform.DOMove(pos, 0.1f);
 
 			// Verification de sa validity
 			if (!CanPlaceOnGrid || _handResource.IsInHand(position)) //on fait rien quand c'est dans la main ou si on ne peut pas la placer
