@@ -3,6 +3,7 @@ using CardGame.StateMachine;
 using CardGame.UI;
 using CardGame.Utility;
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -103,7 +104,7 @@ namespace CardGame.Turns
 
 		private void PlaceBonusTile()
 		{
-			Vector2Int value = BonusTilePositions[Random.Range(0, BonusTilePositions.Count)];
+			Vector2Int value = BonusTilePositions[UnityEngine.Random.Range(0, BonusTilePositions.Count)];
 			TileVisu tempTile = GetTile(value.x, value.y);
 			BonusTilePositions.Remove(value); // On retire la valeur, si ca reussi on retire, si ca fail on retire donc duh
 
@@ -125,7 +126,7 @@ namespace CardGame.Turns
 				}
 
 				//Si ca fonctionne
-				TileData tileData = BonusTilePool[Random.Range(0, BonusTilePool.Count)];
+				TileData tileData = BonusTilePool[UnityEngine.Random.Range(0, BonusTilePool.Count)];
 				BonusTilePool.Remove(tileData); // On retire le tiledata de la liste temp, pour pas le placer en double
 
 				SetTile(tileData, value.x, value.y);
@@ -264,7 +265,31 @@ namespace CardGame.Turns
 			}
 		}
 
-		public void SetNeighborBonusTileLinked(Vector2Int pos)
+		public int CheckNeighborTileLinked(Vector2Int pos) // Ca sert surtout dans le cas des tiles bonus, on l'utilise surtout pour check si > 0;
+		{
+			TileVisu tile = new();
+			int total = 0;
+
+			tile = GetTile(pos.x - 1, pos.y); // a gauche
+			if (tile != null && tile.TileData != null && tile.IsLinked)
+				total++;
+
+			tile = GetTile(pos.x + 1, pos.y); // a droite
+			if (tile != null && tile.TileData != null && tile.IsLinked)
+				total++;
+
+			tile = GetTile(pos.x, pos.y - 1); // au dessous
+			if (tile != null && tile.TileData != null && tile.IsLinked)
+				total++;
+
+			tile = GetTile(pos.x, pos.y + 1); // au dessus
+			if (tile != null && tile.TileData != null && tile.IsLinked)
+				total++;
+
+			return total;
+		}
+
+		public void SetNeighborBonusTileLinked(Vector2Int pos) 
 		{
 			TileVisu tile = new();
 
@@ -296,6 +321,7 @@ namespace CardGame.Turns
 				ActivateSurroundingTiles(pos.x, pos.y + 1);
 			}
 		}
+
 
 		public int GetPlacementConnectionCount(Vector2Int pos)
 		{

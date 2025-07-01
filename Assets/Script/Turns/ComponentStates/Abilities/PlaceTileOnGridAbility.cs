@@ -67,14 +67,15 @@ namespace CardGame.Turns
 
             if (targetTile != null && targetTile.TileData == null)
             {
-                int connectionCount = _gridManager.GetPlacementConnectionCount(tempTile.TileData, pos);
-                if (connectionCount == 0)
+				int neighborCount = _gridManager.CheckNeighborTileLinked(pos);
+				int connectionCount = _gridManager.GetPlacementConnectionCount(tempTile.TileData, pos);
+
+				if (connectionCount == 0 || neighborCount == 0) // Si pas de connection valide, ou que si mais pas de voisin valide (cas d'une tile bonus isolée)
                 {
-                    //Debug.Log("Placement invalide");
-                    _zoneHolder.GiveTileToHand(tempTile.gameObject);
+					_zoneHolder.GiveTileToHand(tempTile.gameObject);
                     return;
                 }
-
+                
                 tempTile.TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex; // On donne l'index du joueur a la tile
                 tempTile.TileData.HasFlag = GameManager.Instance.FlagTurn; // Check si flag turn
 
@@ -96,7 +97,8 @@ namespace CardGame.Turns
 
                 GameObject.Destroy(tempTile.gameObject);
             }
-            else
+
+			else
             {
                 _zoneHolder.GiveTileToHand(tempTile.gameObject);
             }

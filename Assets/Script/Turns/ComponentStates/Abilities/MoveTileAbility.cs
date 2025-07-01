@@ -84,7 +84,10 @@ namespace CardGame.Turns
             else
             {
                 int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
-                CurrentTile.ChangeValidityVisual(connections > 0); // jaune si > 0, sinon noir
+				int linkedNeighbor = _gridManager.CheckNeighborTileLinked(gridPos);
+				//Debug.Log($"placement : {connections}, {linkedNeighbor}, {connections > 0 && linkedNeighbor > 0}");
+
+				CurrentTile.ChangeValidityVisual(connections > 0 && linkedNeighbor > 0); // jaune si > 0, sinon noir
             }
         }
 

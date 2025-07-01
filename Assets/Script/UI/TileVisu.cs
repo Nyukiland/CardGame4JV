@@ -48,7 +48,9 @@ namespace CardGame.UI
         [Space(10)]
 
         [SerializeField] private TMPro.TextMeshPro _ownerTextMeshPro;
-        public TileData TileData { get; set; }
+		[SerializeField] private TMPro.TextMeshPro _bonusTextMeshPro;
+
+		public TileData TileData { get; set; }
 
         public Vector2 PositionOnGrid { get; private set; }
 
@@ -88,7 +90,9 @@ namespace CardGame.UI
             }
 
             _ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : "";
-            _visuValidity.material = TileData.HasFlag ? _purple : _grey;
+            _bonusTextMeshPro.text = TileData.TileSettings.PoolIndex > 0 ? "Bonus" : "";
+
+			_visuValidity.material = TileData.HasFlag ? _purple : _grey;
 
             _visuNorth.enabled = true;
             _visuSouth.enabled = true;
