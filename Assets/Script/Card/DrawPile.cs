@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CardGame.Utility;
 using CardGame.Card;
+using CardGame.Managers;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -51,10 +52,10 @@ namespace CardGame
 		{
 			AllTileSettings.Clear();
 			
-			AsyncOperationHandle<IList<TileSettings>> handle = await AddressableManager.LoadLabel<TileSettings>("TileSetting");
+			IList<TileSettings> handle = await AddressableManager.LoadLabel<TileSettings>("TileSetting");
 
 			_hashSet = new();
-			foreach (var tile in handle.Result)
+			foreach (var tile in handle)
 			{
 				if (tile == null) continue;
 
