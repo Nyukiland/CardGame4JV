@@ -70,12 +70,12 @@ namespace CardGame.Turns
 
 		private void GenerateBonusTiles()
 		{
-			DrawPile drawpile = Storage.Instance.GetElement<DrawPile>();
+			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
 
 			for (int range = 2; range < 4; range++) // On call a range = 2 et = 3 pour les deux carrés
 			{
 				BonusTilePool.Clear(); // On recupere la liste des tiles bonus prévues pour ce carré
-				BonusTilePool = drawpile.GetBonusTileFromPoolIndex(range - 1); // Cringe, car en index on a 1 et 2 pour premier et 2e carré
+				BonusTilePool = drawPile.GetBonusTileFromPoolIndex(range - 1); // Cringe, car en index on a 1 et 2 pour premier et 2e carré
 
 				BonusTilePositions.Clear();
 				GetBonusTilePositionList(range); // On recup toutes les positions possibles pour ce carré

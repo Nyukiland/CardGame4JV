@@ -11,9 +11,11 @@ namespace CardGame
     public class DrawPile : MonoBehaviour
     {
 	    // Use label "TileSetting" to load tile
-		[Disable] public List<TileSettings> AllTileSettings = new();
+		[Disable] public List<TileSettings> AllTileSettings = new(); 
 
 		private List<TileSettings> _tileInDrawPile = new();
+		public List<TileSettings> _bonusTileList {get; private set; } = new();
+
 		private static HashSet<TileSettings> _hashSet;
 
         public event System.Action OnTilesLoaded; // Pour call la grid generation
@@ -29,9 +31,21 @@ namespace CardGame
 
             _tileInDrawPile = new List<TileSettings>();
 
-            for (int i = 0; i < 3; i++)
+			for (int i = 0; i < AllTileSettings.Count; i++) 
+			{
+				if (AllTileSettings[i].PoolIndex == 0)
+				{
+					_tileInDrawPile.Add(AllTileSettings[i]); // On ajoute a la draw pile
+				}
+				else
+				{
+					_bonusTileList.Add(AllTileSettings[i]); // On ajoute a la bonus tile pile
+				}
+			}
+
+            for (int i = 0; i < 2; i++) //On le fait en double pour avoir + de tiles (4 fois +)
             {
-                _tileInDrawPile.AddRange(AllTileSettings);
+                _tileInDrawPile.AddRange(_tileInDrawPile);
             }
 
             OnTilesLoaded?.Invoke(); // start la grid
@@ -111,7 +125,7 @@ namespace CardGame
         {
             List<TileData> result = new();
 
-            foreach (var tile in _tileInDrawPile)
+            foreach (var tile in _bonusTileList)
             {
                 if (tile.PoolIndex == poolIndex)
                 {
