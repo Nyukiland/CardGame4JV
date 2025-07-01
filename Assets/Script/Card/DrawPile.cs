@@ -15,7 +15,9 @@ namespace CardGame
 		private List<TileSettings> _tileInDrawPile = new();
 		private static HashSet<TileSettings> _hashSet;
 
-		private void Awake()
+        public event System.Action OnTilesLoaded; // Pour call la grid generation
+
+        private void Awake()
 		{
 			AsyncAwake().Forget();
 		}
@@ -24,14 +26,16 @@ namespace CardGame
         {
             await LoadTiles();
 
-
             _tileInDrawPile = new List<TileSettings>();
 
             for (int i = 0; i < 3; i++)
             {
                 _tileInDrawPile.AddRange(AllTileSettings);
             }
+
+            OnTilesLoaded?.Invoke(); // start la grid
         }
+
 
         private void OnEnable()
 		{
@@ -98,5 +102,26 @@ namespace CardGame
 		{
 			_tileInDrawPile.Add(GetTileFromID(settingsID));
 		}
+
+
+
+		// 1 ou 2, c'est call par gridmanager
+        public List<TileData> GetBonusTileFromPoolIndex(int poolIndex)
+        {
+            List<TileData> result = new();
+
+            foreach (var tile in _tileInDrawPile)
+            {
+                if (tile.PoolIndex == poolIndex)
+                {
+					TileData data = new();
+					data.InitTile(tile);
+                    result.Add(data);
+                }
+            }
+
+            return result;
+        }
+
     }
 }

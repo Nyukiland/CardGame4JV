@@ -913,6 +913,7 @@ MonoBehaviour:
           serializedVersion: 2
           m_Bits: 64
         _duration: 0.1
+        _specialRotDuration: 0.3
         _shakeStrength: {x: 0.05, y: 0.05}
         _shakeIntensity: 20
         _scaleDown: {x: -0.4, y: -0.4}
@@ -921,8 +922,8 @@ MonoBehaviour:
       type: {class: GridManagerResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        _width: 5
-        _height: 5
+        _width: 21
+        _height: 21
         _gridContainer: {fileID: 1714262388}
         _tilePrefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
         _startingTileSettings: {fileID: 11400000, guid: d3b09ec51731b2646976bc7aca021007, type: 2}

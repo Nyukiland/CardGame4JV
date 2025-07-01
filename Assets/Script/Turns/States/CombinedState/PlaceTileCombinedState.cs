@@ -1,6 +1,9 @@
-using UnityEngine.InputSystem;
+using CardGame.Card;
 using CardGame.StateMachine;
+using CardGame.UI;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace CardGame.Turns
 {
@@ -9,8 +12,11 @@ namespace CardGame.Turns
 		private MoveTileAbility _moveTile;
 		private ZoneHolderResource _zoneResource;
 		private PlaceTileOnGridAbility _placeTileOnGrid;
+        private GridManagerResource _gridManagerRessource;
 
-		public PlaceTileCombinedState()
+        List<TileVisu> _previewTiles;
+
+        public PlaceTileCombinedState()
 		{
             AddSubState(new MoveTileSubState());
             AddSubState(new TauntSubState());
@@ -23,7 +29,13 @@ namespace CardGame.Turns
 			GetStateComponent(ref _moveTile);
 			GetStateComponent(ref _zoneResource);
 			GetStateComponent(ref _placeTileOnGrid);
-			_moveTile.CanPlaceOnGrid = true;
+            GetStateComponent(ref _gridManagerRessource);
+
+            _moveTile.OnCardPicked += HandleCardPicked;
+            _placeTileOnGrid.OnCardReleased += HandleCardReleased;
+
+            _moveTile.CanPlaceOnGrid = true;
+            _previewTiles = new List<TileVisu>();
         }
 
         public override void OnExit()
@@ -35,7 +47,10 @@ namespace CardGame.Turns
 				_zoneResource.GiveTileToHand(_moveTile.CurrentTile.gameObject);
 				_moveTile.CurrentTile = null;
 			}
-		}
+
+            _moveTile.OnCardPicked -= HandleCardPicked;
+            _placeTileOnGrid.OnCardReleased -= HandleCardReleased;
+        }
 
 		public override void OnActionTriggered(InputAction.CallbackContext context)
 		{
@@ -56,6 +71,35 @@ namespace CardGame.Turns
 
 			if (_placeTileOnGrid.TilePlaced)
 				Controller.SetState<DiscardCombinedState>();
+
 		}
+
+        private void HandleCardPicked()
+        {
+            foreach (var tile in _gridManagerRessource.SurroundingTilePos)
+            {
+                TileVisu tempTile = _gridManagerRessource.GetTile(tile.x, tile.y);
+                if (tempTile.TileData == null)
+                {
+                    _previewTiles.Add(tempTile); //On pourrait le mettre en dessous et stocker que les modified, mais ca pourrait servir
+
+                    if (_gridManagerRessource.GetPlacementConnectionCount(_moveTile.CurrentTile.TileData, tile) != 0) // si placement valide
+                    {
+                        tempTile.ChangeValidityVisual(true); // Si valide, on affiche un feedback, on fait rien sinon
+                        _previewTiles.Add(tempTile);
+                    }
+                }
+            }
+        }
+
+        private void HandleCardReleased()
+        {
+            foreach (var tile in _previewTiles)
+            {
+                tile.ResetValidityVisual();
+            }
+            _previewTiles.Clear();
+        }
+
     }
 }

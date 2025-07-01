@@ -18,7 +18,9 @@ namespace CardGame.Turns
 		private CreateHandAbility _createHandAbility;
 		private SendInfoAbility _sender;
 
-		public bool TilePlaced
+        public event System.Action OnCardReleased; //Pour la preview d'ou on peut poser la tile de maniere valide
+
+        public bool TilePlaced
 		{
 			get;
 			private set;
@@ -48,6 +50,8 @@ namespace CardGame.Turns
 			TileVisu tempTile = _moveTile.CurrentTile;
 			_moveTile.CurrentTile = null;
             tempTile.ResetValidityVisual();
+
+            OnCardReleased?.Invoke();
 
             if (_zoneHolder.IsInHand(position))
 			{

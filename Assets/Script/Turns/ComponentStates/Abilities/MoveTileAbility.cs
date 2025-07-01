@@ -16,14 +16,15 @@ namespace CardGame.Turns
 		private GridManagerResource _gridManager;
 		private SendInfoAbility _sender;
 		private ZoneHolderResource _handResource;
-
-		public TileVisu CurrentTile
+        public TileVisu CurrentTile
 		{
 			get;
 			set;
 		}
 
-		public bool CanPlaceOnGrid { get; set; } = false;
+        public event System.Action OnCardPicked; //Pour la preview d'ou on peut poser la tile de maniere valide
+
+        public bool CanPlaceOnGrid { get; set; } = false;
 
 		public override void Init(Controller owner)
 		{
@@ -41,7 +42,9 @@ namespace CardGame.Turns
 				{
 					_handResource.RemoveTileFromHand(visu.gameObject);
 					CurrentTile = visu;
-				}
+
+                    OnCardPicked?.Invoke();
+                }
 			}
 		}
 
@@ -67,15 +70,17 @@ namespace CardGame.Turns
 			Vector2Int gridPos = Vector2Int.FloorToInt(pos);
 			TileVisu target = _gridManager.GetTile(gridPos);
 
-			if (target == null || target.TileData != null)
-			{
-				CurrentTile.ChangeValidityVisual(false); // noir
-			}
-			else
-			{
-				int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
-				CurrentTile.ChangeValidityVisual(connections > 0); // jaune si > 0, sinon noir
-			}
-		}
-	}
+            if (target == null || target.TileData != null)
+            {
+                CurrentTile.ChangeValidityVisual(false); // noir
+            }
+            else
+            {
+                int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
+                CurrentTile.ChangeValidityVisual(connections > 0); // jaune si > 0, sinon noir
+            }
+        }
+
+
+    }
 }
