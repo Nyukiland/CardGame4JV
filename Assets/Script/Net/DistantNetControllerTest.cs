@@ -92,10 +92,10 @@ namespace CardGame.Net
 			if (!_isDistant) return;
 			
 			if (string.IsNullOrEmpty(_gameName.text)) return;
-			_joinPassword = _passwordField.text;
+			_networkUI.Password = _passwordField.text;
 
 			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(_maxPlayer - 1);
-			_joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+			_networkUI.Code = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
 			if (_toggleHost.isOn)
 			{
@@ -104,8 +104,8 @@ namespace CardGame.Net
 					IsPrivate = false,
 					Data = new Dictionary<string, DataObject>
 					{
-						{ "relayJoinCode", new DataObject(DataObject.VisibilityOptions.Public, _joinCode) },
-						{ "password", new DataObject(DataObject.VisibilityOptions.Private, _joinPassword) }
+						{ "relayJoinCode", new DataObject(DataObject.VisibilityOptions.Public, _networkUI.Code) },
+						{ "password", new DataObject(DataObject.VisibilityOptions.Private, _networkUI.Password) }
 					}
 				};
 
@@ -137,6 +137,8 @@ namespace CardGame.Net
 			
 			if (string.IsNullOrEmpty(code)) code = _connectCode.text;
 			if (string.IsNullOrEmpty(code)) return;
+			
+			_networkUI.ToggleInputBlock(true); 
 
 			try
 			{

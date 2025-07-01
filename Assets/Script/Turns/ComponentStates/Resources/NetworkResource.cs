@@ -42,6 +42,7 @@ namespace CardGame.Turns
 
 		public bool IsNetActive()
 		{
+			UnityEngine.Debug.Log(NetCom);
 			return NetCom != null;
 		}
 

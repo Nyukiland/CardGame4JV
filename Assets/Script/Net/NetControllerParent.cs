@@ -1,3 +1,5 @@
+using System;
+using CardGame.UI;
 using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
@@ -10,21 +12,23 @@ namespace CardGame.Net
 	{
 		[SerializeField, Disable] protected NetCommunication _netCommunication;
 
+		[SerializeField] protected NetworkUI _networkUI;
 		[SerializeField] protected GameObject _displayPublicPrefab;
-        
 		[SerializeField] protected string _sceneName;
-
 		[SerializeField, LockUser] protected int _maxPlayer = 4;
-
-		protected string _joinPassword;
-		protected string _joinCode;
+		
 		protected bool _isDistant;
-
 		protected UnityTransport _transport;
 
 		protected virtual void Start()
 		{
 			_transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+		}
+
+		private void OnDestroy()
+		{
+			if (_netCommunication != null)
+				_netCommunication.OnLaunchGameEvent -= _networkUI.CloseMenu;
 		}
 
 		protected virtual void Launch() { }
@@ -72,7 +76,7 @@ namespace CardGame.Net
 				return;
 			}
 
-			if (receivedPassword.ToString() == _joinPassword)
+			if (_networkUI.Password == NetworkUI.NONE_BASE_VALUE || receivedPassword.ToString() == _networkUI.Password)
 			{
 				response.Approved = true;
 				response.CreatePlayerObject = true;
@@ -106,7 +110,10 @@ namespace CardGame.Net
 			NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
 
 			if (connected)
+			{
+				_networkUI.ToggleInputBlock(false);
 				await GetNetComForThisClientAsync();
+			}
 			else
 				NetworkManager.Singleton.Shutdown();
 
@@ -135,12 +142,14 @@ namespace CardGame.Net
 				NetCommunication.Instances.TryGetValue(NetworkManager.Singleton.LocalClientId, out netCom));
 
 			_netCommunication = netCom;
+			
+			_netCommunication.OnLaunchGameEvent += _networkUI.CloseMenu;
 		}
 
 		protected virtual void CopyJoinCode(string code)
 		{
-			if (!string.IsNullOrEmpty(_joinCode))
-				CopyHandler.CopyToClipboard(_joinCode);
+			if (!string.IsNullOrEmpty(code))
+				CopyHandler.CopyToClipboard(code);
 		}
 
 		protected virtual void ToggleDistant(bool isDistant)

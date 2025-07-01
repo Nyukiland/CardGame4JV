@@ -48,7 +48,7 @@ namespace CardGame.Net
 
 			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
 			NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-			_joinPassword = _passwordField.text;
+			_networkUI.Password = _passwordField.text;
 
 			string localIP = GetLocalIPv4();
 			ushort startingPort = 60121;
@@ -70,13 +70,13 @@ namespace CardGame.Net
 				return;
 			}
 
-			_joinCode = NetUtility.GetJoinCode(localIP, selectedPort);
+			_networkUI.Code = NetUtility.GetJoinCode(localIP, selectedPort);
 
 			_transport.SetConnectionData(localIP, selectedPort);
 			NetworkManager.Singleton.StartHost();
 
 			if (_toggleHost.isOn)
-				_lanSearch.StartBroadcast(_gameName.text, selectedPort, _joinCode);
+				_lanSearch.StartBroadcast(_gameName.text, selectedPort, _networkUI.Code);
 
 			GetNetComForThisClientAsync().Forget();
 		}
@@ -154,7 +154,7 @@ namespace CardGame.Net
 			TogglePublicSearch(false);
 
 			_netCommunication = null;
-			_joinCode = null;
+			_networkUI.Code = null;
 
 			_netComText.text = string.Empty;
 			_receivedInfo.text = string.Empty;

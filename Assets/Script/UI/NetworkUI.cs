@@ -1,8 +1,6 @@
-using System;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace CardGame.UI
@@ -49,7 +47,6 @@ namespace CardGame.UI
 		[SerializeField] private Image _clientDistantButtonImage;
 		[SerializeField] private Button _clientLocalButton;
 		[SerializeField] private Image _clientLocalButtonImage;
-		[SerializeField] private TMP_InputField _playerNameInput;
 		[SerializeField] private TMP_InputField _codeInput;
 		[SerializeField] private TMP_InputField _passwordInputClient;
 		[SerializeField] private Button _connectButton;
@@ -64,14 +61,15 @@ namespace CardGame.UI
 
 		// public variables
 		public GameObject PublicHostsContainer => _publicHostsContainer;
+		public const string NONE_BASE_VALUE = "- None -";
 		public string Code { get; set; } = "No code found";
 		public string Password { get; set; } = "No password found";
 		public string SessionName { get; set; } = "No session name found";
 		public bool IsPublicShown { get; private set; }
-		public string PlayerName { get; private set; } = "No player name found";
 
 		// private variables
 		private CurrentScreen _currentScreen;
+		private bool _isDistant = true;
 
 		// Events
 		public StringEvent CopyCodeEvent;
@@ -96,7 +94,6 @@ namespace CardGame.UI
 		[SerializeField] private TextMeshProUGUI _codeTest;
 		[SerializeField] private TextMeshProUGUI _passwordTest;
 		[SerializeField] private TextMeshProUGUI _sessionNameTest;
-		[SerializeField] private TextMeshProUGUI _playerNameTest;
 
 		private void Start()
 		{
@@ -109,7 +106,6 @@ namespace CardGame.UI
 			_codeTest.text = "Code : " + Code;
 			_passwordTest.text = "Password : " + Password;
 			_sessionNameTest.text = "SessionName : " + SessionName;
-			_playerNameTest.text = "PlayerName : " + PlayerName;
 		}
 
 		private void Awake()
@@ -126,15 +122,14 @@ namespace CardGame.UI
 			_connectButton.onClick.AddListener(CallJoinGameEvent);
 			_quitGameButton.onClick.AddListener(QuitClientGame);
 			_clientBackButton.onClick.AddListener(OpenMainMenu);
-			_hostDistantButton.onClick.AddListener(ToggleDistantHost);
-			_hostLocalButton.onClick.AddListener(ToggleLocalHost);
-			_clientDistantButton.onClick.AddListener(ToggleDistantClient);
-			_clientLocalButton.onClick.AddListener(ToggleLocalClient);
+			_hostDistantButton.onClick.AddListener(()=>ToggleDistant(true));
+			_hostLocalButton.onClick.AddListener(()=>ToggleDistant(false));
+			_clientDistantButton.onClick.AddListener(()=>ToggleDistant(true));
+			_clientLocalButton.onClick.AddListener(()=>ToggleDistant(false));
 
 			// Inputs fields
 			_sessionNameInput.onEndEdit.AddListener(UpdateHostInputs);
 			_passwordInputHost.onEndEdit.AddListener(UpdateHostInputs);
-			_playerNameInput.onEndEdit.AddListener(UpdateClientInputs);
 			_codeInput.onEndEdit.AddListener(UpdateClientInputs);
 			//_codeInput.contentType = TMP_InputField.ContentType.Alphanumeric;
 			//_codeInput.onValidateInput += delegate (string s, int i, char c) { return char.ToUpper(c); };
@@ -161,15 +156,14 @@ namespace CardGame.UI
 			_connectButton.onClick.RemoveListener(CallJoinGameEvent);
 			_quitGameButton.onClick.RemoveListener(QuitClientGame);
 			_clientBackButton.onClick.RemoveListener(OpenMainMenu);
-			_hostDistantButton.onClick.RemoveListener(ToggleDistantHost);
-			_hostLocalButton.onClick.RemoveListener(ToggleLocalHost);
-			_clientDistantButton.onClick.RemoveListener(ToggleDistantClient);
-			_clientLocalButton.onClick.RemoveListener(ToggleLocalClient);
+			_hostDistantButton.onClick.RemoveListener(()=>ToggleDistant(true));
+			_hostLocalButton.onClick.RemoveListener(()=>ToggleDistant(false));
+			_clientDistantButton.onClick.RemoveListener(()=>ToggleDistant(true));
+			_clientLocalButton.onClick.RemoveListener(()=>ToggleDistant(false));
 
 			// Inputs fields
 			_sessionNameInput.onEndEdit.RemoveListener(UpdateHostInputs);
 			_passwordInputHost.onEndEdit.RemoveListener(UpdateHostInputs);
-			_playerNameInput.onEndEdit.RemoveListener(UpdateClientInputs);
 			_codeInput.onEndEdit.RemoveListener(UpdateClientInputs);
 			_passwordInputClient.onEndEdit.RemoveListener(UpdateClientInputs);
 
@@ -194,7 +188,7 @@ namespace CardGame.UI
 
 		private void UpdateBeforeHost()
 		{
-			ToggleDistantHost();
+			ToggleDistant(_isDistant);
 				
 			if (string.IsNullOrEmpty(_sessionNameInput.text))
 			{
@@ -226,10 +220,10 @@ namespace CardGame.UI
 
 		private void UpdateBeforeClient()
 		{
-			ToggleDistantClient();
+			ToggleDistant(_isDistant);
 				
 			_publicHostsContainer.SetActive(IsPublicShown);
-			if (string.IsNullOrEmpty(_playerNameInput.text) || string.IsNullOrEmpty(_codeInput.text))
+			if (string.IsNullOrEmpty(_codeInput.text))
 			{
 				_connectButtonGrey.gameObject.SetActive(true);
 				_connectButton.interactable = false;
@@ -241,28 +235,21 @@ namespace CardGame.UI
 			}
 		}
 
-		private void ToggleDistantHost()
+		private void ToggleDistant(bool isDistant)
 		{
-			ToggleDistantEvent?.Invoke(true);
-			ToggleButtons(_hostDistantButtonImage, _hostLocalButtonImage);
-		}
+			_isDistant = isDistant;
+			ToggleDistantEvent?.Invoke(isDistant);
 
-		private void ToggleLocalHost()
-		{
-			ToggleDistantEvent?.Invoke(false);
-			ToggleButtons(_hostLocalButtonImage, _hostDistantButtonImage);
-		}
-
-		private void ToggleDistantClient()
-		{
-			ToggleDistantEvent?.Invoke(true);
-			ToggleButtons(_clientDistantButtonImage, _clientLocalButtonImage);
-		}
-
-		private void ToggleLocalClient()
-		{
-			ToggleDistantEvent?.Invoke(false);
-			ToggleButtons(_clientLocalButtonImage, _clientDistantButtonImage);
+			if (isDistant)
+			{
+				ToggleButtons(_hostDistantButtonImage, _hostLocalButtonImage);
+				ToggleButtons(_clientDistantButtonImage, _clientLocalButtonImage);
+			}
+			else
+			{
+				ToggleButtons(_hostLocalButtonImage, _hostDistantButtonImage);
+				ToggleButtons(_clientLocalButtonImage, _clientDistantButtonImage);
+			}
 		}
 
 		private void ToggleButtons(Image onButtonImage, Image offButtonImage)
@@ -291,7 +278,7 @@ namespace CardGame.UI
 		{
 			SessionName = _sessionNameInput.text;
 			Password = _passwordInputHost.text;
-			if (string.IsNullOrEmpty(Password)) Password = "- None -";
+			if (string.IsNullOrEmpty(Password)) Password = NONE_BASE_VALUE;
 
 			OpenPanel(_afterHostGameObject, CurrentScreen.AfterHost);
 
@@ -362,7 +349,6 @@ namespace CardGame.UI
 		private void StartGame()
 		{
 			PlayGameEvent?.Invoke();
-			CloseMenu();
 		}
 
 		public void QuitClientGame()
@@ -389,7 +375,6 @@ namespace CardGame.UI
 
 		private void CallJoinGameEvent()
 		{
-			PlayerName = _playerNameInput.text;
 			Code = _codeInput.text;
 			if (!string.IsNullOrEmpty(_passwordInputClient.text))
 				Password = _passwordInputClient.text;

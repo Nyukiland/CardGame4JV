@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using CardGame.UI;
 using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
@@ -14,8 +13,6 @@ namespace CardGame.Net
     public class LocalNetController : NetControllerParent
     {
         [SerializeField, Disable] private LanSearchBeacon _lanSearch;
-
-        [SerializeField] private NetworkUI _networkUI;
                 
         #region Unity Methods
 
@@ -300,6 +297,8 @@ namespace CardGame.Net
 		protected override void LaunchGame()
 		{
 			if (_isDistant) return;
+			
+			_networkUI.CloseMenu();
 			
 			if (NetworkManager.Singleton.ConnectedClients.Count <= 1)
 			{

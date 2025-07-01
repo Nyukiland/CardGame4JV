@@ -23,7 +23,7 @@ namespace CardGame.Net
 		{
 			if (_netCommunication != null)
 			{
-				_netComText.text = _netCommunication.gameObject.name + " / \n Join Code: " + _joinCode;
+				_netComText.text = _netCommunication.gameObject.name + " / \n Join Code: " + _networkUI.Code;
 			}
 		}
 

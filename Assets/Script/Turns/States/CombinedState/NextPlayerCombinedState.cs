@@ -24,11 +24,9 @@ namespace CardGame.Turns
 			GetStateComponent(ref _handResource);
 			GetStateComponent(ref _hudAbility);
 			GetStateComponent(ref _moveTile);
+	        GetStateComponent(ref _autoPlayAbility);
 
 			_moveTile.CanPlaceOnGrid = false;
-
-            if (!_net.IsNetActive())
-				GetStateComponent(ref _autoPlayAbility);
         }
 
 		public override void OnExit()
