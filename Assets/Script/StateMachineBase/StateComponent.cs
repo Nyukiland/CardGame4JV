@@ -36,7 +36,7 @@ namespace CardGame.StateMachine
 				OnEnableController();
 		}
 
-		public virtual void OnEnableController()
+		public void OnEnableController()
 		{
 			//i don't like the cast but i guess should do it
 			if (this is Ability) Enabled = true;
@@ -44,7 +44,7 @@ namespace CardGame.StateMachine
 			OnEnable();
 		}
 
-		public virtual void OnDisableController()
+		public void OnDisableController()
 		{
 			//i don't like the cast but i guess should do it
 			if (this is Ability) Enabled = false;
