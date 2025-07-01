@@ -23,28 +23,28 @@ namespace CardGame.Turns
 
 		private TileVisu[,] _grid;
 
-        public List<Vector2Int> SurroundingTilePos { get; private set; } = new();
+		public List<Vector2Int> SurroundingTilePos { get; private set; } = new();
 
 		// Tile bonus
-        private List<Vector2Int> BonusTilePositions = new();
-        private List<TileData> BonusTilePool = new();
+		private List<Vector2Int> BonusTilePositions = new();
+		private List<TileData> BonusTilePool = new();
 
-        public override void LateInit()
-        {
-            DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
-            drawPile.OnTilesLoaded += GenerateGrid;
-
-            Storage.Instance.Register(this);
-        }
-
-        private void GenerateGrid()
+		public override void LateInit()
 		{
-            DrawPile drawPile = Storage.Instance.GetElement<DrawPile>(); // On se desabonne
-            drawPile.OnTilesLoaded -= GenerateGrid;
+			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
+			drawPile.OnTilesLoaded += GenerateGrid;
 
-            _grid = new TileVisu[_width, _height];
-			 
-            for (int x = 0; x < _width; x++)
+			Storage.Instance.Register(this);
+		}
+
+		private void GenerateGrid()
+		{
+			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>(); // On se desabonne
+			drawPile.OnTilesLoaded -= GenerateGrid;
+
+			_grid = new TileVisu[_width, _height];
+
+			for (int x = 0; x < _width; x++)
 			{
 				for (int y = 0; y < _height; y++)
 				{
@@ -61,76 +61,76 @@ namespace CardGame.Turns
 			TileData tileData = new();
 			tileData.InitTile(_startingTileSettings);
 			SetTile(tileData, _width / 2, _height / 2);
+
 			// Tiles bonus
 			GenerateBonusTiles();
 
-            Camera.main.transform.position = new Vector3(_width / 2, (_height / 2) - 5.5f, Camera.main.transform.position.z);
+			Camera.main.transform.position = new Vector3(_width / 2, (_height / 2) - 5, Camera.main.transform.position.z);
 		}
 
 		private void GenerateBonusTiles()
 		{
-            DrawPile drawpile = Storage.Instance.GetElement<DrawPile>();
+			DrawPile drawpile = Storage.Instance.GetElement<DrawPile>();
 
-			for (int range = 2; range<4; range++) // On call a range = 2 et = 3 pour les deux carrés
+			for (int range = 2; range < 4; range++) // On call a range = 2 et = 3 pour les deux carrés
 			{
-                BonusTilePool.Clear(); // On recupere la liste des tiles bonus prévues pour ce carré
-                BonusTilePool = drawpile.GetBonusTileFromPoolIndex(range-1); // Cringe, car en index on a 1 et 2 pour premier et 2e carré
+				BonusTilePool.Clear(); // On recupere la liste des tiles bonus prévues pour ce carré
+				BonusTilePool = drawpile.GetBonusTileFromPoolIndex(range - 1); // Cringe, car en index on a 1 et 2 pour premier et 2e carré
 
-                BonusTilePositions.Clear();
-                GetBonusTilePositionList(range); // On recup toutes les positions possibles pour ce carré
+				BonusTilePositions.Clear();
+				GetBonusTilePositionList(range); // On recup toutes les positions possibles pour ce carré
 
-                for (int i = 0; i < 3; i++) // On pose 3 bonus tiles
-                    PlaceBonusTile();
-            }
-        }
+				for (int i = 0; i < 3; i++) // On pose 3 bonus tiles
+					PlaceBonusTile();
+			}
+		}
 
-        private void GetBonusTilePositionList(int range)
-        {
-            Vector2Int center = new Vector2Int(_width / 2, _height / 2); // Centre du carré 
-
-            for (int x = -range; x <= range; x++) // Calcul sur un centre 0,0
-            {
-                for (int y = -range; y <= range; y++)
-                {
-                    if (Mathf.Abs(x) == range || Mathf.Abs(y) == range) // Un carré 5x5 par ex, la bordure c'est toutes les valeurs ou X vaut 2 ou -2, avec y entre -2 et 2, ou l'inverse
-                    {
-                        BonusTilePositions.Add(center + new Vector2Int(x, y)); // On ajoute la nouvelle position, mais ramenée au centre du carré
-                    }
-                }
-            }
-        }
-
-        private void PlaceBonusTile()
+		private void GetBonusTilePositionList(int range)
 		{
-            Debug.Log($"Bonus tile position count is  {BonusTilePositions.Count}");
-            Vector2Int value = BonusTilePositions[Random.Range(0, BonusTilePositions.Count)];
-            TileVisu tempTile = GetTile(value.x, value.y);
-            BonusTilePositions.Remove(value); // On retire la valeur, si ca reussi on retire, si ca fail on retire donc duh
+			Vector2Int center = new Vector2Int(_width / 2, _height / 2); // Centre du carré 
 
-            if (tempTile != null && tempTile.TileData == null)
+			for (int x = -range; x <= range; x++) // Calcul sur un centre 0,0
 			{
-				for (int x = -2; x<3; x++)
+				for (int y = -range; y <= range; y++)
+				{
+					if (Mathf.Abs(x) == range || Mathf.Abs(y) == range) // Un carré 5x5 par ex, la bordure c'est toutes les valeurs ou X vaut 2 ou -2, avec y entre -2 et 2, ou l'inverse
+					{
+						BonusTilePositions.Add(center + new Vector2Int(x, y)); // On ajoute la nouvelle position, mais ramenée au centre du carré
+					}
+				}
+			}
+		}
+
+		private void PlaceBonusTile()
+		{
+			Vector2Int value = BonusTilePositions[Random.Range(0, BonusTilePositions.Count)];
+			TileVisu tempTile = GetTile(value.x, value.y);
+			BonusTilePositions.Remove(value); // On retire la valeur, si ca reussi on retire, si ca fail on retire donc duh
+
+			if (tempTile != null && tempTile.TileData == null)
+			{
+				for (int x = -2; x < 3; x++)
 				{
 					for (int y = -2 + Mathf.Abs(x); y < 3 - Mathf.Abs(x); y++)
 					{
-                        TileVisu tile = GetTile(value.x + x, value.y + y);
+						TileVisu tile = GetTile(value.x + x, value.y + y);
 
-                        if (tile != null && tile.TileData != null) // && !(x == 0 && y ==0) si on veut autoriser a être proche du centre
+						if (tile != null && tile.TileData != null) // && !(x == 0 && y ==0) si on veut autoriser a être proche du centre
 						{
 							//Si ca fail
 							PlaceBonusTile(); //on retry recursivement
-							return; 
+							return;
 						}
-                    }
+					}
 				}
 
-                //Si ca fonctionne
-                TileData tileData = BonusTilePool[Random.Range(0, BonusTilePool.Count)];
-                BonusTilePool.Remove(tileData); // On retire le tiledata de la liste temp, pour pas le placer en double
+				//Si ca fonctionne
+				TileData tileData = BonusTilePool[Random.Range(0, BonusTilePool.Count)];
+				BonusTilePool.Remove(tileData); // On retire le tiledata de la liste temp, pour pas le placer en double
 
-                SetTile(tileData, value.x, value.y);
-            }
-        }
+				SetTile(tileData, value.x, value.y);
+			}
+		}
 
 		public TileVisu GetTile(int x, int y)
 		{
@@ -156,10 +156,12 @@ namespace CardGame.Turns
 			tileVisu.SetTilePosOnGrid(new(x, y));
 			tileVisu.SetTileLayerGrid(true);
 			tileVisu.gameObject.SetActive(true);
+			tileVisu.IsLinked = (tile.TileSettings.PoolIndex == 0) ? true : false; // Si tile normale true, si tile bonus false
 			ActivateSurroundingTiles(x, y);
 			PlayTileEffect(tileVisu);
 			return true;
 		}
+
 
 		public bool SetTile(TileData tile, Vector2Int arrayCoordinates)
 		{
@@ -170,6 +172,8 @@ namespace CardGame.Turns
 		{
 			if (SurroundingTilePos.Contains(new(x, y)))
 				SurroundingTilePos.Remove(new(x, y));
+
+			if (!GetTile(x, y).IsLinked) return; // Le cas des tiles bonus lors de la generation de la grille
 
 			if (x + 1 <= _width - 1) ActivateTile(x + 1, y);
 			if (x - 1 >= 0) ActivateTile(x - 1, y);
@@ -257,6 +261,39 @@ namespace CardGame.Turns
 				}
 
 				return null;
+			}
+		}
+
+		public void SetNeighborBonusTileLinked(Vector2Int pos)
+		{
+			TileVisu tile = new();
+
+			tile = GetTile(pos.x - 1, pos.y); // a gauche
+			if (tile != null && tile.TileData != null && tile.TileData.TileSettings.PoolIndex != 0)
+			{
+				tile.IsLinked = true;
+				ActivateSurroundingTiles(pos.x - 1, pos.y);
+			}
+
+			tile = GetTile(pos.x + 1, pos.y); // a droite
+			if (tile != null && tile.TileData != null && tile.TileData.TileSettings.PoolIndex != 0)
+			{
+				tile.IsLinked = true;
+				ActivateSurroundingTiles(pos.x + 1, pos.y);
+			}
+
+			tile = GetTile(pos.x, pos.y - 1); // au dessous
+			if (tile != null && tile.TileData != null && tile.TileData.TileSettings.PoolIndex != 0)
+			{
+				tile.IsLinked = true;
+				ActivateSurroundingTiles(pos.x, pos.y - 1);
+			}
+
+			tile = GetTile(pos.x, pos.y + 1); // au dessus
+			if (tile != null && tile.TileData != null && tile.TileData.TileSettings.PoolIndex != 0)
+			{
+				tile.IsLinked = true;
+				ActivateSurroundingTiles(pos.x, pos.y + 1);
 			}
 		}
 

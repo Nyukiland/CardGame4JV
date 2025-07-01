@@ -6,10 +6,10 @@ namespace CardGame.UI
 {
     public class TileVisu : MonoBehaviour
     {
-		[SerializeField]
-		private string _layerGrid;
-		[SerializeField]
-		private string _layerHand;
+        [SerializeField]
+        private string _layerGrid;
+        [SerializeField]
+        private string _layerHand;
 
         [Space(10)]
 
@@ -50,7 +50,9 @@ namespace CardGame.UI
         [SerializeField] private TMPro.TextMeshPro _ownerTextMeshPro;
         public TileData TileData { get; set; }
 
-		public Vector2 PositionOnGrid { get;  private set; }
+        public Vector2 PositionOnGrid { get; private set; }
+
+        public bool IsLinked = true; // Sert pour la preview des placements possibles
 
         private void Start()
         {
@@ -72,7 +74,7 @@ namespace CardGame.UI
         private void UpdateVisu()
         {
 
-			List<ZoneData> zones = new();
+            List<ZoneData> zones = new();
 
             if (TileData == null)
             {
@@ -86,7 +88,7 @@ namespace CardGame.UI
             }
 
             _ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : "";
-            _visuValidity.material = TileData.HasFlag ? _purple : _grey; 
+            _visuValidity.material = TileData.HasFlag ? _purple : _grey;
 
             _visuNorth.enabled = true;
             _visuSouth.enabled = true;
@@ -165,12 +167,12 @@ namespace CardGame.UI
             return null;
         }
 
-		public void SetTileLayerGrid(bool isOnGrid)
-		{
-			if (isOnGrid) gameObject.layer = LayerMask.NameToLayer(_layerGrid);
-			else gameObject.layer = LayerMask.NameToLayer(_layerHand);
-		}
+        public void SetTileLayerGrid(bool isOnGrid)
+        {
+            if (isOnGrid) gameObject.layer = LayerMask.NameToLayer(_layerGrid);
+            else gameObject.layer = LayerMask.NameToLayer(_layerHand);
+        }
 
-		public void SetTilePosOnGrid(Vector2 pos) => PositionOnGrid = pos;
+        public void SetTilePosOnGrid(Vector2 pos) => PositionOnGrid = pos;
     }
 }

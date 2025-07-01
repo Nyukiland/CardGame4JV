@@ -12,35 +12,35 @@ namespace CardGame.Turns
 		private MoveTileAbility _moveTile;
 		private ZoneHolderResource _zoneResource;
 		private PlaceTileOnGridAbility _placeTileOnGrid;
-        private GridManagerResource _gridManagerRessource;
+		private GridManagerResource _gridManagerRessource;
 
-        List<TileVisu> _previewTiles;
+		List<TileVisu> _previewTiles;
 
-        public PlaceTileCombinedState()
+		public PlaceTileCombinedState()
 		{
-            AddSubState(new MoveTileSubState(true));
-            AddSubState(new TauntSubState());
-        }
+			AddSubState(new MoveTileSubState(true));
+			AddSubState(new TauntSubState());
+		}
 
-        public override void OnEnter()
-        {
-            base.OnEnter();
+		public override void OnEnter()
+		{
+			base.OnEnter();
 
 			GetStateComponent(ref _moveTile);
 			GetStateComponent(ref _zoneResource);
 			GetStateComponent(ref _placeTileOnGrid);
-            GetStateComponent(ref _gridManagerRessource);
+			GetStateComponent(ref _gridManagerRessource);
 
-            _moveTile.OnCardPicked += HandleCardPicked;
-            _placeTileOnGrid.OnCardReleased += HandleCardReleased;
+			_moveTile.OnCardPicked += HandleCardPicked;
+			_placeTileOnGrid.OnCardReleased += HandleCardReleased;
 
-            _moveTile.CanPlaceOnGrid = true;
-            _previewTiles = new List<TileVisu>();
-        }
+			_moveTile.CanPlaceOnGrid = true;
+			_previewTiles = new List<TileVisu>();
+		}
 
-        public override void OnExit()
-        {
-            base.OnExit();
+		public override void OnExit()
+		{
+			base.OnExit();
 
 			if (_moveTile.CurrentTile != null)
 			{
@@ -48,9 +48,9 @@ namespace CardGame.Turns
 				_moveTile.CurrentTile = null;
 			}
 
-            _moveTile.OnCardPicked -= HandleCardPicked;
-            _placeTileOnGrid.OnCardReleased -= HandleCardReleased;
-        }
+			_moveTile.OnCardPicked -= HandleCardPicked;
+			_placeTileOnGrid.OnCardReleased -= HandleCardReleased;
+		}
 
 		public override void OnActionTriggered(InputAction.CallbackContext context)
 		{
@@ -74,32 +74,32 @@ namespace CardGame.Turns
 
 		}
 
-        private void HandleCardPicked()
-        {
-            foreach (var tile in _gridManagerRessource.SurroundingTilePos)
-            {
-                TileVisu tempTile = _gridManagerRessource.GetTile(tile.x, tile.y);
-                if (tempTile.TileData == null)
-                {
-                    _previewTiles.Add(tempTile); //On pourrait le mettre en dessous et stocker que les modified, mais ca pourrait servir
+		private void HandleCardPicked()
+		{
+			foreach (var tile in _gridManagerRessource.SurroundingTilePos)
+			{
+				TileVisu tempTile = _gridManagerRessource.GetTile(tile.x, tile.y);
 
-                    if (_gridManagerRessource.GetPlacementConnectionCount(_moveTile.CurrentTile.TileData, tile) != 0) // si placement valide
-                    {
-                        tempTile.ChangeValidityVisual(true); // Si valide, on affiche un feedback, on fait rien sinon
-                        _previewTiles.Add(tempTile);
-                    }
-                }
-            }
-        }
+				if (tempTile.TileData != null) continue;
 
-        private void HandleCardReleased()
-        {
-            foreach (var tile in _previewTiles)
-            {
-                tile.ResetValidityVisual();
-            }
-            _previewTiles.Clear();
-        }
+				_previewTiles.Add(tempTile); //On pourrait le mettre en dessous et stocker que les modified, mais ca pourrait servir
 
-    }
+				if (_gridManagerRessource.GetPlacementConnectionCount(_moveTile.CurrentTile.TileData, tile) != 0)
+				{
+					tempTile.ChangeValidityVisual(true); // Si valide, on affiche un feedback, on fait rien sinon
+					_previewTiles.Add(tempTile);
+				}
+			}
+		}
+
+		private void HandleCardReleased()
+		{
+			foreach (var tile in _previewTiles)
+			{
+				tile.ResetValidityVisual();
+			}
+			_previewTiles.Clear();
+		}
+
+	}
 }
