@@ -845,8 +845,8 @@ MonoBehaviour:
   - rid: 542522587139801178
   - rid: 542522587139801179
   - rid: 542522706916278362
-  - rid: 2787434629904990299
-  - rid: 2787434629904990300
+  - rid: 1922521404052602971
+  - rid: 1922521404052602972
   references:
     version: 2
     RefIds:
@@ -920,15 +920,15 @@ MonoBehaviour:
         _shakeIntensity: 20
         _scaleDown: {x: -0.4, y: -0.4}
         _probaSpecial: 1
-    - rid: 2787434629904990299
+    - rid: 1922521404052602971
+      type: {class: ZoomAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+    - rid: 1922521404052602972
       type: {class: MoveCameraAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
         _moveFactor: 0.005
-    - rid: 2787434629904990300
-      type: {class: ZoomAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
-      data:
-        Enabled: 0
     - rid: 4835484058177241183
       type: {class: GridManagerResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
