@@ -39,6 +39,11 @@ namespace CardGame.Turns
 			_sendInfo = owner.GetStateComponent<SendInfoAbility>();
 		}
 
+		public bool QuickCheckRay(Vector2 position)
+		{
+			return Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100, _layerTile);
+		}
+
 		public void ShakeTile(Vector2 position)
 		{
 			if (Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100f, _layerTile))

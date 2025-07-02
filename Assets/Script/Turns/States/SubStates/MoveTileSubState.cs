@@ -7,11 +7,17 @@ using UnityEngine.InputSystem;
 
 namespace CardGame.Turns
 {
-	public class MoveTileSubState : State
+	//	This is now the worst script of the entire project
+	//	I highly regret not deviding it but changing it is too much work and i'm kinda bored
+	//	So yep sorry
+	//	
+	//	---Roman---
+	public class MoveTileSubState : State 
 	{
 		private MoveTileAbility _moveCardAbility;
 		private RotateTileAbility _rotateCardAbility;
 		private MoveCameraAbility _moveCameraAbility;
+		private TauntShakeTileAbility _tauntShakeTileAbility;
 
 		private bool _isHolding;
 		private CancellationTokenSource _cancelToken;
@@ -36,6 +42,7 @@ namespace CardGame.Turns
 			GetStateComponent(ref _moveCardAbility);
 			GetStateComponent(ref _rotateCardAbility);
 			GetStateComponent(ref _moveCameraAbility);
+			GetStateComponent(ref _tauntShakeTileAbility);
 		}
 
 		public override void OnActionTriggered(InputAction.CallbackContext context)
@@ -53,7 +60,7 @@ namespace CardGame.Turns
 				_cancelToken = new CancellationTokenSource();
 				if (_moveCardAbility.QuickCheckRay(_startPos))
 					DetectHold(_startPos, _cancelToken.Token).Forget();
-				else
+				else if (!_tauntShakeTileAbility.QuickCheckRay(_startPos))
 					_moveCameraAbility.StartMoving(_startPos);
 			}
 			else if (context.phase == InputActionPhase.Canceled)

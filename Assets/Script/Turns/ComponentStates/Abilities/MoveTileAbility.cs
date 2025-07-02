@@ -12,11 +12,14 @@ namespace CardGame.Turns
 		[SerializeField]
 		private LayerMask _layerTile;
 
-		private Plane _planeForCast = new(Vector3.forward, new Vector3(0, 0, -0.15f));
+		private Plane _planeForCast = new(Vector3.forward, new Vector3(0, 0, 0));
 
 		private GridManagerResource _gridManager;
-		private SendInfoAbility _sender;
-		private ZoneHolderResource _handResource;
+		private ZoneHolderResource _holder;
+
+		private Vector2Int _prevPos = new (-100, -100);
+		private bool _prevActivity = false;
+
         public TileVisu CurrentTile
 		{
 			get;
@@ -30,8 +33,7 @@ namespace CardGame.Turns
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
-			_handResource = owner.GetStateComponent<ZoneHolderResource>();
-			_sender = owner.GetStateComponent<SendInfoAbility>();
+			_holder = owner.GetStateComponent<ZoneHolderResource>();
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
 		}
 
@@ -46,10 +48,12 @@ namespace CardGame.Turns
 			{
 				if (hit.collider.GetComponentInParent<TileVisu>() is TileVisu visu)
 				{
-					_handResource.RemoveTileFromHand(visu.gameObject);
+					_holder.RemoveTileFromHand(visu.gameObject);
 					CurrentTile = visu;
 
                     OnCardPicked?.Invoke();
+
+					_holder.HideMyHand(true);
                 }
 			}
 		}
@@ -68,7 +72,7 @@ namespace CardGame.Turns
 			CurrentTile.transform.DOMove(pos, 0.1f);
 
 			// Verification de sa validity
-			if (!CanPlaceOnGrid || _handResource.IsInHand(position)) //on fait rien quand c'est dans la main ou si on ne peut pas la placer
+			if (!CanPlaceOnGrid || _holder.IsInHand(position)) //on fait rien quand c'est dans la main ou si on ne peut pas la placer
 			{
 				CurrentTile.ResetValidityVisual();
 				return;
@@ -83,6 +87,15 @@ namespace CardGame.Turns
             }
             else
             {
+				if (_prevPos != new Vector2Int(-100, -100))
+				{
+					_gridManager.GetTile(_prevPos).gameObject.SetActive(_prevActivity);
+				}
+
+				_prevActivity = _gridManager.GetTile(gridPos).gameObject.activeSelf;
+				_gridManager.GetTile(gridPos).gameObject.SetActive(false);
+				_prevPos = gridPos;
+
                 int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
 				int linkedNeighbor = _gridManager.CheckNeighborTileLinked(gridPos);
 				//Debug.Log($"placement : {connections}, {linkedNeighbor}, {connections > 0 && linkedNeighbor > 0}");
@@ -91,6 +104,17 @@ namespace CardGame.Turns
             }
         }
 
+		public void StandardRelease()
+		{
+			if (_prevPos != new Vector2Int(-100, -100))
+			{
+				_gridManager.GetTile(_prevPos).gameObject.SetActive(_prevActivity);
 
+				_prevPos = new Vector2Int(-100, -100);
+				_prevActivity = false;
+			}
+
+			_holder.HideMyHand(false);
+		}
     }
 }
