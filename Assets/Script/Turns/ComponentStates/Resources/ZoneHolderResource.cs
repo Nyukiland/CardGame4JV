@@ -97,5 +97,13 @@ namespace CardGame.Turns
 				}
 			}
 		}
+
+		public void HideMyHand(bool isHidden)
+		{
+			for (int i = 0; i < _tileInHand.Count; i++)
+			{
+				_tileInHand[i].SetActive(!isHidden);
+			}
+		}
 	}
 }

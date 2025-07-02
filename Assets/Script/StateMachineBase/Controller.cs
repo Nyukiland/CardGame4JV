@@ -152,7 +152,8 @@ namespace CardGame.StateMachine
 		{
 			foreach (StateComponent component in _components)
 			{
-				if (component is Ability) component.OnDisableController();
+				if (component is Ability && component.Enabled)
+					component.OnDisableController();
 			}
 		}
 		#endregion

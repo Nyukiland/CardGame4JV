@@ -23,12 +23,14 @@ namespace CardGame.Turns
 		private bool _inUse;
 
 		private GridManagerResource _gridManager;
+		private ZoneHolderResource _zoneHolder;
 
 		public override void LateInit()
 		{
 			base.LateInit();
 			_cam = Camera.main;
 			_gridManager = Owner.GetStateComponent<GridManagerResource>();
+			_zoneHolder = Owner.GetStateComponent<ZoneHolderResource>();
 		}
 
 		public override void OnDisable()
@@ -62,6 +64,8 @@ namespace CardGame.Turns
 
 			_bottomLeftCorner -= new Vector3(_limitCamMove, _limitCamMove, 0);
 			_topRightCorner += new Vector3(_limitCamMove, _limitCamMove, 0);
+
+			_zoneHolder.HideMyHand(true);
 		}
 
 		public void MoveCamera(Vector2 pos)
@@ -90,6 +94,7 @@ namespace CardGame.Turns
 
 		public void StopMoving()
 		{
+			_zoneHolder.HideMyHand(false);
 			_inUse = false;
 			_startPos = Vector2.zero;
 			_camPos = Vector3.zero;
