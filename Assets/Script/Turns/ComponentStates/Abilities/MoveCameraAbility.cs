@@ -72,9 +72,9 @@ namespace CardGame.Turns
 			Vector3 move = _cam.ScreenToWorldPoint(_startPos) - _cam.ScreenToWorldPoint(pos);
 
 			Vector2 viewport = _cam.WorldToViewportPoint(_bottomLeftCorner + move);
-			if (viewport.x > 1 || viewport.x < 0 ||
-				viewport.y > 1 || viewport.x < 0)
-				return;
+			//if (viewport.x > 1 || viewport.x < 0 ||
+			//	viewport.y > 1 || viewport.x < 0)
+			//	return;
 
 			_cam.transform.DOMove(_camPos + (move * _moveFactor), 0.1f);
 		}

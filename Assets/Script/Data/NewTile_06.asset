@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PoolIndex: 0
   _northZone:
-    environment: 2
+    environment: 1
     isOpen: 1
   _eastZone:
     environment: 2
@@ -23,7 +23,7 @@ MonoBehaviour:
     environment: 2
     isOpen: 1
   _westZone:
-    environment: 2
+    environment: 1
     isOpen: 1
   _cardEffect: []
   _cardFeedback: []

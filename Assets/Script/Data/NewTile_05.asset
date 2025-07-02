@@ -17,8 +17,8 @@ MonoBehaviour:
     environment: 1
     isOpen: 0
   _eastZone:
-    environment: 3
-    isOpen: 1
+    environment: 5
+    isOpen: 0
   _southZone:
     environment: 3
     isOpen: 1

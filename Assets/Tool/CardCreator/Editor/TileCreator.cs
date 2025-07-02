@@ -71,7 +71,10 @@ public class TileCreator : EditorWindow
                 GUI.backgroundColor = Color.gray * 0.6f;
 
             if (GUILayout.Button(RenderTilePreview(tile), GUILayout.Width(180), GUILayout.Height(180)))
+            {
+                GUI.FocusControl(null);
                 _selectedTile = tile;
+            }
 
             GUI.backgroundColor = originalBg;
         }
@@ -90,11 +93,91 @@ public class TileCreator : EditorWindow
             EditorGUILayout.BeginVertical("HelpBox");
             GUI.backgroundColor = originalColor;
 
-            Editor editor = Editor.CreateEditor(_selectedTile);
+			SerializedObject serializedTile = new SerializedObject(_selectedTile);
+			serializedTile.Update();
 
-            EditorGUI.BeginChangeCheck();
-            editor.OnInspectorGUI();
-            if (EditorGUI.EndChangeCheck())
+			SerializedProperty presetProp = serializedTile.FindProperty("tilePreset");
+			EditorGUILayout.PropertyField(presetProp);
+
+			TilePreset preset = (TilePreset)presetProp.enumValueIndex;
+
+            // Pour update les valeurs
+			ZoneData north = _selectedTile.NorthZone;
+			ZoneData east = _selectedTile.EastZone;
+			ZoneData south = _selectedTile.SouthZone;
+			ZoneData west = _selectedTile.WestZone;
+
+			switch (preset)
+			{
+				case TilePreset.FourDifferentClosed:
+					north.environment = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("North", north.environment);
+					west.environment = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("West", west.environment);
+					east.environment = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("East", east.environment);
+					south.environment = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("South", south.environment);
+
+					north.isOpen = false;
+					west.isOpen = false;
+					east.isOpen = false;
+					south.isOpen = false;
+					break;
+
+				case TilePreset.ThreeSame:
+					ENVIRONEMENT_TYPE small = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("Small Zone", north.environment);
+					ENVIRONEMENT_TYPE big = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("Big Zone", east.environment);
+
+					north.environment = small; north.isOpen = false;
+					east.environment = big; east.isOpen = true;
+					south.environment = big; south.isOpen = true;
+					west.environment = big; west.isOpen = true;
+					break;
+
+				case TilePreset.DiagonalOpenFull:
+					ENVIRONEMENT_TYPE diagA = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("Diagonal A (N/E) : ", north.environment);
+					ENVIRONEMENT_TYPE diagB = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("Diagonal B (S/W) : ", south.environment);
+
+					north.environment = diagA; north.isOpen = true;
+                    east.environment = diagA; east.isOpen = true;
+
+					south.environment = diagB; south.isOpen = true;
+					west.environment = diagB; west.isOpen = true;
+					break;
+
+				case TilePreset.DiagonalOpenHalf:
+					ENVIRONEMENT_TYPE a = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("Open Diagonal (N/E)", north.environment);
+					ENVIRONEMENT_TYPE b = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("South : ", south.environment);
+					ENVIRONEMENT_TYPE c = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("West : ", west.environment);
+
+					north.environment = a; north.isOpen = true;
+					east.environment = a; east.isOpen = true;
+
+					south.environment = b; south.isOpen = false;
+					west.environment = c; west.isOpen = false;
+					break;
+
+				case TilePreset.Path:
+					ENVIRONEMENT_TYPE main = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("Main Path (N & S) : ", north.environment);
+
+					ENVIRONEMENT_TYPE capEast = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("East : ", east.environment);
+					ENVIRONEMENT_TYPE capWest = (ENVIRONEMENT_TYPE)EditorGUILayout.EnumPopup("West : ", west.environment);
+
+					north.environment = main; north.isOpen = true;
+					south.environment = main; south.isOpen = true;
+
+					west.environment = capWest; west.isOpen = false;
+                    east.environment = capEast; east.isOpen = false;
+
+
+					break;
+
+			}
+
+			serializedTile.ApplyModifiedProperties();
+
+			// Set updated zone data back into the tile
+			_selectedTile.SetZones(north, east, south, west);
+			EditorUtility.SetDirty(_selectedTile);
+
+			if (EditorGUI.EndChangeCheck())
             {
                 _tilePreviews.Remove(_selectedTile);
                 Repaint(); // force l’UI à redessiner la preview
@@ -108,7 +191,15 @@ public class TileCreator : EditorWindow
                 EditorUtility.SetDirty(_selectedTile); // Marque comme modifié pour que Unity sauvegarde
             }
 
-            GUILayout.Space(10);
+			GUILayout.Space(5);
+			EditorGUI.BeginChangeCheck();
+			_selectedTile.NumberOfCopies = EditorGUILayout.IntField("Number of Copies", _selectedTile.NumberOfCopies);
+			if (EditorGUI.EndChangeCheck())
+			{
+				EditorUtility.SetDirty(_selectedTile);
+			}
+
+			GUILayout.Space(10);
 
             // RENAME 
             EditorGUILayout.BeginHorizontal();
@@ -230,11 +321,12 @@ public class TileCreator : EditorWindow
 
         Color GetColor(ENVIRONEMENT_TYPE type) => type switch
         {
-            ENVIRONEMENT_TYPE.Forest => Color.green,
-            ENVIRONEMENT_TYPE.Snow => Color.white,
-            ENVIRONEMENT_TYPE.Lava => Color.red,
-            ENVIRONEMENT_TYPE.River => Color.blue,
-            _ => Color.gray
+			ENVIRONEMENT_TYPE.Neutral => Color.white,
+			ENVIRONEMENT_TYPE.Grass => Color.green,
+            ENVIRONEMENT_TYPE.Terrain => new Color(0.59f, 0.29f, 0.0f),
+			ENVIRONEMENT_TYPE.Water => Color.blue,
+			ENVIRONEMENT_TYPE.Fields => Color.yellow,
+			_ => Color.gray
         };
 
         Vector2 center = new Vector2(size / 2f, size / 2f);

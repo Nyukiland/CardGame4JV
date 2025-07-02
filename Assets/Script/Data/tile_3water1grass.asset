@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c445cec05d1a07744b5c5dd201f7a2e2, type: 3}
-  m_Name: NewTile_13
+  m_Name: tile_3water1grass
   m_EditorClassIdentifier: 
-  PoolIndex: 1
+  PoolIndex: 0
   _northZone:
-    environment: 1
-    isOpen: 1
+    environment: 2
+    isOpen: 0
   _eastZone:
-    environment: 1
+    environment: 5
     isOpen: 1
   _southZone:
     environment: 5
@@ -25,6 +25,7 @@ MonoBehaviour:
   _westZone:
     environment: 5
     isOpen: 1
+  tilePreset: 1
   _cardEffect: []
   _cardFeedback: []
   references:

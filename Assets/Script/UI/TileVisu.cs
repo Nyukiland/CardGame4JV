@@ -28,27 +28,22 @@ namespace CardGame.UI
 
         [Space(10)]
 
-        [SerializeField]
-        private Material _red;
-        [SerializeField]
-        private Material _green;
-        [SerializeField]
-        private Material _blue;
-        [SerializeField]
-        private Material _white;
-        [SerializeField]
-        private Material _grey; // default
-        [SerializeField]
-        private Material _black; // Not valid
-        [SerializeField]
-        private Material _yellow; // valid
-        [SerializeField]
-        private Material _purple; // flag
+		//Enviro
+		[SerializeField] private Material _white;
+        [SerializeField] private Material _green;
+        [SerializeField] private Material _blue;
+        [SerializeField] private Material _yellow;
+		[SerializeField] private Material _brown;
+
+
+		[SerializeField] private Material _grey; // default
+        [SerializeField] private Material _black; // Not valid
+        [SerializeField] private Material _red; // valid
+        [SerializeField] private Material _purple; // flag
 
         [Space(10)]
 
         [SerializeField] private TMPro.TextMeshPro _ownerTextMeshPro;
-		[SerializeField] private TMPro.TextMeshPro _bonusTextMeshPro;
 
 		public TileData TileData { get; set; }
 
@@ -90,7 +85,6 @@ namespace CardGame.UI
             }
 
             _ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : "";
-            _bonusTextMeshPro.text = TileData.TileSettings.PoolIndex > 0 ? "Bonus" : "";
 
 			_visuValidity.material = TileData.HasFlag ? _purple : _grey;
 
@@ -140,7 +134,7 @@ namespace CardGame.UI
 
         public void ChangeValidityVisual(bool isValid)
         {
-            _visuValidity.material = isValid ? _yellow : _black;
+            _visuValidity.material = isValid ? _red : _black;
         }
 
         public void ResetValidityVisual()
@@ -158,15 +152,17 @@ namespace CardGame.UI
         {
             switch (type)
             {
-                case ENVIRONEMENT_TYPE.Forest:
-                    return _green;
-                case ENVIRONEMENT_TYPE.Snow:
+                case ENVIRONEMENT_TYPE.Neutral:
                     return _white;
-                case ENVIRONEMENT_TYPE.Lava:
-                    return _red;
-                case ENVIRONEMENT_TYPE.River:
+                case ENVIRONEMENT_TYPE.Grass:
+                    return _green;
+                case ENVIRONEMENT_TYPE.Fields:
+                    return _yellow;
+                case ENVIRONEMENT_TYPE.Water:
                     return _blue;
-            }
+				case ENVIRONEMENT_TYPE.Terrain:
+					return _brown;
+			}
 
             return null;
         }
@@ -178,5 +174,10 @@ namespace CardGame.UI
         }
 
         public void SetTilePosOnGrid(Vector2 pos) => PositionOnGrid = pos;
-    }
+
+		public void SetTileMesh()
+		{
+
+		}
+	}
 }

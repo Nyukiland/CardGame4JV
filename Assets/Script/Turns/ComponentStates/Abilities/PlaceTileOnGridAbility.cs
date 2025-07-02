@@ -85,9 +85,6 @@ namespace CardGame.Turns
                 _sender.SendInfoTilePlaced(tempTile.TileData, pos);
 				_scoring.SetScoringPos(pos);
 
-                // On fait les ajustements pour la preview
-                _gridManager.SetNeighborBonusTileLinked(pos); //On check si une tile a coté est tile bonus 
-
                 if (!_sender.SendTurnFinished())
                 {
                     for (int i = 0; i < connectionCount; i++)

@@ -15,7 +15,7 @@ MonoBehaviour:
   PoolIndex: 1
   _northZone:
     environment: 4
-    isOpen: 1
+    isOpen: 0
   _eastZone:
     environment: 2
     isOpen: 0
@@ -24,7 +24,8 @@ MonoBehaviour:
     isOpen: 0
   _westZone:
     environment: 4
-    isOpen: 1
+    isOpen: 0
+  tilePreset: 0
   _cardEffect: []
   _cardFeedback: []
   references:

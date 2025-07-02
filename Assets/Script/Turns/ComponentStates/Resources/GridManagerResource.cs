@@ -160,6 +160,7 @@ namespace CardGame.Turns
 			tileVisu.gameObject.SetActive(true);
 			tileVisu.IsLinked = (tile.TileSettings.PoolIndex == 0) ? true : false; // Si tile normale true, si tile bonus false
 			ActivateSurroundingTiles(x, y);
+			SetNeighborBonusTileLinked(new(x, y));
 			PlayTileEffect(tileVisu);
 			return true;
 		}
@@ -292,32 +293,41 @@ namespace CardGame.Turns
 		public void SetNeighborBonusTileLinked(Vector2Int pos) 
 		{
 			TileVisu tile = null;
+			TileVisu currentTile = GetTile(pos.x, pos.y);
 
 			tile = GetTile(pos.x - 1, pos.y); // a gauche
-			if (tile != null && tile.TileData != null && tile.TileData.TileSettings.PoolIndex != 0)
+			if (tile != null && !tile.IsLinked) // On check si c'est une tile bonus jamais connectée ni owned, du coup.
 			{
 				tile.IsLinked = true;
+				tile.TileData.OwnerPlayerIndex = currentTile.TileData.OwnerPlayerIndex;
+				tile.UpdateTile(tile.TileData);
 				ActivateSurroundingTiles(pos.x - 1, pos.y);
 			}
 
 			tile = GetTile(pos.x + 1, pos.y); // a droite
-			if (tile != null && tile.TileData != null && tile.TileData.TileSettings.PoolIndex != 0)
+			if (tile != null && !tile.IsLinked)
 			{
 				tile.IsLinked = true;
+				tile.TileData.OwnerPlayerIndex = currentTile.TileData.OwnerPlayerIndex;
+				tile.UpdateTile(tile.TileData);
 				ActivateSurroundingTiles(pos.x + 1, pos.y);
 			}
 
 			tile = GetTile(pos.x, pos.y - 1); // au dessous
-			if (tile != null && tile.TileData != null && tile.TileData.TileSettings.PoolIndex != 0)
+			if (tile != null && !tile.IsLinked)
 			{
 				tile.IsLinked = true;
+				tile.TileData.OwnerPlayerIndex = currentTile.TileData.OwnerPlayerIndex;
+				tile.UpdateTile(tile.TileData);
 				ActivateSurroundingTiles(pos.x, pos.y - 1);
 			}
 
 			tile = GetTile(pos.x, pos.y + 1); // au dessus
-			if (tile != null && tile.TileData != null && tile.TileData.TileSettings.PoolIndex != 0)
+			if (tile != null && !tile.IsLinked)
 			{
 				tile.IsLinked = true;
+				tile.TileData.OwnerPlayerIndex = currentTile.TileData.OwnerPlayerIndex;
+				tile.UpdateTile(tile.TileData);
 				ActivateSurroundingTiles(pos.x, pos.y + 1);
 			}
 		}
