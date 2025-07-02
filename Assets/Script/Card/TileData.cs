@@ -18,9 +18,10 @@ namespace CardGame.Card
         // Bonus tile 
         public int MultiplicativeBonus = 1;
         public int AdditiveBonus = 0;
-        //public int PoolIndex = 0; // 1 is small pool and 2 is big pool, c'est dans tile settings
 
-        public void InitTile(TileSettings tileSettingsRef)
+		public event System.Action OnTileRotated;
+
+		public void InitTile(TileSettings tileSettingsRef)
         {
             TileSettings = tileSettingsRef;
 
@@ -32,8 +33,6 @@ namespace CardGame.Card
 
             OwnerPlayerIndex = -1;
             HasFlag = false;
-
-            
         }
 
         public void RotateTile()
@@ -47,7 +46,8 @@ namespace CardGame.Card
             Zones[0] = copiedZone;
 
             TileRotationCount += 1;
+			OnTileRotated?.Invoke(); // Tile visu va rotate son visuel
 
-        }
+		}
     }
 }

@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5170864870705583581
 Transform:
   m_ObjectHideFlags: 0
@@ -103,7 +103,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6353224360883467066
 Transform:
   m_ObjectHideFlags: 0
@@ -202,7 +202,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7857543833582779110}
+  m_Father: {fileID: 8344482355117399686}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -365,7 +365,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1591807541914103480
 Transform:
   m_ObjectHideFlags: 0
@@ -488,16 +488,22 @@ MonoBehaviour:
   _visuEast: {fileID: 199289482891222132}
   _visuWest: {fileID: 3441136048826296857}
   _visuCenter: {fileID: 3323001826489668244}
-  _white: {fileID: 2100000, guid: 604771eb075b1474ba1bf43289fe3e6d, type: 2}
-  _green: {fileID: 2100000, guid: 0f0df524c1cb272499f1aea6b04c1339, type: 2}
-  _blue: {fileID: 2100000, guid: 5f630b35d7f2f1b4c86a46921d82eaae, type: 2}
-  _yellow: {fileID: 2100000, guid: 7cd7570c7c10c224a869c0fad9d87912, type: 2}
-  _brown: {fileID: 2100000, guid: 3f0ac61adb584de4a8e78a24a1c2883b, type: 2}
+  _neutral: {fileID: 2100000, guid: 105dcf2eec0a01741b3ae8ee4e6c9c18, type: 2}
+  _grass: {fileID: 2100000, guid: 7c80afd54ddc87941ad53ca24d9549e2, type: 2}
+  _water: {fileID: 2100000, guid: 003ca149f94018748b41fde1489c2b9a, type: 2}
+  _fields: {fileID: 2100000, guid: 799cf63a8ab3c3c498a9cd34fd902fd6, type: 2}
+  _terrain: {fileID: 2100000, guid: 622711da566916644bf3f8e0a1e75bf2, type: 2}
   _grey: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   _black: {fileID: 2100000, guid: 03666876bf12a3840ad1719360cf9662, type: 2}
   _red: {fileID: 2100000, guid: 19fc054611a2e2243a1e70daf06288ca, type: 2}
   _purple: {fileID: 2100000, guid: a39bbc86eba180b49a66bee2b6a233d0, type: 2}
   _ownerTextMeshPro: {fileID: 3264921891419928780}
+  _meshesPresetList:
+  - {fileID: 7654788531814112361, guid: 32ff365726a0d584d99012981af0737c, type: 3}
+  - {fileID: 1643511142034846453, guid: 0ef16ab1e452ad84ba8275ad815ced9f, type: 3}
+  - {fileID: 4235886302587807323, guid: 63fa987e287457b479e7d4b27048bfae, type: 3}
+  - {fileID: 5871376803430326747, guid: 1cb95dfa36c5c6a4395375b1ff8e6c6b, type: 3}
+  - {fileID: 4191913911310541570, guid: bf3d29a3290d09f4cbbaafb7d8c8a282, type: 3}
   IsLinked: 1
 --- !u!65 &3792996417808844489
 BoxCollider:
@@ -537,7 +543,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2334637312565835374
 Transform:
   m_ObjectHideFlags: 0
@@ -637,7 +643,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1116041593418831064}
   - {fileID: 2334637312565835374}
   - {fileID: 6353224360883467066}
   - {fileID: 5170864870705583581}
@@ -727,6 +732,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 0.05}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1116041593418831064}
   - {fileID: 7857543833582779110}
   m_Father: {fileID: 1870554843247871833}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -747,7 +753,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4033688077911908256
 Transform:
   m_ObjectHideFlags: 0

@@ -53,7 +53,7 @@ namespace CardGame.Card
 			return BitConverter.ToInt32(hash, 0);
 		}
 
-		// Faut passer par lç car c'est privé
+		// Faut passer par la car c'est privé
 		public void SetZones(ZoneData n, ZoneData e, ZoneData s, ZoneData w)
 		{
 			_northZone = n;

@@ -13,18 +13,20 @@ MonoBehaviour:
   m_Name: NewTile_13
   m_EditorClassIdentifier: 
   PoolIndex: 1
+  NumberOfCopies: 1
   _northZone:
     environment: 1
-    isOpen: 1
+    isOpen: 0
   _eastZone:
     environment: 1
-    isOpen: 1
+    isOpen: 0
   _southZone:
     environment: 5
-    isOpen: 1
+    isOpen: 0
   _westZone:
     environment: 5
-    isOpen: 1
+    isOpen: 0
+  tilePreset: 0
   _cardEffect: []
   _cardFeedback: []
   references:
