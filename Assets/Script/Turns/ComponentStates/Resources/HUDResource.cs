@@ -25,11 +25,14 @@ namespace CardGame.Turns
 		[SerializeField] private Transform _scoreContainer;
 		[SerializeField] private ScoreUI _scorePrefab;
 		
+		private PlaceTileOnGridAbility _placeTileOnGrid;
+
 		private List<ScoreUI> _scoreList = new();
 
 		public override void Init(Controller owner)
 		{
 			OpenHud();
+			_placeTileOnGrid = owner.GetStateComponent<PlaceTileOnGridAbility>();
 		}
 
 		public override void OnEnable()
@@ -76,6 +79,7 @@ namespace CardGame.Turns
 		private void NextTurn()
 		{
 			Debug.Log($"Plop, going to next turn");
+			_placeTileOnGrid.CallEndTurn();
 		}
 		
 		#region Panels

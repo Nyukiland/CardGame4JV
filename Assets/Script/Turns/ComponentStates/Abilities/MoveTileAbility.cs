@@ -16,25 +16,27 @@ namespace CardGame.Turns
 
 		private GridManagerResource _gridManager;
 		private ZoneHolderResource _holder;
+		private PlaceTileOnGridAbility _placeTileOnGrid;
 
-		private Vector2Int _prevPos = new (-100, -100);
+		private Vector2Int _prevPos = new(-100, -100);
 		private bool _prevActivity = false;
 
-        public TileVisu CurrentTile
+		public TileVisu CurrentTile
 		{
 			get;
 			set;
 		}
 
-        public event System.Action OnCardPicked; //Pour la preview d'ou on peut poser la tile de maniere valide
+		public event System.Action OnCardPicked; //Pour la preview d'ou on peut poser la tile de maniere valide
 
-        public bool CanPlaceOnGrid { get; set; } = false;
+		public bool CanPlaceOnGrid { get; set; } = false;
 
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
 			_holder = owner.GetStateComponent<ZoneHolderResource>();
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
+			_placeTileOnGrid = owner.GetStateComponent<PlaceTileOnGridAbility>();
 		}
 
 		public bool QuickCheckRay(Vector2 position)
@@ -48,13 +50,27 @@ namespace CardGame.Turns
 			{
 				if (hit.collider.GetComponentInParent<TileVisu>() is TileVisu visu)
 				{
-					_holder.RemoveTileFromHand(visu.gameObject);
+					bool needRemove = true;
+
+					if (_placeTileOnGrid.TempPlacedTile != null && _placeTileOnGrid.TempPlacedTile != visu)
+					{
+						_holder.GiveTileToHand(_placeTileOnGrid.TempPlacedTile.gameObject);
+						_placeTileOnGrid.TempPlacedTile = null;
+					}
+					else if (_placeTileOnGrid.TempPlacedTile == visu)
+					{
+						needRemove = false;
+					}
+
+					if (needRemove)
+						_holder.RemoveTileFromHand(visu.gameObject);
+
 					CurrentTile = visu;
 
-                    OnCardPicked?.Invoke();
+					OnCardPicked?.Invoke();
 
 					_holder.HideMyHand(true);
-                }
+				}
 			}
 		}
 
@@ -81,12 +97,12 @@ namespace CardGame.Turns
 			Vector2Int gridPos = Vector2Int.FloorToInt(pos);
 			TileVisu target = _gridManager.GetTile(gridPos);
 
-            if (target == null || target.TileData != null)
-            {
-                CurrentTile.ChangeValidityVisual(false); // noir
-            }
-            else
-            {
+			if (target == null || target.TileData != null)
+			{
+				CurrentTile.ChangeValidityVisual(false); // noir
+			}
+			else
+			{
 				if (_prevPos != new Vector2Int(-100, -100))
 				{
 					_gridManager.GetTile(_prevPos).gameObject.SetActive(_prevActivity);
@@ -96,25 +112,32 @@ namespace CardGame.Turns
 				_gridManager.GetTile(gridPos).gameObject.SetActive(false);
 				_prevPos = gridPos;
 
-                int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
+				int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
 				int linkedNeighbor = _gridManager.CheckNeighborTileLinked(gridPos);
 				//Debug.Log($"placement : {connections}, {linkedNeighbor}, {connections > 0 && linkedNeighbor > 0}");
 
 				CurrentTile.ChangeValidityVisual(connections > 0 && linkedNeighbor > 0); // jaune si > 0, sinon noir
-            }
-        }
+			}
+		}
 
 		public void StandardRelease()
 		{
 			if (_prevPos != new Vector2Int(-100, -100))
 			{
-				_gridManager.GetTile(_prevPos).gameObject.SetActive(_prevActivity);
+				TileVisu visu = _gridManager.GetTile(_prevPos);
+
+				visu.gameObject.SetActive(_prevActivity);
 
 				_prevPos = new Vector2Int(-100, -100);
 				_prevActivity = false;
 			}
 
+			if (_placeTileOnGrid.TempPlacedTile == CurrentTile)
+			{
+				_placeTileOnGrid.TempPlacedTile = null;
+			}
+
 			_holder.HideMyHand(false);
 		}
-    }
+	}
 }
