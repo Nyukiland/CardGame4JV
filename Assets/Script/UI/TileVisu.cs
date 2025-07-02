@@ -63,7 +63,7 @@ namespace CardGame.UI
 
 		private void OnDestroy()
 		{
-			TileData.OnTileRotated -= RotateTileVisual;
+			if (TileData != null) TileData.OnTileRotated -= RotateTileVisual;
 		}
 
 		public void UpdateTile(TileData data)
