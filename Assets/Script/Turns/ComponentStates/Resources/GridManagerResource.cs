@@ -6,6 +6,7 @@ using CardGame.Utility;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 
 namespace CardGame.Turns
@@ -66,6 +67,7 @@ namespace CardGame.Turns
 			TileData tileData = new();
 			tileData.InitTile(_startingTileSettings);
 			SetTile(tileData, _width / 2, _height / 2);
+			//tileData.DetermineTileRegions(_width / 2, _height / 2);
 
 			Camera.main.transform.position = new Vector3(_width / 2, (_height / 2) - 5, Camera.main.transform.position.z);
 		}
@@ -161,6 +163,7 @@ namespace CardGame.Turns
 			tileVisu.IsLinked = (tile.TileSettings.PoolIndex == 0) ? true : false; // Si tile normale true, si tile bonus false
 			ActivateSurroundingTiles(x, y);
 			PlayTileEffect(tileVisu);
+			tile.DetermineTileRegions(x, y);
 			return true;
 		}
 
