@@ -28,7 +28,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		private set { _instance = value; }
 	}
 
-	#region
+	#region Net
 
 	public override void OnNetworkDespawn()
 	{
@@ -68,7 +68,9 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	public List<string> SoloNames = new();
 
 	#endregion
-
+	
+	#region Variables
+	
 	public int PlayerIndex
 	{
 		get;
@@ -95,8 +97,10 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			}
 			else
 			{
-				if (SoloNames.Count == 0) return "none";
-				else return SoloNames[0];
+				if (SoloNames.Count == 0)
+					return "none";
+				
+				return SoloNames[0];
 			}
 		}
 	}
@@ -152,6 +156,11 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			}
 		}
 	}
+	
+	public ScoreEventDelegate ScoreEvent;
+	public delegate void ScoreEventDelegate(int playerId, float floatEvent);
+	
+	#endregion
 
 	public bool GameIsFinished
 	{
@@ -164,6 +173,8 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 	}
 
+	#region Methods
+	
 	public void ResetManager()
 	{
 		if (IsNetCurrentlyActive())
@@ -188,16 +199,28 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		if (IsNetCurrentlyActive())
 		{
 			if (index == -1)
+			{
 				OnlineScores[PlayerIndex] += score;
+				ScoreEvent?.Invoke(PlayerIndex, OnlineScores[PlayerIndex]);
+			}
 			else
+			{
 				OnlineScores[index] += score;
+				ScoreEvent?.Invoke(index, OnlineScores[index]);
+			}
 		}
 		else
 		{
 			if (index == -1)
-				OnlineScores[0] += score;
+			{
+				SoloScores[0] += score;
+				ScoreEvent?.Invoke(0, SoloScores[0]);
+			}
 			else
-				OnlineScores[index] += score;
+			{
+				SoloScores[index] += score;
+				ScoreEvent?.Invoke(index, SoloScores[index]);
+			}
 		}
 	}
 
@@ -231,4 +254,6 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			$"{nameof(PlayerName)}: {PlayerName} \n" +
 			$"{nameof(FlagTurn)}: {FlagTurn}";
 	}
+	
+	#endregion
 }

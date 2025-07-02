@@ -1,3 +1,4 @@
+using CardGame.Utility;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
@@ -116,6 +117,8 @@ namespace CardGame.UI
 
 		private void Awake()
 		{
+			Storage.Instance.Register(this);
+			
 			// Buttons
 			_mainHostButton.onClick.AddListener(OpenBeforeHost);
 			_mainConnectButton.onClick.AddListener(OpenBeforeClient);
@@ -270,7 +273,7 @@ namespace CardGame.UI
 
 		#region Change Panels
 
-		private void OpenMainMenu()
+		public void OpenMainMenu()
 		{
 			OpenPanel(_mainMenuGameObject, CurrentScreen.MainMenu);
 		}
