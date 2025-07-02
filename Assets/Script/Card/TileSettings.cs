@@ -61,9 +61,17 @@ namespace CardGame.Card
     }
 
     [System.Serializable]
-    public struct ZoneData // Je laisse publique car il y a rien qui modifie ca, en dehors du tools
+    public class ZoneData // Je laisse publique car il y a rien qui modifie ca, en dehors du tools
     {
         public ENVIRONEMENT_TYPE environment;
         public bool isOpen;
-    }
+        public Region Region = null;
+
+		//public ZoneData(ENVIRONEMENT_TYPE Environment, bool IsOpen)
+  //      {
+  //          environment = Environment;
+  //          isOpen = IsOpen;
+		//	Region = null;
+		//}
+	}
 }

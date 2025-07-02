@@ -18,28 +18,29 @@ namespace CardGame
         public Region(int openingCount)
         {
             OpeningCount = openingCount;
-			Debug.Log("Vous avez créé une région");
+			//Debug.Log("Vous avez créé une région");
         }
 
         public void Merge(Region OtherRegion)
         {
-			// prend toutes les connections d'une region et les intègre à une région
-			// ajoute son compteur de d'ouverture à celui de la présente région
 
-			//Nouvelle version :
-			// - on prend la liste des tuiles contenues dans la deuxième région
+			// Etape 1 : Pour chaque tuile de la région qu'on fusionne, il faut updater l'info de region contenu dans ZoneData :
+			foreach(TileData Tile in OtherRegion.Tiles)
+			{
+				foreach (ZoneData Zone in Tile.Zones)
+				{
+					// Si la region actuelle de la zone est la region qu'on veut changer
+					if (Zone.Region == OtherRegion)
+					{
+						Zone.Region = this;
+					}
+				}
+			} 
 
-				// - Pour chacune, on explore les Régions en lien avec chaque zone
-	
-				// - Si la Région == la deuxième région, on la remplace par la 1ère région
-				// - On met la tuile dans la liste de la 1ère région
-
-			// - Quand la boucle sur toutes les tuiles est terminée, on met à jour le compteur d'ouverture de la 1ère région
-
-
+			// Etape 2 : Fusionner les données des Régions
 			Tiles.UnionWith(OtherRegion.Tiles);
 			OpeningCount += OtherRegion.OpeningCount;
-			Debug.Log("FUUUUUUSION !!! " + Tiles.Count + " > " + OpeningCount);
+			//Debug.Log("FUUUUUUSION !!! " + Tiles.Count + " > " + OpeningCount);
 			// - QUAND FERA LE SCORING FAUDRA PAS OUBLIER DE COPIER LES AUTRES DATAS DE LA REGION LORS DU MERGE
 			if (OpeningCount == 0)
 			{
