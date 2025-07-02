@@ -153,6 +153,17 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 	}
 
+	public bool GameIsFinished
+	{
+		get
+		{
+			if (IsNetCurrentlyActive())
+				return GlobalTurn >= 12 * OnlinePlayersID.Count;
+			else
+				return GlobalTurn >= 12 * SoloNames.Count;
+		}
+	}
+
 	public void ResetManager()
 	{
 		if (IsNetCurrentlyActive())

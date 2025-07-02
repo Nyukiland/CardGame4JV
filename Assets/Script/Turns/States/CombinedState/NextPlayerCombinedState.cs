@@ -11,15 +11,15 @@ namespace CardGame.Turns
 		private ZoneHolderResource _handResource;
 		private MoveTileAbility _moveTile;
 
-        public NextPlayerCombinedState()
-        {
+		public NextPlayerCombinedState()
+		{
 			AddSubState(new MoveTileSubState(true));
 			AddSubState(new TauntSubState());
 		}
 
-        public override void OnEnter()
-        {
-            base.OnEnter();
+		public override void OnEnter()
+		{
+			base.OnEnter();
 			GetStateComponent(ref _net);
 			GetStateComponent(ref _handResource);
 			GetStateComponent(ref _hudAbility);
@@ -27,9 +27,12 @@ namespace CardGame.Turns
 
 			_moveTile.CanPlaceOnGrid = false;
 
-            if (!_net.IsNetActive())
+			if (!_net.IsNetActive())
+			{
 				GetStateComponent(ref _autoPlayAbility);
-        }
+				_autoPlayAbility.CallBotTurn();
+			}
+		}
 
 		public override void OnExit()
 		{
@@ -62,16 +65,27 @@ namespace CardGame.Turns
 		public override void Update(float deltaTime)
 		{
 			base.Update(deltaTime);
+
+			if (GameManager.Instance.GameIsFinished)
+			{
+				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(EndGameCombinedState));
+				Controller.SetState<ScoringCombinedState>();
+			}
+
 			if (!_net.IsNetActive())
 			{
 				if (_autoPlayAbility.IsFinished)
-					Controller.SetState<PlaceTileCombinedState>();
+				{
+					Controller.GetStateComponent<ScoringAbility>().SetState(typeof(PlaceTileCombinedState));
+					Controller.SetState<ScoringCombinedState>();
+				}
 			}
 			else if (_net.IsFinished)
 			{
 				_net.IsFinished = false;
-				Controller.SetState<PlaceTileCombinedState>();
+				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(PlaceTileCombinedState));
+				Controller.SetState<ScoringCombinedState>();
 			}
 		}
-    }
+	}
 }

@@ -25,7 +25,10 @@ namespace CardGame.Turns
 			_moveTile.CanPlaceOnGrid = false;
 
 			if (_discardCard.DiscardFinished())
-				Controller.SetState<NextPlayerCombinedState>();
+			{
+				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(NextPlayerCombinedState));
+				Controller.SetState<ScoringCombinedState>();
+			}
 		}
 
 		public override void OnExit()

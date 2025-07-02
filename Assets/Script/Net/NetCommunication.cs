@@ -14,7 +14,6 @@ namespace CardGame.Net
 		public static Dictionary<ulong, NetCommunication> Instances = new();
 
 		public delegate void SendTileInfoEvent(DataToSend data);
-		public event SendTileInfoEvent TileMoved;
 		public event SendTileInfoEvent TilePlaced;
 
 		public delegate void SendGridEvent(DataToSendList data);
@@ -48,6 +47,7 @@ namespace CardGame.Net
 		public override void OnNetworkDespawn()
 		{
 			OnDestroyEvent?.Invoke();
+			_manager.OnlineTurns.Value = 100;
 			Instances.Remove(OwnerClientId);
 		}
 
@@ -147,6 +147,9 @@ namespace CardGame.Net
 		public void TurnCompletedServerRPC()
 		{
 			_manager.OnlineTurns.Value++;
+
+			if (_manager.GameIsFinished)
+				return;
 
 			Instances[_manager.OnlinePlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
 		}
