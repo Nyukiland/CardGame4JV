@@ -153,6 +153,17 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 	}
 
+	public bool GameIsFinished
+	{
+		get
+		{
+			if (IsNetCurrentlyActive())
+				return GlobalTurn >= 12 * OnlinePlayersID.Count;
+			else
+				return GlobalTurn >= 12 * SoloNames.Count;
+		}
+	}
+
 	public void ResetManager()
 	{
 		if (IsNetCurrentlyActive())
@@ -169,6 +180,24 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			SoloTurns = 0;
 			SoloScores.Clear();
 			SoloNames.Clear();
+		}
+	}
+
+	public void AddScore(int score, int index = -1)
+	{
+		if (IsNetCurrentlyActive())
+		{
+			if (index == -1)
+				OnlineScores[PlayerIndex] += score;
+			else
+				OnlineScores[index] += score;
+		}
+		else
+		{
+			if (index == -1)
+				OnlineScores[0] += score;
+			else
+				OnlineScores[index] += score;
 		}
 	}
 

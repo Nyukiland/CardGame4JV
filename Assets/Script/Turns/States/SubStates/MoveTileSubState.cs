@@ -7,84 +7,104 @@ using UnityEngine.InputSystem;
 
 namespace CardGame.Turns
 {
-    public class MoveTileSubState : State
-    {
-        private MoveTileAbility _moveCardAbility;
-        private RotateTileAbility _rotateCardAbility;
+	public class MoveTileSubState : State
+	{
+		private MoveTileAbility _moveCardAbility;
+		private RotateTileAbility _rotateCardAbility;
+		private MoveCameraAbility _moveCameraAbility;
 
-        private bool _isHolding;
-        private CancellationTokenSource _cancelToken;
+		private bool _isHolding;
+		private CancellationTokenSource _cancelToken;
 
-        private Vector2 _startPos;
+		private Vector2 _startPos;
 
-        public override void OnEnter()
-        {
-            base.OnEnter();
-            GetStateComponent(ref _moveCardAbility);
-            GetStateComponent(ref _rotateCardAbility);
-        }
+		private readonly bool MoveCam;
 
-        public override void OnActionTriggered(InputAction.CallbackContext context)
-        {
-            base.OnActionTriggered(context);
+		public MoveTileSubState()
+		{
+			MoveCam = false;
+		}
 
-            if (context.action.name != "Touch")
-                return;
+		public MoveTileSubState(bool canMoveCam)
+		{
+			MoveCam = canMoveCam;
+		}
 
-            if (context.phase == InputActionPhase.Performed)
-            {
-                _startPos = Controller.GetActionValue<Vector2>("TouchPos");
-                //Debug.Log("Start touching");
+		public override void OnEnter()
+		{
+			base.OnEnter();
+			GetStateComponent(ref _moveCardAbility);
+			GetStateComponent(ref _rotateCardAbility);
+			GetStateComponent(ref _moveCameraAbility);
+		}
 
-                _cancelToken = new CancellationTokenSource();
-                DetectHold(_startPos, _cancelToken.Token).Forget();
-            }
-            else if (context.phase == InputActionPhase.Canceled)
-            {
-                //Debug.Log("End touching");
+		public override void OnActionTriggered(InputAction.CallbackContext context)
+		{
+			base.OnActionTriggered(context);
 
-                _cancelToken?.Cancel();
-                _cancelToken = null;
+			if (context.action.name != "Touch")
+				return;
 
-                if (!_isHolding)
-                {
-                    //Debug.Log("Tap detected -> Rotate");
-                    _rotateCardAbility.RotateCard(_startPos);
-                }
+			if (context.phase == InputActionPhase.Performed)
+			{
+				_startPos = Controller.GetActionValue<Vector2>("TouchPos");
+				//Debug.Log("Start touching");
 
-                _isHolding = false;
-            }
-        }
+				_cancelToken = new CancellationTokenSource();
+				if (_moveCardAbility.QuickCheckRay(_startPos))
+					DetectHold(_startPos, _cancelToken.Token).Forget();
+				else
+					_moveCameraAbility.StartMoving(_startPos);
+			}
+			else if (context.phase == InputActionPhase.Canceled)
+			{
+				//Debug.Log("End touching");
 
-        private async UniTaskVoid DetectHold(Vector2 pos, CancellationToken token)
-        {
-            try
-            {
-                await UniTask.Delay(200, cancellationToken: token); // 100 ms to hold
+				_cancelToken?.Cancel();
+				_cancelToken = null;
 
-                if (token.IsCancellationRequested)
-                    return;
+				if (!_isHolding)
+				{
+					//Debug.Log("Tap detected -> Rotate");
+					_rotateCardAbility.RotateCard(_startPos);
+				}
 
-                _isHolding = true;
-                //Debug.Log("Start holding");
+				_moveCameraAbility.StopMoving();
 
-                _moveCardAbility.PickCard(pos);
-            }
-            catch (OperationCanceledException)
-            {
-                
-            }
-        }
+				_isHolding = false;
+			}
+		}
 
-        public override void Update(float deltaTime)
-        {
-            base.Update(deltaTime);
+		private async UniTaskVoid DetectHold(Vector2 pos, CancellationToken token)
+		{
+			try
+			{
+				await UniTask.Delay(200, cancellationToken: token); // 100 ms to hold
 
-            if (_isHolding)
-            {
-                Vector2 currentPos = Controller.GetActionValue<Vector2>("TouchPos");
-                _moveCardAbility.MoveCard(currentPos);
-            }
-        }
-    }
+				if (token.IsCancellationRequested)
+					return;
+
+				_isHolding = true;
+				//Debug.Log("Start holding");
+
+				_moveCardAbility.PickCard(_startPos);
+			}
+			catch (OperationCanceledException)
+			{
+
+			}
+		}
+
+		public override void Update(float deltaTime)
+		{
+			base.Update(deltaTime);
+
+			Vector2 currentPos = Controller.GetActionValue<Vector2>("TouchPos");
+
+			if (_isHolding)
+				_moveCardAbility.MoveCard(currentPos);
+
+			_moveCameraAbility.MoveCamera(currentPos);
+		}
+	}
 }

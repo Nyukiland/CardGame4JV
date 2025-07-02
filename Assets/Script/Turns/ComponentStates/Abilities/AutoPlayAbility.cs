@@ -10,6 +10,7 @@ namespace CardGame.Turns
 	public class AutoPlayAbility : Ability
 	{
 		private GridManagerResource _grid;
+		private ScoringAbility _scoring;
 		private DrawPile _drawPile;
 
 		[SerializeField]
@@ -27,7 +28,8 @@ namespace CardGame.Turns
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
-			_grid = Owner.GetStateComponent<GridManagerResource>();
+			_grid = owner.GetStateComponent<GridManagerResource>();
+			_scoring = owner.GetStateComponent<ScoringAbility>();
 		}
 
 		public override void LateInit()
@@ -39,8 +41,6 @@ namespace CardGame.Turns
 		public override void OnEnable()
 		{
 			base.OnEnable();
-			GameManager.Instance.SoloTurns++;
-			AutoPlay().Forget();
 		}
 
 		public override void OnDisable()
@@ -63,6 +63,12 @@ namespace CardGame.Turns
 
 				_tilesInHand.Add(tileData);
 			}
+		}
+
+		public void CallBotTurn()
+		{
+			GameManager.Instance.SoloTurns++;
+			AutoPlay().Forget();
 		}
 
 		//need to split that in multiple unitask and await them
@@ -118,6 +124,7 @@ namespace CardGame.Turns
 				tileData.HasFlag = GameManager.Instance.FlagTurn;
 				_grid.SetTile(tileData, tilePlaced);
 				_tilesInHand.Remove(tileData);
+				_scoring.SetScoringPos(tilePlaced);
 				GenerateTheoreticalHand(connection);
 			}
 

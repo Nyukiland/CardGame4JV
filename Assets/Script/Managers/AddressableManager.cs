@@ -1,47 +1,49 @@
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace CardGame
+namespace CardGame.Managers
 {
     public static class AddressableManager
     {
-        private static List<AsyncOperationHandle> _allAddressable = new();
+        private static readonly Dictionary<string, AsyncOperationHandle> _allAddressable = new();
         
-        public static async UniTask<AsyncOperationHandle<T>> LoadAddressable<T>(string key, bool release = false)
+        public static async UniTask<T> LoadAddressable<T>(string key)
         {
+            if (_allAddressable.TryGetValue(key, out AsyncOperationHandle savedHandle))
+            {
+                return (T)savedHandle.Result;
+            }
+            
             AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(key);
+
             await UniTask.WaitUntil(() => handle.IsDone);
 
-            if (release)
-                handle.Release();
-            else
-                _allAddressable.Add(handle);
+            _allAddressable.Add(key, handle);
 
-            return handle;
+            return handle.Result;
         }
 
         public static void UnloadAddressable<T>(AsyncOperationHandle<T> handle)
         {
             handle.Release();
         }
-        
-        public static async UniTask<AsyncOperationHandle<IList<T>>> LoadLabel<T>(string label, bool release = false)
+
+        public static async UniTask<IList<T>> LoadLabel<T>(string label)
         {
+            // check in list here
+            
             AsyncOperationHandle<IList<T>> handles = Addressables.LoadAssetsAsync<T>(label);
+
             await UniTask.WaitUntil(() => handles.IsDone);
 
-            if (release)
-                handles.Release();
-            else
-                _allAddressable.Add(handles);
+            _allAddressable.Add(label, handles);
 
-            return handles;
+            return handles.Result;
         }
-        
+
         public static void UnloadLabel<T>(AsyncOperationHandle<IList<T>> handles)
         {
             Addressables.Release(handles);
@@ -49,12 +51,12 @@ namespace CardGame
         
         public static void UnloadAllAddressable()
         {
-            for (int i = _allAddressable.Count - 1; i >= 0; i--)
+            foreach (AsyncOperationHandle handle in _allAddressable.Values)
             {
-                _allAddressable[i].Release();
+                handle.Release();
             }
 
-            _allAddressable = new();
+            _allAddressable.Clear();
         }
     }
 }

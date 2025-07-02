@@ -100,6 +100,14 @@ public class TileCreator : EditorWindow
                 Repaint(); // force l’UI à redessiner la preview
             }
 
+            GUILayout.Space(5);
+            EditorGUI.BeginChangeCheck();
+            _selectedTile.PoolIndex = EditorGUILayout.IntField("Pool Index", _selectedTile.PoolIndex);
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorUtility.SetDirty(_selectedTile); // Marque comme modifié pour que Unity sauvegarde
+            }
+
             GUILayout.Space(10);
 
             // RENAME 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CardGame.Utility;
 using CardGame.Card;
+using CardGame.Managers;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -10,12 +11,16 @@ namespace CardGame
     public class DrawPile : MonoBehaviour
     {
 	    // Use label "TileSetting" to load tile
-		[Disable] public List<TileSettings> AllTileSettings = new();
+		[Disable] public List<TileSettings> AllTileSettings = new(); 
 
 		private List<TileSettings> _tileInDrawPile = new();
+		public List<TileSettings> _bonusTileList {get; private set; } = new();
+
 		private static HashSet<TileSettings> _hashSet;
 
-		private void Awake()
+        public event System.Action OnTilesLoaded; // Pour call la grid generation
+
+        private void Awake()
 		{
 			AsyncAwake().Forget();
 		}
@@ -24,14 +29,28 @@ namespace CardGame
         {
             await LoadTiles();
 
-
             _tileInDrawPile = new List<TileSettings>();
 
-            for (int i = 0; i < 3; i++)
+			for (int i = 0; i < AllTileSettings.Count; i++) 
+			{
+				if (AllTileSettings[i].PoolIndex == 0)
+				{
+					_tileInDrawPile.Add(AllTileSettings[i]); // On ajoute a la draw pile
+				}
+				else
+				{
+					_bonusTileList.Add(AllTileSettings[i]); // On ajoute a la bonus tile pile
+				}
+			}
+
+            for (int i = 0; i < 2; i++) //On le fait en double pour avoir + de tiles (4 fois +)
             {
-                _tileInDrawPile.AddRange(AllTileSettings);
+                _tileInDrawPile.AddRange(_tileInDrawPile);
             }
+
+            OnTilesLoaded?.Invoke(); // start la grid
         }
+
 
         private void OnEnable()
 		{
@@ -47,10 +66,10 @@ namespace CardGame
 		{
 			AllTileSettings.Clear();
 			
-			AsyncOperationHandle<IList<TileSettings>> handle = await AddressableManager.LoadLabel<TileSettings>("TileSetting");
+			IList<TileSettings> handle = await AddressableManager.LoadLabel<TileSettings>("TileSetting");
 
 			_hashSet = new();
-			foreach (var tile in handle.Result)
+			foreach (var tile in handle)
 			{
 				if (tile == null) continue;
 
@@ -98,5 +117,26 @@ namespace CardGame
 		{
 			_tileInDrawPile.Add(GetTileFromID(settingsID));
 		}
+
+
+
+		// 1 ou 2, c'est call par gridmanager
+        public List<TileData> GetBonusTileFromPoolIndex(int poolIndex)
+        {
+            List<TileData> result = new();
+
+            foreach (var tile in _bonusTileList)
+            {
+                if (tile.PoolIndex == poolIndex)
+                {
+					TileData data = new();
+					data.InitTile(tile);
+                    result.Add(data);
+                }
+            }
+
+            return result;
+        }
+
     }
 }

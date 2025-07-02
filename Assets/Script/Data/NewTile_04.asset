@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c445cec05d1a07744b5c5dd201f7a2e2, type: 3}
   m_Name: NewTile_04
   m_EditorClassIdentifier: 
+  PoolIndex: 2
   _northZone:
     environment: 1
     isOpen: 1

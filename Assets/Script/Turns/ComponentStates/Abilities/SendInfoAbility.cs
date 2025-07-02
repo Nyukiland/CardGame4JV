@@ -16,7 +16,6 @@ namespace CardGame.Turns
 
 			_net = owner.GetStateComponent<NetworkResource>();
             tileInHand = owner.GetStateComponent<CreateHandAbility>().CountCard;
-
         }
 
 		public void AskForSetUp()
@@ -26,11 +25,11 @@ namespace CardGame.Turns
 			_net.NetCom.SetUp(tileInHand);
 		}
 
-		public void SendInfoTileMoved(DataToSend send)
+		public void SendGridToOthers()
 		{
 			if (!_net.IsNetActive()) return;
 
-			
+			_net.NetCom.GenerateFirstGrid();
 		}
 
 		public void SendInfoTilePlaced(TileData send, Vector2Int pos)

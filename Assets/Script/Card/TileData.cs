@@ -15,6 +15,11 @@ namespace CardGame.Card
         public int OwnerPlayerIndex { get; set; } = -1; // C'est l'index du joueur dans la liste de OnlinePlayersID 
         public bool HasFlag { get; set; } = false;
 
+        // Bonus tile 
+        public int MultiplicativeBonus = 1;
+        public int AdditiveBonus = 0;
+        //public int PoolIndex = 0; // 1 is small pool and 2 is big pool, c'est dans tile settings
+
         public void InitTile(TileSettings tileSettingsRef)
         {
             TileSettings = tileSettingsRef;
@@ -27,6 +32,8 @@ namespace CardGame.Card
 
             OwnerPlayerIndex = -1;
             HasFlag = false;
+
+            
         }
 
         public void RotateTile()

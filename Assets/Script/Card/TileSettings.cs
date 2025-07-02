@@ -14,6 +14,7 @@ namespace CardGame.Card
 		public int IdCode => GetStableId();
 
         [Header("Zone Data")]
+        [SerializeField] public int PoolIndex = 0; // Pour les pools de tile bonus sur la map
         [SerializeField] private ZoneData _northZone;
         [SerializeField] private ZoneData _eastZone;
         [SerializeField] private ZoneData _southZone;

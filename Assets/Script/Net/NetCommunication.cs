@@ -14,7 +14,6 @@ namespace CardGame.Net
 		public static Dictionary<ulong, NetCommunication> Instances = new();
 
 		public delegate void SendTileInfoEvent(DataToSend data);
-		public event SendTileInfoEvent TileMoved;
 		public event SendTileInfoEvent TilePlaced;
 
 		public delegate void SendGridEvent(DataToSendList data);
@@ -48,13 +47,8 @@ namespace CardGame.Net
 		public override void OnNetworkDespawn()
 		{
 			OnDestroyEvent?.Invoke();
+			_manager.OnlineTurns.Value = 100;
 			Instances.Remove(OwnerClientId);
-		}
-
-		public void SendPlacementTile(DataToSend data)
-		{
-			if (IsLocalPlayer)
-				SendMoveTileServerRPC(data);
 		}
 
 		public void SendTilePlaced(DataToSend data)
@@ -69,10 +63,13 @@ namespace CardGame.Net
 				SendDiscardTileServerRPC(ID);
 		}
 
-		public void SendGrid(DataToSendList dataList)
+		public void GenerateFirstGrid()
 		{
-			if (IsLocalPlayer)
-				SendGridServerRPC(dataList);
+			if (IsHost)
+			{
+				Storage.Instance.GetElement<GridManagerResource>().GenerateBonusTiles();
+				SendGridServerRPC();
+			}
 		}
 
 		public void SendTauntShakeNet(Vector2 pos, bool special)
@@ -100,14 +97,6 @@ namespace CardGame.Net
 		}
 
 		#region Server
-
-		[ServerRpc(RequireOwnership = false)]
-		public void SendMoveTileServerRPC(DataToSend data, ServerRpcParams rpcParams = default)
-		{
-			ulong senderClientId = rpcParams.Receive.SenderClientId;
-
-			ForEachOtherClient(senderClientId, x => x.DistributeMovementTileClientRPC(data));
-		}
 
 		[ServerRpc(RequireOwnership = false)]
 		public void SendTilePlacedServerRPC(DataToSend data, ServerRpcParams rpcParams = default)
@@ -142,37 +131,25 @@ namespace CardGame.Net
 		}
 
 		[ServerRpc(RequireOwnership = false)]
-		public void SendGridServerRPC(DataToSendList dataList, ServerRpcParams rpcParams = default)
+		public void SendGridServerRPC(ServerRpcParams rpcParams = default)
 		{
 			ulong senderClientId = rpcParams.Receive.SenderClientId;
 
 			GridManagerResource grid = Storage.Instance.GetElement<GridManagerResource>();
 			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
 
-			bool isDifferent = false;
+			DataToSendList list = grid.GetListOfPlacedTile();
 
-			foreach (DataToSend data in dataList.DataList)
-			{
-				TileData tile = NetUtility.FromDataToTile(data, drawPile.AllTileSettings);
-
-				if (grid.GetTile(data.Position.x, data.Position.y).TileData != tile)
-				{
-					isDifferent = true;
-					break;
-				}
-			}
-
-			if (isDifferent)
-			{
-				Instances.TryGetValue(senderClientId, out NetCommunication instance);
-				instance.DistributeGridClientRPC(dataList);
-			}
+			ForEachOtherClient(senderClientId, x => x.DistributeGridClientRPC(list));
 		}
 
 		[ServerRpc(RequireOwnership = false)]
 		public void TurnCompletedServerRPC()
 		{
 			_manager.OnlineTurns.Value++;
+
+			if (_manager.GameIsFinished)
+				return;
 
 			Instances[_manager.OnlinePlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
 		}
@@ -223,12 +200,6 @@ namespace CardGame.Net
 		#endregion
 
 		#region Client
-
-		[ClientRpc(RequireOwnership = false)]
-		public void DistributeMovementTileClientRPC(DataToSend data)
-		{
-			TileMoved?.Invoke(data);
-		}
 
 		[ClientRpc(RequireOwnership = false)]
 		public void DistributeTilePlacedClientRPC(DataToSend data)

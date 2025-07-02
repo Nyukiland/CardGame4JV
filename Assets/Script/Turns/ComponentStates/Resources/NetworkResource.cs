@@ -17,6 +17,7 @@ namespace CardGame.Turns
 		private CreateHandAbility _createHand;
 		private TauntShakeTileAbility _tauntShakeTile;
 		private GridManagerResource _grid;
+		private ScoringAbility _scoring;
 
 		[SerializeField]
 		private DrawPile _drawPile;
@@ -35,6 +36,7 @@ namespace CardGame.Turns
 			_createHand = owner.GetStateComponent<CreateHandAbility>();
 			_tauntShakeTile = owner.GetStateComponent<TauntShakeTileAbility>();
 			_grid = owner.GetStateComponent<GridManagerResource>();
+			_scoring = owner.GetStateComponent<ScoringAbility>();
 
 			if (GameManager.Instance.IsNetCurrentlyActive())
 				GetNetComForThisClientAsync().Forget();
@@ -65,7 +67,6 @@ namespace CardGame.Turns
 
 			if (NetCom != null)
 			{
-				NetCom.TileMoved += UpdateTileInMovement;
 				NetCom.TilePlaced += UpdateGridPlaced;
 				NetCom.GridUpdated += UpdateGrid;
 				NetCom.TileForHand += UpdateHand;
@@ -81,7 +82,6 @@ namespace CardGame.Turns
 
 			if (NetCom != null)
 			{
-				NetCom.TileMoved -= UpdateTileInMovement;
 				NetCom.TilePlaced -= UpdateGridPlaced;
 				NetCom.GridUpdated -= UpdateGrid;
 				NetCom.TileForHand -= UpdateHand;
@@ -90,15 +90,11 @@ namespace CardGame.Turns
 			}
 		}
 
-		private void UpdateTileInMovement(DataToSend data)
-		{
-			TileData tileReceived = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
-		}
-
 		private void UpdateGridPlaced(DataToSend data)
 		{
 			TileData tileReceived = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
 			_grid.SetTile(tileReceived, data.Position.x, data.Position.y);
+			_scoring.SetScoringPos(new(data.Position.x, data.Position.y));
 		}
 
 		private void UpdateHand(int ID)
@@ -113,6 +109,8 @@ namespace CardGame.Turns
 			foreach (DataToSend data in dataList.DataList)
 			{
 				TileData tile = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
+
+				if (tile == null) continue;
 
 				if (_grid.GetTile(data.Position.x, data.Position.y).TileData == tile)
 					continue;
