@@ -1050,7 +1050,7 @@ MonoBehaviour:
       type: {class: MoveCameraAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        _moveFactor: 0.005
+        _moveFactor: 1
     - rid: 2787434653344333914
       type: {class: ScoringAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
