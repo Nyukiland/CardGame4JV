@@ -37,7 +37,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	}
 
 	public NetworkVariable<int> OnlineTurns =
-		new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+		new(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
 	public NetworkList<int> OnlineScores =
 		new(new List<int>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -150,6 +150,17 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 				if (SoloScores.Count == 0) return 0;
 				return SoloScores[0];
 			}
+		}
+	}
+
+	public bool GameIsFinished
+	{
+		get
+		{
+			if (IsNetCurrentlyActive())
+				return GlobalTurn >= 12 * OnlinePlayersID.Count;
+			else
+				return GlobalTurn >= 12 * SoloNames.Count;
 		}
 	}
 

@@ -44,6 +44,8 @@ namespace CardGame
         {
             ResourceManager.ExceptionHandler = AddressableErrorHandler.HandleAddressableException;
             
+            // Oui il y a UN message d'erreur de l'event system juste avant qu'il soit désac
+            // On peut rien y faire déso
             if (SceneManager.loadedSceneCount > 1)
                 _eventSystem.gameObject.SetActive(false);
         }

@@ -968,6 +968,7 @@ MonoBehaviour:
   - rid: 542522706916278362
   - rid: 1922521404052602971
   - rid: 1922521404052602972
+  - rid: 2787434653344333914
   references:
     version: 2
     RefIds:
@@ -1050,6 +1051,10 @@ MonoBehaviour:
       data:
         Enabled: 0
         _moveFactor: 0.005
+    - rid: 2787434653344333914
+      type: {class: ScoringAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
     - rid: 4835484058177241183
       type: {class: GridManagerResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:

@@ -17,6 +17,7 @@ namespace CardGame.Turns
         private GridManagerResource _gridManager;
         private CreateHandAbility _createHandAbility;
         private SendInfoAbility _sender;
+		private ScoringAbility _scoring;
 
         public event System.Action OnCardReleased; //Pour la preview d'ou on peut poser la tile de maniere valide
 
@@ -34,6 +35,7 @@ namespace CardGame.Turns
             _gridManager = owner.GetStateComponent<GridManagerResource>();
             _createHandAbility = owner.GetStateComponent<CreateHandAbility>();
             _sender = owner.GetStateComponent<SendInfoAbility>();
+			_scoring = owner.GetStateComponent<ScoringAbility>();
         }
 
         public override void OnEnable()
@@ -81,6 +83,7 @@ namespace CardGame.Turns
 
                 _gridManager.SetTile(tempTile.TileData, pos);
                 _sender.SendInfoTilePlaced(tempTile.TileData, pos);
+				_scoring.SetScoringPos(pos);
 
                 // On fait les ajustements pour la preview
                 _gridManager.SetNeighborBonusTileLinked(pos); //On check si une tile a coté est tile bonus 
@@ -97,7 +100,6 @@ namespace CardGame.Turns
 
                 GameObject.Destroy(tempTile.gameObject);
             }
-
 			else
             {
                 _zoneHolder.GiveTileToHand(tempTile.gameObject);

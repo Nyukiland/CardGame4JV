@@ -1,8 +1,7 @@
-using System;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace CardGame.UI
@@ -21,6 +20,10 @@ namespace CardGame.UI
 
 		[Header("BeforeHost")]
 		[SerializeField] private GameObject _beforeHostGameObject;
+		[SerializeField] private Button _hostDistantButton;
+		[SerializeField] private Image _hostDistantButtonImage;
+		[SerializeField] private Button _hostLocalButton;
+		[SerializeField] private Image _hostLocalButtonImage;
 		[SerializeField] private TMP_InputField _sessionNameInput;
 		[SerializeField] private TMP_InputField _passwordInputHost;
 		[SerializeField] private Toggle _publicHostToggle;
@@ -41,7 +44,10 @@ namespace CardGame.UI
 
 		[Header("BeforeClient")]
 		[SerializeField] private GameObject _beforeClientGameObject;
-		[SerializeField] private TMP_InputField _playerNameInput;
+		[SerializeField] private Button _clientDistantButton;
+		[SerializeField] private Image _clientDistantButtonImage;
+		[SerializeField] private Button _clientLocalButton;
+		[SerializeField] private Image _clientLocalButtonImage;
 		[SerializeField] private TMP_InputField _codeInput;
 		[SerializeField] private TMP_InputField _passwordInputClient;
 		[SerializeField] private Button _connectButton;
@@ -54,37 +60,38 @@ namespace CardGame.UI
 		[SerializeField] private GameObject _afterClientGameObject;
 		[SerializeField] private Button _quitGameButton;
 
+		[Header("PopUp")]
+		[SerializeField] private GameObject _popUpContainer;
+		[SerializeField] private TextMeshProUGUI _popUpTMP;
+		
 		// public variables
 		public GameObject PublicHostsContainer => _publicHostsContainer;
+		public const string NONE_BASE_VALUE = "- None -";
 		public string Code { get; set; } = "No code found";
 		public string Password { get; set; } = "No password found";
 		public string SessionName { get; set; } = "No session name found";
-		public bool IsPublicShown { get; private set; }
-		public string PlayerName { get; private set; } = "No player name found";
+		public bool IsPublicShown { get; private set; } = true;                
 
 		// private variables
 		private CurrentScreen _currentScreen;
+		private bool _isDistant = true;
 
 		// Events
 		public StringEvent CopyCodeEvent;
 		public BoolEvent TogglePublicEvent;
-		public Action StartHostEvent;
-		public Action JoinGameEvent;
-		public Action UnhostEvent;
-		public Action QuitGameEvent;
-		public Action PlayGameEvent;
+		public BoolEvent ToggleDistantEvent;
+		public SingleEvent StartHostEvent;
+		public SingleEvent JoinGameEvent;
+		public SingleEvent UnhostEvent;
+		public SingleEvent QuitGameEvent;
+		public SingleEvent PlayGameEvent;
 
 		// Delegates
+		public delegate void SingleEvent();
 		public delegate void StringEvent(string stringEvent);
 		public delegate void BoolEvent(bool boolEvent);
 
 		#endregion
-
-		private void Start()
-		{
-			Screen.autorotateToPortrait = false;
-			Screen.autorotateToPortraitUpsideDown = false;
-		}
 
 		#region Unity Methods
 
@@ -92,13 +99,19 @@ namespace CardGame.UI
 		[SerializeField] private TextMeshProUGUI _codeTest;
 		[SerializeField] private TextMeshProUGUI _passwordTest;
 		[SerializeField] private TextMeshProUGUI _sessionNameTest;
-		[SerializeField] private TextMeshProUGUI _playerNameTest;
+
+		private void Start()
+		{
+			Screen.autorotateToPortrait = false;
+			Screen.autorotateToPortraitUpsideDown = false;
+			_popUpContainer.SetActive(false);
+		}
+		
 		private void Update()
 		{
 			_codeTest.text = "Code : " + Code;
 			_passwordTest.text = "Password : " + Password;
 			_sessionNameTest.text = "SessionName : " + SessionName;
-			_playerNameTest.text = "PlayerName : " + PlayerName;
 		}
 
 		private void Awake()
@@ -115,11 +128,14 @@ namespace CardGame.UI
 			_connectButton.onClick.AddListener(CallJoinGameEvent);
 			_quitGameButton.onClick.AddListener(QuitClientGame);
 			_clientBackButton.onClick.AddListener(OpenMainMenu);
+			_hostDistantButton.onClick.AddListener(()=>ToggleDistant(true));
+			_hostLocalButton.onClick.AddListener(()=>ToggleDistant(false));
+			_clientDistantButton.onClick.AddListener(()=>ToggleDistant(true));
+			_clientLocalButton.onClick.AddListener(()=>ToggleDistant(false));
 
 			// Inputs fields
 			_sessionNameInput.onEndEdit.AddListener(UpdateHostInputs);
 			_passwordInputHost.onEndEdit.AddListener(UpdateHostInputs);
-			_playerNameInput.onEndEdit.AddListener(UpdateClientInputs);
 			_codeInput.onEndEdit.AddListener(UpdateClientInputs);
 			//_codeInput.contentType = TMP_InputField.ContentType.Alphanumeric;
 			//_codeInput.onValidateInput += delegate (string s, int i, char c) { return char.ToUpper(c); };
@@ -146,11 +162,14 @@ namespace CardGame.UI
 			_connectButton.onClick.RemoveListener(CallJoinGameEvent);
 			_quitGameButton.onClick.RemoveListener(QuitClientGame);
 			_clientBackButton.onClick.RemoveListener(OpenMainMenu);
+			_hostDistantButton.onClick.RemoveListener(()=>ToggleDistant(true));
+			_hostLocalButton.onClick.RemoveListener(()=>ToggleDistant(false));
+			_clientDistantButton.onClick.RemoveListener(()=>ToggleDistant(true));
+			_clientLocalButton.onClick.RemoveListener(()=>ToggleDistant(false));
 
 			// Inputs fields
 			_sessionNameInput.onEndEdit.RemoveListener(UpdateHostInputs);
 			_passwordInputHost.onEndEdit.RemoveListener(UpdateHostInputs);
-			_playerNameInput.onEndEdit.RemoveListener(UpdateClientInputs);
 			_codeInput.onEndEdit.RemoveListener(UpdateClientInputs);
 			_passwordInputClient.onEndEdit.RemoveListener(UpdateClientInputs);
 
@@ -163,18 +182,21 @@ namespace CardGame.UI
 
 		#region Update Visuals
 
-		public void UpdateHostInputs(string inputString)
+		private void UpdateHostInputs(string inputString)
 		{
 			UpdateBeforeHost();
 		}
 
-		public void UpdateClientInputs(string inputString)
+		private void UpdateClientInputs(string inputString)
 		{
 			UpdateBeforeClient();
 		}
 
-		public void UpdateBeforeHost()
+		private void UpdateBeforeHost()
 		{
+			ToggleDistant(_isDistant);
+			TogglePublicGames(IsPublicShown);
+				
 			if (string.IsNullOrEmpty(_sessionNameInput.text))
 			{
 				_hostButtonGrey.gameObject.SetActive(true);
@@ -203,10 +225,13 @@ namespace CardGame.UI
 			}
 		}
 
-		public void UpdateBeforeClient()
+		private void UpdateBeforeClient()
 		{
+			ToggleDistant(_isDistant);
+			TogglePublicGames(IsPublicShown);
+				
 			_publicHostsContainer.SetActive(IsPublicShown);
-			if (string.IsNullOrEmpty(_playerNameInput.text) || string.IsNullOrEmpty(_codeInput.text))
+			if (string.IsNullOrEmpty(_codeInput.text))
 			{
 				_connectButtonGrey.gameObject.SetActive(true);
 				_connectButton.interactable = false;
@@ -216,6 +241,29 @@ namespace CardGame.UI
 				_connectButtonGrey.gameObject.SetActive(false);
 				_connectButton.interactable = true;
 			}
+		}
+
+		private void ToggleDistant(bool isDistant)
+		{
+			_isDistant = isDistant;
+			ToggleDistantEvent?.Invoke(isDistant);
+
+			if (isDistant)
+			{
+				ToggleButtons(_hostDistantButtonImage, _hostLocalButtonImage);
+				ToggleButtons(_clientDistantButtonImage, _clientLocalButtonImage);
+			}
+			else
+			{
+				ToggleButtons(_hostLocalButtonImage, _hostDistantButtonImage);
+				ToggleButtons(_clientLocalButtonImage, _clientDistantButtonImage);
+			}
+		}
+
+		private void ToggleButtons(Image onButtonImage, Image offButtonImage)
+		{
+			onButtonImage.color = Color.green;
+			offButtonImage.color = Color.white;
 		}
 
 		#endregion
@@ -238,7 +286,7 @@ namespace CardGame.UI
 		{
 			SessionName = _sessionNameInput.text;
 			Password = _passwordInputHost.text;
-			if (string.IsNullOrEmpty(Password)) Password = "- None -";
+			if (string.IsNullOrEmpty(Password)) Password = NONE_BASE_VALUE;
 
 			OpenPanel(_afterHostGameObject, CurrentScreen.AfterHost);
 
@@ -247,9 +295,17 @@ namespace CardGame.UI
 			_sessionNameText.text = SessionName;
 			_codeText.text = Code;
 			_passwordText.text = Password;
+			
+			_inputBlocker.SetActive(true);
 		}
 
-		private void OpenBeforeClient()
+		public void UpdateCodeAfterHost()
+		{
+			_codeText.text = Code;
+			_inputBlocker.SetActive(false);
+		}
+
+		public void OpenBeforeClient()
 		{
 			OpenPanel(_beforeClientGameObject, CurrentScreen.BeforeClient);
 
@@ -285,7 +341,7 @@ namespace CardGame.UI
 				_currentScreen = nextScreen;
 			}
 		}
-
+		
 		private void TogglePublicGames(bool toggle)
 		{
 			IsPublicShown = toggle;
@@ -309,7 +365,6 @@ namespace CardGame.UI
 		private void StartGame()
 		{
 			PlayGameEvent?.Invoke();
-			CloseMenu();
 		}
 
 		public void QuitClientGame()
@@ -324,6 +379,15 @@ namespace CardGame.UI
 			_inputBlocker.SetActive(toggle);
 		}
 
+		public async UniTask SpawnPopUp(string text, float duration)
+		{
+			_popUpTMP.text = text;
+			_popUpContainer.SetActive(true);
+			
+			await UniTask.WaitForSeconds(duration);
+			_popUpContainer.SetActive(false);
+		}
+
 		#endregion
 
 		#region Event Methods
@@ -336,12 +400,12 @@ namespace CardGame.UI
 
 		private void CallJoinGameEvent()
 		{
-			PlayerName = _playerNameInput.text;
 			Code = _codeInput.text;
 			if (!string.IsNullOrEmpty(_passwordInputClient.text))
 				Password = _passwordInputClient.text;
 
 			JoinGameEvent?.Invoke();
+			OpenAfterClient();
 		}
 
 		private void CallUnhostEvent()
