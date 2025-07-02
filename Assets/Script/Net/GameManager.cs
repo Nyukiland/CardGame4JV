@@ -37,7 +37,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	}
 
 	public NetworkVariable<int> OnlineTurns =
-		new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+		new(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
 	public NetworkList<int> OnlineScores =
 		new(new List<int>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
