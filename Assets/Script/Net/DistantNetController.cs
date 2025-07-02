@@ -191,6 +191,8 @@ namespace CardGame.Net
 			catch (RelayServiceException e)
 			{
 				Debug.LogError($"Failed to join relay: {e.Message}");
+				_networkUI.OpenBeforeClient();
+				_networkUI.SpawnPopUp("No game has been found", 2f).Forget();
 			}
 			
 			_networkUI.ToggleInputBlock(false);

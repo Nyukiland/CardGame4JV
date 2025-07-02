@@ -221,7 +221,15 @@ namespace CardGame.Net
 		protected override async UniTask SafeConnectAsync()
 		{
 			await base.SafeConnectAsync();
-			if (!NetworkManager.Singleton.ShutdownInProgress) TogglePublicSearch(false);
+			if (!NetworkManager.Singleton.ShutdownInProgress)
+			{
+				TogglePublicSearch(false);
+			}
+			else
+			{
+				_networkUI.OpenBeforeClient();
+				_networkUI.SpawnPopUp("No game has been found", 2f).Forget();
+			}
 			_networkUI.ToggleInputBlock(false);
 		}
 
@@ -282,29 +290,6 @@ namespace CardGame.Net
 					}
 				}
 			}
-		}
-
-		#endregion
-
-		#region Useful
-
-		protected override async UniTask GetNetComForThisClientAsync()
-		{
-			await base.GetNetComForThisClientAsync();
-
-			if (_netCommunication == null) return;
-
-			_netCommunication.OnDestroyEvent += ()=>
-			{
-				_networkUI.QuitClientGame();
-				_netCommunication.OnDestroyEvent -= _networkUI.QuitClientGame;
-			};
-			
-			_netCommunication.OnLaunchGameEvent += ()=>
-			{
-				_networkUI.CloseMenu();
-				_netCommunication.OnLaunchGameEvent -= _networkUI.CloseMenu;
-			};
 		}
 
 		#endregion

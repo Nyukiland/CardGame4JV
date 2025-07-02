@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -59,13 +60,17 @@ namespace CardGame.UI
 		[SerializeField] private GameObject _afterClientGameObject;
 		[SerializeField] private Button _quitGameButton;
 
+		[Header("PopUp")]
+		[SerializeField] private GameObject _popUpContainer;
+		[SerializeField] private TextMeshProUGUI _popUpTMP;
+		
 		// public variables
 		public GameObject PublicHostsContainer => _publicHostsContainer;
 		public const string NONE_BASE_VALUE = "- None -";
 		public string Code { get; set; } = "No code found";
 		public string Password { get; set; } = "No password found";
 		public string SessionName { get; set; } = "No session name found";
-		public bool IsPublicShown { get; private set; } = true;
+		public bool IsPublicShown { get; private set; } = true;                
 
 		// private variables
 		private CurrentScreen _currentScreen;
@@ -99,6 +104,7 @@ namespace CardGame.UI
 		{
 			Screen.autorotateToPortrait = false;
 			Screen.autorotateToPortraitUpsideDown = false;
+			_popUpContainer.SetActive(false);
 		}
 		
 		private void Update()
@@ -299,7 +305,7 @@ namespace CardGame.UI
 			_inputBlocker.SetActive(false);
 		}
 
-		private void OpenBeforeClient()
+		public void OpenBeforeClient()
 		{
 			OpenPanel(_beforeClientGameObject, CurrentScreen.BeforeClient);
 
@@ -339,7 +345,6 @@ namespace CardGame.UI
 		private void TogglePublicGames(bool toggle)
 		{
 			IsPublicShown = toggle;
-			Debug.Log($"toggle = {toggle}");
 
 			if (_currentScreen == CurrentScreen.BeforeHost)
 			{
@@ -372,6 +377,15 @@ namespace CardGame.UI
 		public void ToggleInputBlock(bool toggle)
 		{
 			_inputBlocker.SetActive(toggle);
+		}
+
+		public async UniTask SpawnPopUp(string text, float duration)
+		{
+			_popUpTMP.text = text;
+			_popUpContainer.SetActive(true);
+			
+			await UniTask.WaitForSeconds(duration);
+			_popUpContainer.SetActive(false);
 		}
 
 		#endregion

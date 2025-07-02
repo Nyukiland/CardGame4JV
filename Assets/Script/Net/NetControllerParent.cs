@@ -109,13 +109,16 @@ namespace CardGame.Net
 			NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
 			NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
 
+			_networkUI.ToggleInputBlock(false);
+			
 			if (connected)
 			{
-				_networkUI.ToggleInputBlock(false);
 				await GetNetComForThisClientAsync();
 			}
 			else
+			{
 				NetworkManager.Singleton.Shutdown();
+			}
 
 			//------------------------------
 			void OnConnected(ulong id) 
@@ -130,6 +133,7 @@ namespace CardGame.Net
 					connected = false; 
 			}
 		}
+
 		#endregion
 
 		#region Useful
@@ -144,6 +148,23 @@ namespace CardGame.Net
 			_netCommunication = netCom;
 			
 			_netCommunication.OnLaunchGameEvent += _networkUI.CloseMenu;
+			
+			if (_netCommunication == null) return;
+			
+			_netCommunication.OnLaunchGameEvent += ()=>
+			{
+				_networkUI.CloseMenu();
+				_netCommunication.OnLaunchGameEvent -= _networkUI.CloseMenu;
+			};
+
+			if (_netCommunication.IsHost) return;
+			
+			_netCommunication.OnDestroyEvent += ()=>
+			{
+				_networkUI.QuitClientGame();
+				_networkUI.SpawnPopUp("You have been disconnected because the host closed the game", 2f).Forget();
+				_netCommunication.OnDestroyEvent -= _networkUI.QuitClientGame;
+			};
 		}
 
 		protected virtual void CopyJoinCode(string code)
