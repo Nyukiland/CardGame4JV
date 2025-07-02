@@ -47,7 +47,9 @@ namespace CardGame.Net
 		public override void OnNetworkDespawn()
 		{
 			OnDestroyEvent?.Invoke();
-			//if (_manager.OnlineTurns.Value != -1) _manager.OnlineTurns.Value = 100;
+			if (_manager.OnlinePlayersID.Contains(OwnerClientId) && _manager.OnlineTurns.Value != -1)
+				_manager.OnlineTurns.Value = 100;
+
 			Instances.Remove(OwnerClientId);
 		}
 
