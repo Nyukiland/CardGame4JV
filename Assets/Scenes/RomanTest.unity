@@ -2259,11 +2259,12 @@ MonoBehaviour:
           serializedVersion: 2
           m_Bits: 64
         _duration: 0.1
-        _specialRotDuration: 0.3
+        _specialRotDuration: 0.8
         _shakeStrength: {x: 0.05, y: 0.05}
         _shakeIntensity: 20
+        _shakeIntensitySpecial: 20
         _scaleDown: {x: -0.4, y: -0.4}
-        _probaSpecial: 1
+        _probaSpecial: 0.155
     - rid: 1922521404052602971
       type: {class: ZoomAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
