@@ -12,19 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c445cec05d1a07744b5c5dd201f7a2e2, type: 3}
   m_Name: NewTile_15
   m_EditorClassIdentifier: 
-  PoolIndex: 1
+  PoolIndex: 2
+  NumberOfCopies: 1
   _northZone:
-    environment: 3
+    environment: 4
     isOpen: 0
   _eastZone:
-    environment: 5
-    isOpen: 0
+    environment: 1
+    isOpen: 1
   _southZone:
-    environment: 4
+    environment: 1
     isOpen: 1
   _westZone:
-    environment: 4
+    environment: 1
     isOpen: 1
+  tilePreset: 1
   _cardEffect: []
   _cardFeedback: []
   references:

@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c445cec05d1a07744b5c5dd201f7a2e2, type: 3}
-  m_Name: NewTile_001
+  m_Name: NewTile_19
   m_EditorClassIdentifier: 
   PoolIndex: 0
   NumberOfCopies: 1
   _northZone:
-    environment: 0
-    isOpen: 0
+    environment: 5
+    isOpen: 1
   _eastZone:
-    environment: 0
+    environment: 2
     isOpen: 0
   _southZone:
-    environment: 0
-    isOpen: 0
+    environment: 5
+    isOpen: 1
   _westZone:
-    environment: 0
+    environment: 2
     isOpen: 0
-  tilePreset: 0
+  tilePreset: 4
   _cardEffect: []
   _cardFeedback: []
   references:

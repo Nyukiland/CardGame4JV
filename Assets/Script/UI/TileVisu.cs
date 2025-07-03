@@ -186,14 +186,14 @@ namespace CardGame.UI
 
 				case TilePreset.DiagonalOpenHalf:
 					renderers[0].material = GetMaterialForType(zones[0].environment); // North
-					renderers[1].material = GetMaterialForType(zones[1].environment); // East
-					renderers[1].material = GetMaterialForType(zones[2].environment); // South + West
+					renderers[1].material = GetMaterialForType(zones[2].environment); // East
+					renderers[2].material = GetMaterialForType(zones[3].environment); // South + West
 					break;
 
 				case TilePreset.Path:
 					renderers[0].material = GetMaterialForType(zones[0].environment); // North + South
 					renderers[1].material = GetMaterialForType(zones[1].environment); // East
-					renderers[1].material = GetMaterialForType(zones[3].environment); // West
+					renderers[2].material = GetMaterialForType(zones[3].environment); // West
 					break;
 			}
 		}
