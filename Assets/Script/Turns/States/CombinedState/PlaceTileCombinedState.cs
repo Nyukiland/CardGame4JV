@@ -36,6 +36,8 @@ namespace CardGame.Turns
 
 			_moveTile.CanPlaceOnGrid = true;
 			_previewTiles = new List<TileVisu>();
+
+			Controller.GetStateComponent<HUDResource>().UpdateFlag();
 		}
 
 		public override void OnExit()

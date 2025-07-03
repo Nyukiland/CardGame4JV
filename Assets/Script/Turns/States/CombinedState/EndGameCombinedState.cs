@@ -5,11 +5,18 @@ namespace CardGame.Turns
 {
 	public class EndGameCombinedState : CombinedState
 	{
+		private HUDResource _hud;
+
 		public override void OnEnter()
 		{
 			base.OnEnter();
 
-			UnityEngine.Debug.Log($"Fini \n Score: {GameManager.Instance.PlayerScore}");
+			GetStateComponent(ref _hud);
+
+			if (GameManager.Instance.AmIWinning())
+				_hud.OpenWin();
+			else
+				_hud.OpenLoose();
 		}
 	}
 }
