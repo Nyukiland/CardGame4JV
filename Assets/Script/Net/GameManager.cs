@@ -68,9 +68,9 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	public List<string> SoloNames = new();
 
 	#endregion
-	
+
 	#region Variables
-	
+
 	public int PlayerIndex
 	{
 		get;
@@ -99,7 +99,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			{
 				if (SoloNames.Count == 0)
 					return "none";
-				
+
 				return SoloNames[0];
 			}
 		}
@@ -156,10 +156,10 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			}
 		}
 	}
-	
+
 	public ScoreEventDelegate ScoreEvent;
 	public delegate void ScoreEventDelegate(int playerId, float floatEvent);
-	
+
 	#endregion
 
 	public bool GameIsFinished
@@ -173,8 +173,38 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 	}
 
+	public bool AmIWinning()
+	{
+		bool isHigher = true;
+
+		if (IsNetCurrentlyActive())
+		{
+			foreach (int score in OnlineScores)
+			{
+				if (score > PlayerScore)
+				{
+					isHigher = false;
+					break;
+				}
+			}
+		}
+		else
+		{
+			foreach (int score in SoloScores)
+			{
+				if (score > PlayerScore)
+				{
+					isHigher = false;
+					break;
+				}
+			}
+		}
+
+		return isHigher;
+	}
+
 	#region Methods
-	
+
 	public void ResetManager()
 	{
 		if (IsNetCurrentlyActive())
@@ -254,6 +284,6 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			$"{nameof(PlayerName)}: {PlayerName} \n" +
 			$"{nameof(FlagTurn)}: {FlagTurn}";
 	}
-	
+
 	#endregion
 }
