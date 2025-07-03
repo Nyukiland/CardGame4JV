@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using CardGame.Utility;
 using UnityEngine;
 using System;
+using CardGame.Turns;
 
 namespace CardGame.StateMachine
 {
@@ -217,6 +218,11 @@ namespace CardGame.StateMachine
 			}
 
 			return text;
+		}
+
+		private void OnDestroy()
+		{
+			GetStateComponent<ZoneHolderResource>().EndDestroyTile();
 		}
 	}
 }
