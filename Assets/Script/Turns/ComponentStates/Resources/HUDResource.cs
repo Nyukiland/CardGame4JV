@@ -3,6 +3,7 @@ using CardGame.StateMachine;
 using CardGame.UI;
 using CardGame.Utility;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -24,10 +25,14 @@ namespace CardGame.Turns
 		[Header("Score")]
 		[SerializeField] private Transform _scoreContainer;
 		[SerializeField] private ScoreUI _scorePrefab;
+		[Header("FlagCounter")]
+		[SerializeField] private Image _firstCircle;
+		[SerializeField] private Image _secondCircle;
+		[SerializeField] private Image _flag;
 		
 		private PlaceTileOnGridAbility _placeTileOnGrid;
 
-		private List<ScoreUI> _scoreList = new();
+		private readonly List<ScoreUI> _scoreList = new();
 
 		public override void Init(Controller owner)
 		{
@@ -66,7 +71,6 @@ namespace CardGame.Turns
 			}
 			else
 			{
-				Debug.Log($"we have {manager.SoloNames.Count} players");
 				for (int i = 0; i < manager.SoloNames.Count; i++)
 				{
 					ScoreUI playerScore = Object.Instantiate(_scorePrefab, _scoreContainer);
@@ -78,8 +82,30 @@ namespace CardGame.Turns
 		
 		private void NextTurn()
 		{
-			Debug.Log($"Plop, going to next turn");
 			_placeTileOnGrid.CallEndTurn();
+		}
+
+		public void UpdateFlag()
+		{
+			_firstCircle.enabled = false;
+			_secondCircle.enabled = false;
+			_flag.enabled = false;
+			
+			int turn = GameManager.Instance.LocalPlayerTurn % 3;
+			
+			switch (turn)
+			{
+				case 0:
+					_flag.enabled = true;
+					break;
+				case -1:
+				case 1:
+					_firstCircle.enabled = true;
+					break;
+				default:
+					_secondCircle.enabled = true;
+					break;
+			}
 		}
 		
 		#region Panels
