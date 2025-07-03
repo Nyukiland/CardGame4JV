@@ -13,6 +13,7 @@ namespace CardGame
 		
 		public HashSet<TileData> Tiles = new();
 
+		public bool AlreadyScored = false;
 
 
         public Region(int openingCount)

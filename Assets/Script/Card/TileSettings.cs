@@ -79,9 +79,6 @@ namespace CardGame.Card
         public ENVIRONEMENT_TYPE environment;
         public bool isOpen;
         public Region Region = null;
-
-
-	}
     }
 
 	// Aide a la generation des tiles
