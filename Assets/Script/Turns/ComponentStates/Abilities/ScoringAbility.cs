@@ -1,13 +1,11 @@
-using CardGame.StateMachine;
-using Cysharp.Threading.Tasks;
-using System;
-using UnityEngine;
-using DG.Tweening;
 using CardGame.Card;
-using CardGame.Utility;
-using UnityEngine.SocialPlatforms.Impl;
-using NUnit.Framework;
+using CardGame.StateMachine;
+using CardGame.UI;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CardGame.Turns
 {
@@ -15,11 +13,15 @@ namespace CardGame.Turns
 	{
 		private GridManagerResource _gridManager;
 
-		public Vector2Int TilePlaced
+		public Vector2Int TilePlacedPosition
 		{
 			get;
 			private set;
 		}
+
+		private TileData _tilePlaced;
+
+		private HashSet<Region> _closedRegionsInTurn = new();
 
 		public Type NextState
 		{
@@ -41,7 +43,7 @@ namespace CardGame.Turns
 
 		public void SetScoringPos(Vector2Int pos)
 		{
-			TilePlaced = pos;
+			TilePlacedPosition = pos;
 		}
 
 		public void SetState(Type type)
@@ -52,36 +54,49 @@ namespace CardGame.Turns
 		public override void OnDisable()
 		{
 			base.OnDisable();
-			TilePlaced = new(-100, -100);
+			TilePlacedPosition = new(-100, -100);
 			IsScoringFinished = false;
+			_tilePlaced = null;
+			_closedRegionsInTurn = new();
+
 		}
 
 		public void CallScoring()
 		{
-			TileData Tile = _gridManager.GetTile(TilePlaced.x, TilePlaced.y).TileData;
-			foreach (ZoneData Zone in Tile.Zones)
+			_tilePlaced = _gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).TileData;
+			foreach (ZoneData Zone in _tilePlaced.Zones)
 			{
 				if (
 					Zone.Region.OpeningCount == 0 &&
 					Zone.environment != ENVIRONEMENT_TYPE.Neutral &&
 					Zone.Region.AlreadyScored == false)
 				{
-					Debug.Log("Score tile : " + TilePlaced.x + " - " + TilePlaced.y);
+					_closedRegionsInTurn.Add(Zone.Region);
+					Debug.Log("Score tile : " + TilePlacedPosition.x + " - " + TilePlacedPosition.y);
 					ScoreClassicTiles(Zone.Region);
 					ScoreFlagTiles(Zone.Region);
 					Zone.Region.AlreadyScored = true;
 
 				}
 			}
-			ScoringAsync().Forget();
+			VisualFeedbackAtScoringAsync().Forget();
 		}
 
-		private async UniTask ScoringAsync()
+
+		private async UniTask VisualFeedbackAtScoringAsync()
 		{
-			Owner.transform.DOShakePosition(0.1f);
 
-			await UniTask.Yield();
+			foreach (var ClosedRegion in _closedRegionsInTurn)
+			{
+				foreach (var TileVisu in ClosedRegion.Tiles)
+				{
+					Debug.Log("Shake tile : " + TileVisu.PositionOnGrid.x + " - " + TileVisu.PositionOnGrid.y);
 
+					TileVisu.transform.DOShakePosition(0.1f);
+					await UniTask.WaitForSeconds(0.5f);
+				}
+			}
+			await UniTask.WaitForSeconds(3.0f);
 			IsScoringFinished = true; //fin
 		}
 
@@ -89,12 +104,14 @@ namespace CardGame.Turns
 		{
 			Dictionary<int, int> PlayersTileNumber = new();
 			Debug.Log("Score tuiles classiques ? ");
-			foreach (TileData Tile in Region.Tiles)
+			foreach (TileVisu TileVisu in Region.Tiles)
 			{
-				Debug.Log("foreach : Tile de la region ");
-				// les tuiles avec flag ne sont pas comptabilisées
+				TileData Tile = TileVisu.TileData;
+
+				// les tuiles avec flag ou sans player défini (-1) ne sont pas comptabilisées :
 				if (Tile.HasFlag == true) continue;
-				if (Tile.OwnerPlayerIndex == -1) continue; // -1 correspond à la tile centrale qui n'appartient à personne. Elle ne nous intéresse pas.
+				if (Tile.OwnerPlayerIndex == -1) continue;
+
 				if (PlayersTileNumber.ContainsKey(Tile.OwnerPlayerIndex) == false)
 				{
 					PlayersTileNumber.Add(Tile.OwnerPlayerIndex, 0);
@@ -110,16 +127,16 @@ namespace CardGame.Turns
 				Debug.Log("Score tuiles classiques : " + PlayerScore);
 				GameManager.Instance.AddScore(PlayerScore, PlayerTileNumber.Key);
 			}
-
 		}
 
 		private void ScoreFlagTiles(Region Region)
 		{
 			Dictionary<int, int> PlayersTileNumber = new();
 			Debug.Log("Score tuiles Flag ? ");
-			foreach (TileData Tile in Region.Tiles)
+			foreach (TileVisu TileVisu in Region.Tiles)
 			{
-				Debug.Log("foreach : Tile de la region ");
+				TileData Tile = TileVisu.TileData;
+
 				// on ne veut comptabiliser que les tuiles avec un flag :
 				if (Tile.HasFlag == false) continue;
 				if (PlayersTileNumber.ContainsKey(Tile.OwnerPlayerIndex) == false)

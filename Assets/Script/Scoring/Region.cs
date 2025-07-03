@@ -1,4 +1,5 @@
 using CardGame.Card;
+using CardGame.UI;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,9 @@ namespace CardGame
 	{
 		public int OpeningCount = 0;
 		
-		public HashSet<TileData> Tiles = new();
+		public HashSet<TileVisu> Tiles = new();
 
 		public bool AlreadyScored = false;
-
-
         public Region(int openingCount)
         {
             OpeningCount = openingCount;
@@ -26,9 +25,9 @@ namespace CardGame
         {
 
 			// Etape 1 : Pour chaque tuile de la région qu'on fusionne, il faut updater l'info de region contenu dans ZoneData :
-			foreach(TileData Tile in OtherRegion.Tiles)
+			foreach(TileVisu Tile in OtherRegion.Tiles)
 			{
-				foreach (ZoneData Zone in Tile.Zones)
+				foreach (ZoneData Zone in Tile.TileData.Zones)
 				{
 					// Si la region actuelle de la zone est la region qu'on veut changer
 					if (Zone.Region == OtherRegion)
