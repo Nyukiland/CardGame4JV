@@ -96,11 +96,6 @@ namespace CardGame.UI
 
 		#region Unity Methods
 
-		[Header("Test")]
-		[SerializeField] private TextMeshProUGUI _codeTest;
-		[SerializeField] private TextMeshProUGUI _passwordTest;
-		[SerializeField] private TextMeshProUGUI _sessionNameTest;
-
 		private void Start()
 		{
 			Screen.autorotateToPortrait = false;
@@ -108,13 +103,6 @@ namespace CardGame.UI
 			_popUpContainer.SetActive(false);
 		}
 		
-		private void Update()
-		{
-			_codeTest.text = "Code : " + Code;
-			_passwordTest.text = "Password : " + Password;
-			_sessionNameTest.text = "SessionName : " + SessionName;
-		}
-
 		private void Awake()
 		{
 			Storage.Instance.Register(this);
