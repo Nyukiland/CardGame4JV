@@ -40,9 +40,9 @@ Material:
     m_Floats:
     - _Albedo_Scale_noise: 0.8
     - _Albedo_Time_speed: 1.2
-    - _DisplaceX_General_Multiplier_1: 0.051
-    - _DisplaceY_General_Multiplier_2: 0.005
-    - _DisplaceZ_General_Multiplier: 0.016
+    - _DisplaceX_General_Multiplier_1: 0
+    - _DisplaceY_General_Multiplier_2: 0
+    - _DisplaceZ_General_Multiplier: 0
     - _Displace_Scale_noise: 1.38
     - _Displace_Time_speed: 2
     - _Hard_edges_Albeldo_1: 0
