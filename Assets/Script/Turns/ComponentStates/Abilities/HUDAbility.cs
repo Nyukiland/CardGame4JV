@@ -21,8 +21,8 @@ namespace CardGame.Turns
 
 		public override void OnDisable()
 		{
+			_hudResource?.WaitingScreen.SetActive(false);
 			base.OnDisable();
-			_hudResource.WaitingScreen.SetActive(false);
 		}
 	}
 }
