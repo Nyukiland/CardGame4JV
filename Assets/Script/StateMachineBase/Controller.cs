@@ -220,6 +220,7 @@ namespace CardGame.StateMachine
 			return text;
 		}
 
+		//ugly scripting
 		private void OnDestroy()
 		{
 			GetStateComponent<ZoneHolderResource>().EndDestroyTile();

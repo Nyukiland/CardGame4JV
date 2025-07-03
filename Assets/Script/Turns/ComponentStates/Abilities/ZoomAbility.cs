@@ -1,4 +1,5 @@
 using CardGame.StateMachine;
+using CardGame.UI;
 using UnityEngine;
 
 namespace CardGame.Turns
@@ -15,8 +16,9 @@ namespace CardGame.Turns
 
 		private Camera _cam;
 		private ZoneHolderResource _zoneHolder;
+		private GridManagerResource _gridManager;
 
-		private const float MaxZoom = 10f;
+		private float _maxZoom = 10f;
 
 		public bool InZoom => _inZoom;
 
@@ -26,6 +28,7 @@ namespace CardGame.Turns
 			_cam = Camera.main;
 
 			_zoneHolder = owner.GetStateComponent<ZoneHolderResource>();
+			_gridManager = owner.GetStateComponent<GridManagerResource>();
 		}
 
 		public void StartZoom(Vector2 posTouch1, Vector2 posTouch2)
@@ -34,6 +37,27 @@ namespace CardGame.Turns
 			_startdist = Vector2.Distance(posTouch1, posTouch2);
 			_startZoom = _cam.orthographicSize;
 
+			Vector3 bottomLeft = new(100, 100, 0);
+			Vector3 topRight = new(0, 0, 0);
+
+			for (int i = 0; i < _gridManager.Width; i++)
+			{
+				for (int j = 0; j < _gridManager.Height; j++)
+				{
+					TileVisu tile = _gridManager.GetTile(i, j);
+
+					if (tile.TileData == null) continue;
+
+					Vector3 tilePos = tile.transform.position;
+
+					bottomLeft.x = Mathf.Min(bottomLeft.x, tilePos.x);
+					bottomLeft.y = Mathf.Min(bottomLeft.y, tilePos.y);
+					topRight.x = Mathf.Max(topRight.x, tilePos.x);
+					topRight.y = Mathf.Max(topRight.y, tilePos.y);
+				}
+			}
+
+			_maxZoom = Vector3.Distance(bottomLeft, topRight);
 			_zoneHolder.HideMyHand(true);
 		}
 
@@ -44,7 +68,7 @@ namespace CardGame.Turns
 			float currentDist = Vector2.Distance(posTouch1, posTouch2);
 			float zoomFactor = _startdist / currentDist;
 
-			_cam.orthographicSize = Mathf.Clamp(_startZoom * zoomFactor, _minZoom, MaxZoom);
+			_cam.orthographicSize = Mathf.Clamp(_startZoom * zoomFactor, _minZoom, _maxZoom);
 
 			_zoneHolder.UpdatePlacementInHand(true);
 		}
