@@ -69,6 +69,8 @@ namespace CardGame.Turns
 
 					OnCardPicked?.Invoke();
 
+					//Debug.Log($"{visu.TileData.TileSettings.name} : North {visu.TileData.Zones[0].environment}, Est {visu.TileData.Zones[1].environment} south {visu.TileData.Zones[2].environment} west {visu.TileData.Zones[3].environment}");
+
 					_holder.HideMyHand(true);
 				}
 			}

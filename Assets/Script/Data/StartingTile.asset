@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: StartingTile
   m_EditorClassIdentifier: 
   PoolIndex: 0
+  NumberOfCopies: 1
   _northZone:
     environment: 2
     isOpen: 0
@@ -25,6 +26,7 @@ MonoBehaviour:
   _westZone:
     environment: 4
     isOpen: 0
+  tilePreset: 0
   _cardEffect: []
   _cardFeedback: []
   references:

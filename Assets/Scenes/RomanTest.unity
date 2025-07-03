@@ -2190,7 +2190,7 @@ MonoBehaviour:
       data:
         Enabled: 0
         _handZone: {fileID: 2013116586}
-        _tileInHand: []
+        TileInHand: []
     - rid: 542522248351187035
       type: {class: CreateHandAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
@@ -2244,6 +2244,7 @@ MonoBehaviour:
       data:
         Enabled: 0
         _drawPile: {fileID: 1031992356}
+        _maxTimeTurn: 500
     - rid: 542522587139801179
       type: {class: DiscardCardAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
