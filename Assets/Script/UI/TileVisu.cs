@@ -149,7 +149,7 @@ namespace CardGame.UI
 
 			Transform transform = _currentVisualMesh.transform;
 
-			float angle = (TileData.TileRotationCount % 4) * -90f;
+			float angle = (TileData.TileRotationCount % 4) * -90f; 
 			transform.localRotation = Quaternion.Euler(0f, 0f, angle);
 		}
 
@@ -165,8 +165,8 @@ namespace CardGame.UI
 			_currentVisualMesh = Instantiate(prefab, transform); // Spawn en enfant
 			var renderers = _currentVisualMesh.GetComponentsInChildren<MeshRenderer>(); // On recup les renderer, pour set materials
 
-			ZoneData[] zones = TileData.Zones;
-
+			ZoneData[] zones = TileData.GetUnrotatedZones();
+            
 			switch (preset) // Ici je me base sur les 5 presets de tiles : ils ont tous un nbr de mesh different, je dois donc adapter au cas par cas
 			{
 				case TilePreset.FourDifferentClosed: // 4 tiles dif
@@ -196,6 +196,8 @@ namespace CardGame.UI
 					renderers[2].material = GetMaterialForType(zones[3].environment); // West
 					break;
 			}
+
+            RotateTileVisual();
 		}
 
 	}

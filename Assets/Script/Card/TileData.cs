@@ -59,6 +59,18 @@ namespace CardGame.Card
 
 		}
 
+		public ZoneData[] GetUnrotatedZones()
+		{
+			var zones = new ZoneData[4];
+			zones[0] = TileSettings.NorthZone;
+			zones[1] = TileSettings.EastZone;
+			zones[2] = TileSettings.SouthZone;
+			zones[3] = TileSettings.WestZone;
+			return zones;
+		}
+	}
+		}
+
 		/*
 		 
 		 */
