@@ -95,22 +95,22 @@ namespace CardGame.Turns
 				// les tuiles avec flag ne sont pas comptabilisées
 				if (Tile.HasFlag == true) continue;
 				if (Tile.OwnerPlayerIndex == -1) continue; // -1 correspond à la tile centrale qui n'appartient à personne. Elle ne nous intéresse pas.
-				if(PlayersTileNumber.ContainsKey(Tile.OwnerPlayerIndex) == false)
+				if (PlayersTileNumber.ContainsKey(Tile.OwnerPlayerIndex) == false)
 				{
-					PlayersTileNumber.TryAdd(Tile.OwnerPlayerIndex, 0);
+					PlayersTileNumber.Add(Tile.OwnerPlayerIndex, 0);
 				}
-				PlayersTileNumber.TryAdd(Tile.OwnerPlayerIndex, PlayersTileNumber[Tile.OwnerPlayerIndex]++);
+				PlayersTileNumber[Tile.OwnerPlayerIndex] = PlayersTileNumber[Tile.OwnerPlayerIndex] + 1;
 			}
 
-			foreach (int PlayerIndex in PlayersTileNumber.Keys)
+			foreach (var PlayerTileNumber in PlayersTileNumber)
 			{
-				Debug.Log("foreach : PlayerIndex : " + PlayerIndex);
+				Debug.Log("foreach : PlayerIndex : " + PlayerTileNumber.Key);
 				// Le joueur score le nombre de tuiles lui appartenant présentes dans la zone (hors tuile avec flag) :
-				int PlayerScore = CalculateScore(PlayersTileNumber[PlayerIndex]);
+				int PlayerScore = CalculateScore(PlayerTileNumber.Value);
 				Debug.Log("Score tuiles classiques : " + PlayerScore);
-				GameManager.Instance.AddScore(PlayerScore, PlayerIndex);
+				GameManager.Instance.AddScore(PlayerScore, PlayerTileNumber.Key);
 			}
-			
+
 		}
 
 		private void ScoreFlagTiles(Region Region)
@@ -126,7 +126,7 @@ namespace CardGame.Turns
 				{
 					PlayersTileNumber.TryAdd(Tile.OwnerPlayerIndex, 0);
 				}
-				PlayersTileNumber.Add(Tile.OwnerPlayerIndex, PlayersTileNumber[Tile.OwnerPlayerIndex]++);
+				PlayersTileNumber[Tile.OwnerPlayerIndex] = PlayersTileNumber[Tile.OwnerPlayerIndex] + 1;
 			}
 
 			foreach (int PlayerIndex in PlayersTileNumber.Keys)
@@ -143,7 +143,7 @@ namespace CardGame.Turns
 
 		private int CalculateScore(int TilesNumber)
 		{
-			return TilesNumber * (TilesNumber + 1) / 2 ; 
+			return TilesNumber * (TilesNumber + 1) / 2;
 		}
 	}
 }
