@@ -151,7 +151,8 @@ namespace CardGame.Turns
 			{
 				_timer = -1f;
 
-				AutoPlace();
+				if (TempPlacedTile == null) AutoPlace();
+				CallEndTurn();
 
 				return;
 			}
@@ -195,8 +196,6 @@ namespace CardGame.Turns
 			_tempPos = tilePlaced;
 
 			_zoneHolder.RemoveTileFromHand(TempPlacedTile.gameObject);
-
-			CallEndTurn();
 		}
 	}
 }
