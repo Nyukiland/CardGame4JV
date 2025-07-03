@@ -10,10 +10,10 @@ namespace CardGame.Turns
 		[SerializeField]
 		private RectTransform _handZone;
 
-		[SerializeField]
-		private List<GameObject> _tileInHand;
+		[Disable]
+		public List<GameObject> TileInHand;
 
-		public int TileInHandCount => _tileInHand.Count;
+		public int TileInHandCount => TileInHand.Count;
 
 		public override void LateInit()
 		{
@@ -27,19 +27,19 @@ namespace CardGame.Turns
 
 		private int GetInsertionIndex(Vector3 droppedPosition)
 		{
-			for (int i = 0; i < _tileInHand.Count; i++)
+			for (int i = 0; i < TileInHand.Count; i++)
 			{
-				if (droppedPosition.x < _tileInHand[i].transform.position.x)
+				if (droppedPosition.x < TileInHand[i].transform.position.x)
 					return i;
 			}
 
-			return _tileInHand.Count; // add a la fin sinon
+			return TileInHand.Count; // add a la fin sinon
 		}
 
 
 		public void GiveTileToHand(GameObject tile)
 		{
-			if (_tileInHand.Contains(tile))
+			if (TileInHand.Contains(tile))
 			{
 				UnityEngine.Debug.LogError($"[{nameof(ZoneHolderResource)}] Tile already in hand");
 				return;
@@ -47,20 +47,20 @@ namespace CardGame.Turns
 
 			int insertIndex = GetInsertionIndex(tile.transform.position);
 			tile.transform.parent = Camera.main.transform;
-			_tileInHand.Insert(insertIndex, tile);
+			TileInHand.Insert(insertIndex, tile);
 
 			UpdatePlacementInHand();
 		}
 
 		public void RemoveTileFromHand(GameObject tile)
 		{
-			if (!_tileInHand.Contains(tile))
+			if (!TileInHand.Contains(tile))
 			{
 				UnityEngine.Debug.LogError($"[{nameof(ZoneHolderResource)}] Tile not in hand");
 				return;
 			}
 
-			_tileInHand.Remove(tile);
+			TileInHand.Remove(tile);
 			tile.transform.parent = null;
 			tile.transform.DORotate(new(0, 0, 0), 0.2f, RotateMode.Fast);
 
@@ -75,7 +75,7 @@ namespace CardGame.Turns
 			Vector3 pos1 = Camera.main.ScreenToWorldPoint(worldCorners[1]);
 			Vector3 pos2 = Camera.main.ScreenToWorldPoint(worldCorners[2]);
 
-			int count = _tileInHand.Count;
+			int count = TileInHand.Count;
 
 			for (int i = 0; i < count; i++)
 			{
@@ -87,14 +87,22 @@ namespace CardGame.Turns
 
 				if (!force)
 				{
-					_tileInHand[i].transform.DOMove(pos + (Camera.main.transform.forward * 2), 0.2f);
-					_tileInHand[i].transform.DORotate(Camera.main.transform.eulerAngles, 0.2f, RotateMode.Fast);
+					TileInHand[i].transform.DOMove(pos + (Camera.main.transform.forward * 2), 0.2f);
+					TileInHand[i].transform.DORotate(Camera.main.transform.eulerAngles, 0.2f, RotateMode.Fast);
 				}
 				else
 				{
-					_tileInHand[i].transform.position = pos + (Camera.main.transform.forward * 2);
-					_tileInHand[i].transform.eulerAngles = Camera.main.transform.eulerAngles;
+					TileInHand[i].transform.position = pos + (Camera.main.transform.forward * 2);
+					TileInHand[i].transform.eulerAngles = Camera.main.transform.eulerAngles;
 				}
+			}
+		}
+
+		public void HideMyHand(bool isHidden)
+		{
+			for (int i = 0; i < TileInHand.Count; i++)
+			{
+				TileInHand[i].SetActive(!isHidden);
 			}
 		}
 	}

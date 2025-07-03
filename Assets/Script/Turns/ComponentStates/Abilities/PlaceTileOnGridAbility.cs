@@ -5,123 +5,198 @@ using UnityEngine;
 
 namespace CardGame.Turns
 {
-    public class PlaceTileOnGridAbility : Ability
-    {
-        [SerializeField]
-        private DrawPile _drawPile;
+	public class PlaceTileOnGridAbility : Ability
+	{
+		[SerializeField]
+		private DrawPile _drawPile;
 
-        private Plane _planeForCast = new(Vector3.forward, new Vector3(0, 0, -0.15f));
+		[SerializeField, Min(0)]
+		private float _maxTimeTurn = 30;
 
-        private MoveTileAbility _moveTile;
-        private ZoneHolderResource _zoneHolder;
-        private GridManagerResource _gridManager;
-        private CreateHandAbility _createHandAbility;
-        private SendInfoAbility _sender;
+		private Plane _planeForCast = new(Vector3.forward, new Vector3(0, 0, -0.15f));
+
+		private MoveTileAbility _moveTile;
+		private ZoneHolderResource _zoneHolder;
+		private GridManagerResource _gridManager;
+		private CreateHandAbility _createHandAbility;
+		private SendInfoAbility _sender;
 		private ScoringAbility _scoring;
 
-        public event System.Action OnCardReleased; //Pour la preview d'ou on peut poser la tile de maniere valide
 
-        public bool TilePlaced
-        {
-            get;
-            private set;
-        }
+		private float _timer = 0;
 
-        public override void Init(Controller owner)
-        {
-            base.Init(owner);
-            _moveTile = owner.GetStateComponent<MoveTileAbility>();
-            _zoneHolder = owner.GetStateComponent<ZoneHolderResource>();
-            _gridManager = owner.GetStateComponent<GridManagerResource>();
-            _createHandAbility = owner.GetStateComponent<CreateHandAbility>();
-            _sender = owner.GetStateComponent<SendInfoAbility>();
+		public event System.Action OnCardReleased; //Pour la preview d'ou on peut poser la tileObject de maniere valide
+
+		public TileVisu TempPlacedTile { get; set; } = null;
+		private Vector2Int _tempPos;
+
+		public bool TilePlaced { get; private set; }
+
+		public override void Init(Controller owner)
+		{
+			base.Init(owner);
+			_moveTile = owner.GetStateComponent<MoveTileAbility>();
+			_zoneHolder = owner.GetStateComponent<ZoneHolderResource>();
+			_gridManager = owner.GetStateComponent<GridManagerResource>();
+			_createHandAbility = owner.GetStateComponent<CreateHandAbility>();
+			_sender = owner.GetStateComponent<SendInfoAbility>();
 			_scoring = owner.GetStateComponent<ScoringAbility>();
-        }
+		}
 
-        public override void OnEnable()
-        {
-            base.OnEnable();
-            TilePlaced = false;
-        }
+		public override void OnEnable()
+		{
+			base.OnEnable();
+			TilePlaced = false;
+			_timer = 0;
 
-        public void ReleaseTile(Vector2 position)
-        {
-            if (_moveTile.CurrentTile == null)
-                return;
+			TempPlacedTile = null;
+		}
 
-            TileVisu tempTile = _moveTile.CurrentTile;
-            _moveTile.CurrentTile = null;
-            tempTile.ResetValidityVisual();
+		public void ReleaseTile(Vector2 position)
+		{
+			if (_moveTile.CurrentTile == null)
+				return;
 
-            OnCardReleased?.Invoke();
+			_moveTile.StandardRelease();
+			TileVisu tempTile = _moveTile.CurrentTile;
+			_moveTile.CurrentTile = null;
+			tempTile.ResetValidityVisual();
 
-            if (_zoneHolder.IsInHand(position))
-            {
-                _zoneHolder.GiveTileToHand(tempTile.gameObject);
-                return;
-            }
+			OnCardReleased?.Invoke();
 
-            Ray ray = Camera.main.ScreenPointToRay(position);
-            _planeForCast.Raycast(ray, out float dist);
-            Vector2Int pos = Vector2Int.FloorToInt(ray.GetPoint(dist));
+			if (_zoneHolder.IsInHand(position))
+			{
+				_zoneHolder.GiveTileToHand(tempTile.gameObject);
+				return;
+			}
 
-            TileVisu targetTile = _gridManager.GetTile(pos);
+			Ray ray = Camera.main.ScreenPointToRay(position);
+			_planeForCast.Raycast(ray, out float dist);
+			Vector2Int pos = Vector2Int.FloorToInt(ray.GetPoint(dist));
 
-            if (targetTile != null && targetTile.TileData == null)
-            {
+			TileVisu targetTile = _gridManager.GetTile(pos);
+
+			if (targetTile != null && targetTile.TileData == null)
+			{
 				int neighborCount = _gridManager.CheckNeighborTileLinked(pos);
 				int connectionCount = _gridManager.GetPlacementConnectionCount(tempTile.TileData, pos);
 
-				if (connectionCount == 0 || neighborCount == 0) // Si pas de connection valide, ou que si mais pas de voisin valide (cas d'une tile bonus isolée)
-                {
+				if (connectionCount == 0 || neighborCount == 0) // Si pas de connection valide, ou que si mais pas de voisin valide (cas d'une tileObject bonus isolée)
+				{
 					_zoneHolder.GiveTileToHand(tempTile.gameObject);
-                    return;
-                }
-                
-                tempTile.TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex; // On donne l'index du joueur a la tile
-                tempTile.TileData.HasFlag = GameManager.Instance.FlagTurn; // Check si flag turn
+					return;
+				}
 
-                _gridManager.SetTile(tempTile.TileData, pos);
-                _sender.SendInfoTilePlaced(tempTile.TileData, pos);
-				_scoring.SetScoringPos(pos);
-
-                // On fait les ajustements pour la preview
-                _gridManager.SetNeighborBonusTileLinked(pos); //On check si une tile a coté est tile bonus 
-
-                if (!_sender.SendTurnFinished())
-                {
-                    for (int i = 0; i < connectionCount; i++)
-                    {
-                        SoloDrawCard();
-                    }
-                }
-
-                TilePlaced = true;
-
-                GameObject.Destroy(tempTile.gameObject);
-            }
+				TempPlacedTile = tempTile;
+				_tempPos = pos;
+			}
 			else
-            {
-                _zoneHolder.GiveTileToHand(tempTile.gameObject);
-            }
-        }
+			{
+				_zoneHolder.GiveTileToHand(tempTile.gameObject);
+			}
+		}
 
-        private void SoloDrawCard()
-        {
-            int tileId = _drawPile.GetTileIDFromDrawPile();
-            if (tileId == -1) return;
+		private void SoloDrawCard()
+		{
+			int tileId = _drawPile.GetTileIDFromDrawPile();
+			if (tileId == -1) return;
 
-            TileSettings tileSettings = null;
-            foreach (TileSettings setting in _drawPile.AllTileSettings)
-            {
-                if (setting.IdCode == tileId)
-                {
-                    tileSettings = setting;
-                    break;
-                }
-            }
+			TileSettings tileSettings = null;
+			foreach (TileSettings setting in _drawPile.AllTileSettings)
+			{
+				if (setting.IdCode == tileId)
+				{
+					tileSettings = setting;
+					break;
+				}
+			}
 
-            _createHandAbility.CreateTile(tileSettings);
-        }
-    }
+			_createHandAbility.CreateTile(tileSettings);
+		}
+
+		public void CallEndTurn()
+		{
+			if (TempPlacedTile == null) return;
+
+			int connectionCount = _gridManager.GetPlacementConnectionCount(TempPlacedTile.TileData, _tempPos);
+
+			TempPlacedTile.TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex; // On donne l'index du joueur a la tileObject
+			TempPlacedTile.TileData.HasFlag = GameManager.Instance.FlagTurn; // Check si flag turn
+
+			_gridManager.SetTile(TempPlacedTile.TileData, _tempPos);
+			_sender.SendInfoTilePlaced(TempPlacedTile.TileData, _tempPos);
+			_scoring.SetScoringPos(_tempPos);
+
+			if (!_sender.SendTurnFinished())
+			{
+				for (int i = 0; i < connectionCount; i++)
+				{
+					SoloDrawCard();
+				}
+			}
+
+			TilePlaced = true;
+
+			GameObject.Destroy(TempPlacedTile.gameObject);
+		}
+
+		public override void Update(float deltaTime)
+		{
+			base.Update(deltaTime);
+
+			if (_timer == -1f)
+				return;
+
+			if (_timer > _maxTimeTurn)
+			{
+				_timer = -1f;
+
+				AutoPlace();
+
+				return;
+			}
+
+			_timer += deltaTime;
+		}
+
+		private void AutoPlace()
+		{
+			//find card placement
+			//fun triple loop
+			Vector2Int tilePlaced = new(-100, -100);
+			TileVisu tileVisu = null;
+			foreach (GameObject tileObject in _zoneHolder.TileInHand)
+			{
+				TileVisu tile = tileObject.GetComponent<TileVisu>();
+
+				foreach (Vector2Int pos in _gridManager.SurroundingTilePos)
+				{
+					for (int i = 0; i < 4; i++)
+					{
+						if (_gridManager.GetPlacementConnectionCount(tile.TileData, pos) != 0)
+						{
+							tileVisu = tile;
+							tilePlaced = pos;
+							break;
+						}
+						else
+						{
+							tile.TileData.RotateTile();
+						}
+					}
+
+					if (tilePlaced != new Vector2Int(-100, -100)) break;
+				}
+
+				if (tilePlaced != new Vector2Int(-100, -100)) break;
+			}
+
+			TempPlacedTile = tileVisu;
+			_tempPos = tilePlaced;
+
+			_zoneHolder.RemoveTileFromHand(TempPlacedTile.gameObject);
+
+			CallEndTurn();
+		}
+	}
 }

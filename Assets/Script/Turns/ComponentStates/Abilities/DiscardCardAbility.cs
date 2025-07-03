@@ -39,7 +39,7 @@ namespace CardGame.Turns
 		{
 			base.OnDisable();
 
-			_discardArea.gameObject.SetActive(false);
+			if (_discardArea != null) _discardArea.gameObject.SetActive(false);
 		}
 
 		public void ReleaseCard(Vector2 pos)

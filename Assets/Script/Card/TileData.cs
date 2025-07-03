@@ -3,8 +3,7 @@ using CardGame.Utility;
 using System;
 using System.Collections.Generic;
 using Unity.Services.Relay.Models;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
+
 using UnityEngine;
 
 namespace CardGame.Card
@@ -25,14 +24,15 @@ namespace CardGame.Card
 		public int OwnerPlayerIndex { get; set; } = -1; // C'est l'index du joueur dans la liste de OnlinePlayersID 
 		public bool HasFlag { get; set; } = false;
 
-		// Bonus tile 
-		public int MultiplicativeBonus = 1;
-		public int AdditiveBonus = 0;
-		//public int PoolIndex = 0; // 1 is small pool and 2 is big pool, c'est dans tile settings
+        // Bonus tile 
+        public int MultiplicativeBonus = 1;
+        public int AdditiveBonus = 0;
+
+		public event System.Action OnTileRotated;
 
 		public void InitTile(TileSettings tileSettingsRef)
-		{
-			TileSettings = tileSettingsRef;
+        {
+            TileSettings = tileSettingsRef;
 
 			Zones = new ZoneData[4];
 			Zones[0] = TileSettings.NorthZone;
@@ -40,15 +40,9 @@ namespace CardGame.Card
 			Zones[2] = TileSettings.SouthZone;
 			Zones[3] = TileSettings.WestZone;
 
-			//Regions = new Region[4];
-			//Regions[0] = null;
-			//Regions[1] = null;
-			//Regions[2] = null;
-			//Regions[3] = null;
-
-			OwnerPlayerIndex = -1;
-			HasFlag = false;
-		}
+            OwnerPlayerIndex = -1;
+            HasFlag = false;
+        }
 
 		public void RotateTile()
 		{
@@ -60,7 +54,8 @@ namespace CardGame.Card
 			}
 			Zones[0] = copiedZone;
 
-			TileRotationCount += 1;
+            TileRotationCount += 1;
+			OnTileRotated?.Invoke(); // Tile visu va rotate son visuel
 
 		}
 

@@ -14,7 +14,7 @@ namespace CardGame.Turns
 		private PlaceTileOnGridAbility _placeTileOnGrid;
 		private GridManagerResource _gridManagerRessource;
 
-		List<TileVisu> _previewTiles;
+		private List<TileVisu> _previewTiles;
 
 		public PlaceTileCombinedState()
 		{

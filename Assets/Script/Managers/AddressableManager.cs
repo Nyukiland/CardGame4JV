@@ -1,5 +1,5 @@
+using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -9,6 +9,7 @@ namespace CardGame.Managers
     public static class AddressableManager
     {
         private static readonly Dictionary<string, AsyncOperationHandle> _allAddressable = new();
+        private static readonly Dictionary<string, AsyncOperationHandle> _allAddressableLabels = new();
         
         public static async UniTask<T> LoadAddressable<T>(string key)
         {
@@ -33,13 +34,16 @@ namespace CardGame.Managers
 
         public static async UniTask<IList<T>> LoadLabel<T>(string label)
         {
-            // check in list here
+            if (_allAddressableLabels.TryGetValue(label, out AsyncOperationHandle savedHandle))
+            {
+                return (IList<T>)savedHandle.Result;
+            }
             
             AsyncOperationHandle<IList<T>> handles = Addressables.LoadAssetsAsync<T>(label);
 
             await UniTask.WaitUntil(() => handles.IsDone);
-
-            _allAddressable.Add(label, handles);
+            
+            _allAddressableLabels.Add(label, handles);
 
             return handles.Result;
         }
@@ -55,8 +59,14 @@ namespace CardGame.Managers
             {
                 handle.Release();
             }
+            
+            foreach (AsyncOperationHandle handle in _allAddressableLabels.Values)
+            {
+                handle.Release();
+            }
 
             _allAddressable.Clear();
+            _allAddressableLabels.Clear();
         }
     }
 }

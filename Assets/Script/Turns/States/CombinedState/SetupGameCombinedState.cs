@@ -12,6 +12,7 @@ namespace CardGame.Turns
 		private CreateHandAbility _createHandAbility;
 		private AutoPlayAbility _autoPlay;
 		private GridManagerResource _gridManager;
+		private HUDResource _hudResource;
 
 		public SetupGameCombinedState()
 		{
@@ -27,7 +28,7 @@ namespace CardGame.Turns
 			GetStateComponent(ref _createHandAbility);
 			GetStateComponent(ref _autoPlay, false);
 			GetStateComponent(ref _gridManager);
-
+			GetStateComponent(ref _hudResource);
 
 			WaitStart().Forget();
 		}
@@ -54,6 +55,8 @@ namespace CardGame.Turns
 				GameManager.Instance.SetPlayerInfo(2222, "Bot");
 				_createHandAbility.GenerateTiles(_createHandAbility.CountCard);
 				_autoPlay.GenerateTheoreticalHand(_createHandAbility.CountCard);
+				
+				Controller.GetStateComponent<HUDResource>().InitScores();
 			}
 		}
 	}

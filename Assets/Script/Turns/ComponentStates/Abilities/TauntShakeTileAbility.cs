@@ -22,6 +22,9 @@ namespace CardGame.Turns
 		[SerializeField, Min(0)]
 		private int _shakeIntensity = 20;
 
+		[SerializeField, Min(0)]
+		private int _shakeIntensitySpecial = 50;
+
 		[SerializeField]
 		private Vector2 _scaleDown = new(-0.4f, -0.4f);
 
@@ -34,6 +37,11 @@ namespace CardGame.Turns
 		{
 			base.Init(owner);
 			_sendInfo = owner.GetStateComponent<SendInfoAbility>();
+		}
+
+		public bool QuickCheckRay(Vector2 position)
+		{
+			return Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100, _layerTile);
 		}
 
 		public void ShakeTile(Vector2 position)
@@ -62,11 +70,9 @@ namespace CardGame.Turns
 			}
 			else
 			{
-				tile.transform.rotation = Quaternion.identity;
-
 				seq.Append(tile.transform.DOPunchScale(_scaleDown, _duration));
-				seq.AppendInterval(0.02f);
-				seq.Append(tile.transform.DORotate(new Vector3(0, 0, 360), _specialRotDuration, RotateMode.FastBeyond360).SetEase(Ease.OutBack));
+				seq.Join(tile.transform.DOShakeRotation(_specialRotDuration, _shakeIntensitySpecial))
+					.OnComplete(() => tile.transform.rotation = Quaternion.identity);
 			}
 
 			seq.Play();

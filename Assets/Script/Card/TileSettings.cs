@@ -14,14 +14,17 @@ namespace CardGame.Card
 		public int IdCode => GetStableId();
 
         [Header("Zone Data")]
-        [SerializeField] public int PoolIndex = 0; // Pour les pools de tile bonus sur la map
-        [SerializeField] private ZoneData _northZone;
+        public int PoolIndex = 0; // Pour les pools de tile bonus sur la map
+		public int NumberOfCopies = 1;
+		[SerializeField] private ZoneData _northZone;
         [SerializeField] private ZoneData _eastZone;
         [SerializeField] private ZoneData _southZone;
         [SerializeField] private ZoneData _westZone;
 
-        // Permet de recuperer 
-        public ZoneData NorthZone => _northZone;
+		[HideInInspector] public TilePreset tilePreset = TilePreset.FourDifferentClosed;
+
+		// Permet de recuperer 
+		public ZoneData NorthZone => _northZone;
         public ZoneData EastZone => _eastZone;
         public ZoneData SouthZone => _southZone;
         public ZoneData WestZone => _westZone;
@@ -49,15 +52,25 @@ namespace CardGame.Card
 			// Take the first 4 bytes 
 			return BitConverter.ToInt32(hash, 0);
 		}
+
+		// Faut passer par la car c'est privé
+		public void SetZones(ZoneData n, ZoneData e, ZoneData s, ZoneData w)
+		{
+			_northZone = n;
+			_eastZone = e;
+			_southZone = s;
+			_westZone = w;
+		}
 	}
 
     public enum ENVIRONEMENT_TYPE
     {
         None,
-        Forest,
-        Snow,
-        Lava,
-        River,
+        Neutral, // mort, vaut rien
+		Terrain, // marron
+        Grass,  // Vert
+        Fields, // Jaune
+        Water, // I mean...
     }
 
     [System.Serializable]
@@ -67,11 +80,18 @@ namespace CardGame.Card
         public bool isOpen;
         public Region Region = null;
 
-		//public ZoneData(ENVIRONEMENT_TYPE Environment, bool IsOpen)
-  //      {
-  //          environment = Environment;
-  //          isOpen = IsOpen;
-		//	Region = null;
-		//}
+
 	}
+    }
+
+	// Aide a la generation des tiles
+	public enum TilePreset
+	{
+		FourDifferentClosed, // 1 2 3 4 
+		ThreeSame,           // 1 2 2 2 
+		DiagonalOpenFull,    // 1 1 2 2 
+		DiagonalOpenHalf,    // 1 1 2 3
+		Path                 // 1 2 2 1, 1 2 2 3
+	}
+
 }
