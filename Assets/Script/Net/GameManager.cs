@@ -167,9 +167,15 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		get
 		{
 			if (IsNetCurrentlyActive())
+			{
+				if (OnlinePlayersID.Count <= 0) return false;
 				return GlobalTurn >= 12 * OnlinePlayersID.Count;
+			}
 			else
+			{
+				if (SoloNames.Count <= 0) return false;
 				return GlobalTurn >= 12 * SoloNames.Count;
+			}
 		}
 	}
 

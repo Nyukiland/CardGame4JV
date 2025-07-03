@@ -68,7 +68,7 @@ namespace CardGame.Turns
 			base.Update(deltaTime);
 
 			if (GameManager.Instance.GameIsFinished)
-			{
+			{ 
 				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(EndGameCombinedState));
 				Controller.SetState<ScoringCombinedState>();
 			}
