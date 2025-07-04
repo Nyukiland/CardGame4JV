@@ -60,7 +60,7 @@ namespace CardGame.Turns
 			base.Update(deltaTime);
 
 			if (_discardCard.DiscardFinished())
-				Controller.SetState<NextPlayerCombinedState>();
+				Controller.SetState<ScoringCombinedState>();
 		}
 	}
 }
