@@ -17,7 +17,7 @@ namespace CardGame.Turns
 		{
 			get;
 			private set;
-		}
+		} = new Vector2Int(-100, -100);
 
 		private TileData _tilePlaced;
 

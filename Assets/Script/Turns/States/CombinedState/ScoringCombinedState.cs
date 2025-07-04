@@ -12,6 +12,9 @@ namespace CardGame.Turns
 		{
 			base.OnEnter();
 			GetStateComponent(ref _scoring);
+			if (_scoring.TilePlacedPosition == new Vector2Int(-100, -100))
+				return;
+
 			_scoring.CallScoring();
 		}
 
