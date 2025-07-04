@@ -64,12 +64,6 @@ namespace CardGame.Net
 				ENVIRONEMENT_TYPE env = default;
 				bool isOpen = false;
 
-				if (Zones[i] != null)
-				{
-					env = Zones[i].environment;
-					isOpen = Zones[i].isOpen;
-				}
-
 				serializer.SerializeValue(ref env);
 				serializer.SerializeValue(ref isOpen);
 

@@ -3,6 +3,7 @@ using CardGame.UI;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 
@@ -28,12 +29,12 @@ namespace CardGame
 			// Etape 1 : Pour chaque tuile de la region qu'on fusionne, il faut updater l'info de region contenu dans ZoneData :
 			foreach (TileVisu Tile in otherRegion.Tiles)
 			{
-				foreach (ZoneData Zone in Tile.TileData.Zones)
+				for (int i = 0; i < Tile.TileData.Zones.Length; i++)
 				{
 					// Si la region actuelle de la zone est la region qu'on veut changer
-					if (Zone.Region == otherRegion)
+					if (Tile.TileData.Zones[i].Region == otherRegion)
 					{
-						Zone.Region = this;
+						Tile.TileData.Zones[i].Region = this;
 					}
 				}
 			}
