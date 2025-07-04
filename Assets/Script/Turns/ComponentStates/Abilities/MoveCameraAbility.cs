@@ -79,19 +79,26 @@ namespace CardGame.Turns
 
 			Vector3 camShift = _cam.transform.position - targetPos;
 
-			Vector3 viewBL = _cam.WorldToViewportPoint(_bottomLeftCorner + camShift);
-			Vector3 viewTR = _cam.WorldToViewportPoint(_topRightCorner + camShift);
+			// Shifted world positions of corners
+			Vector3 shiftedBL = _bottomLeftCorner + camShift;
+			Vector3 shiftedTR = _topRightCorner + camShift;
 
-			bool isVisible =
-				viewBL.x >= 0.01f && viewBL.y >= 0.01f &&
-				viewTR.x <= 1f - 0.01f && viewTR.y <= 1f - 0.01f;
+			// Viewport space
+			Vector3 viewBL = _cam.WorldToViewportPoint(shiftedBL);
+			Vector3 viewTR = _cam.WorldToViewportPoint(shiftedTR);
 
-			if (!isVisible) return;
+			// Check if either corner is still visible
+			bool topRightVisible = viewTR.x >= 0.01f && viewTR.x <= 0.99f &&
+								   viewTR.y >= 0.01f && viewTR.y <= 0.99f;
 
-			// Immediate movement — smoother drag feel
-			_cam.transform.DOMove(targetPos, 0.1f);
+			bool bottomLeftVisible = viewBL.x >= 0.01f && viewBL.x <= 0.99f &&
+									 viewBL.y >= 0.01f && viewBL.y <= 0.99f;
+
+			if (topRightVisible || bottomLeftVisible)
+			{
+				_cam.transform.DOMove(targetPos, 0.1f);
+			}
 		}
-
 
 
 		public void StopMoving()
