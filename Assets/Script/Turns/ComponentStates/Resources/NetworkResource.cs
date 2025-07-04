@@ -40,7 +40,10 @@ namespace CardGame.Turns
 			_scoring = owner.GetStateComponent<ScoringAbility>();
 
 			if (GameManager.Instance.IsNetCurrentlyActive())
+			{
 				GetNetComForThisClientAsync().Forget();
+			}
+			else IsWaitNetComplete = true;
 		}
 
 		public bool IsNetActive()
