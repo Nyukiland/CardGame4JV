@@ -18,5 +18,17 @@ namespace CardGame
         {
             GameManager.Instance.AddScore(50);
         }
+        
+        [ContextMenu("ShowHUD")]
+        public void ShowHUD()
+        {
+            Storage.Instance.GetElement<Controller>().GetStateComponent<HUDResource>().OpenHud();
+        }
+        
+        [ContextMenu("HideHUD")]
+        public void HideHUD()
+        {
+            Storage.Instance.GetElement<Controller>().GetStateComponent<HUDResource>().CloseHud();
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace CardGame.Turns
 		private GridManagerResource _gridManagerRessource;
 
 		private List<TileVisu> _previewTiles;
+		private HUDResource _hudResource;
 
 		public PlaceTileCombinedState()
 		{
@@ -37,7 +38,9 @@ namespace CardGame.Turns
 			_moveTile.CanPlaceOnGrid = true;
 			_previewTiles = new List<TileVisu>();
 
-			Controller.GetStateComponent<HUDResource>().UpdateFlag();
+			_hudResource = Controller.GetStateComponent<HUDResource>();
+			_hudResource.UpdateFlag();
+			_hudResource.ToggleNextTurnButton(true);
 		}
 
 		public override void OnExit()
@@ -52,6 +55,7 @@ namespace CardGame.Turns
 
 			_moveTile.OnCardPicked -= HandleCardPicked;
 			_placeTileOnGrid.OnCardReleased -= HandleCardReleased;
+			_hudResource.ToggleNextTurnButton(false);
 		}
 
 		public override void OnActionTriggered(InputAction.CallbackContext context)

@@ -2,6 +2,7 @@ using CardGame.StateMachine;
 using CardGame.Card;
 using CardGame.UI;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CardGame.Turns
 {
@@ -12,6 +13,7 @@ namespace CardGame.Turns
 
 		[SerializeField, Min(0)]
 		private float _maxTimeTurn = 30;
+		public float MaxTimeTurn => _maxTimeTurn;
 
 		private Plane _planeForCast = new(Vector3.forward, new Vector3(0, 0, -0.15f));
 
@@ -22,8 +24,7 @@ namespace CardGame.Turns
 		private SendInfoAbility _sender;
 		private ScoringAbility _scoring;
 
-
-		private float _timer = 0;
+		public float Timer { get; private set; } = 0;
 
 		public event System.Action OnCardReleased; //Pour la preview d'ou on peut poser la tileObject de maniere valide
 
@@ -47,7 +48,7 @@ namespace CardGame.Turns
 		{
 			base.OnEnable();
 			TilePlaced = false;
-			_timer = 0;
+			Timer = 0;
 
 			TempPlacedTile = null;
 		}
@@ -81,7 +82,7 @@ namespace CardGame.Turns
 				int neighborCount = _gridManager.CheckNeighborTileLinked(pos);
 				int connectionCount = _gridManager.GetPlacementConnectionCount(tempTile.TileData, pos);
 
-				if (connectionCount == 0 || neighborCount == 0) // Si pas de connection valide, ou que si mais pas de voisin valide (cas d'une tileObject bonus isolée)
+				if (connectionCount == 0 || neighborCount == 0) // Si pas de connection valide, ou que si mais pas de voisin valide (cas d'une tileObject bonus isolï¿½e)
 				{
 					_zoneHolder.GiveTileToHand(tempTile.gameObject);
 					return;
@@ -119,6 +120,8 @@ namespace CardGame.Turns
 			if (TempPlacedTile == null) return;
 
 			int connectionCount = _gridManager.GetPlacementConnectionCount(TempPlacedTile.TileData, _tempPos);
+			
+			if (connectionCount == 0) return;
 
 			TempPlacedTile.TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex; // On donne l'index du joueur a la tileObject
 			TempPlacedTile.TileData.HasFlag = GameManager.Instance.FlagTurn; // Check si flag turn
@@ -144,12 +147,12 @@ namespace CardGame.Turns
 		{
 			base.Update(deltaTime);
 
-			if (_timer == -1f)
+			if (Timer == -1f)
 				return;
 
-			if (_timer > _maxTimeTurn)
+			if (Timer > _maxTimeTurn)
 			{
-				_timer = -1f;
+				Timer = -1f;
 
 				if (TempPlacedTile == null) AutoPlace();
 				CallEndTurn();
@@ -157,7 +160,7 @@ namespace CardGame.Turns
 				return;
 			}
 
-			_timer += deltaTime;
+			Timer += deltaTime;
 		}
 
 		private void AutoPlace()

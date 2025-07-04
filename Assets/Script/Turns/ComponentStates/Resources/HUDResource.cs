@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CardGame.StateMachine;
 using CardGame.UI;
 using CardGame.Utility;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
@@ -14,7 +15,7 @@ namespace CardGame.Turns
 		[SerializeField] private string _sceneName;
 		public GameObject WaitingScreen;
 		[Header("Hud")]
-		[SerializeField] private GameObject _hudScreen;
+		[SerializeField] private CanvasGroup _hudScreen;
 		[Header("WinScreen")]
 		[SerializeField] private GameObject _winScreen;
 		[SerializeField] private Button _winContinueButton;
@@ -32,15 +33,25 @@ namespace CardGame.Turns
 		[SerializeField] private Slider _nextTurnSlider;
 		[SerializeField] private Button _nextTurnButton;
 		[SerializeField] private Image _nextTurnFillImage;
+		[SerializeField] private Image _greyFilter;
+		[SerializeField] private Color _startSliderColor;
+		[SerializeField] private Color _endSliderColor;
 		
 		private PlaceTileOnGridAbility _placeTileOnGrid;
 
 		private readonly List<ScoreUI> _scoreList = new();
 
+		private bool _isHudOpen;
+		private Tween _lastHudTween;
+
+		#region Unity Methods
+		
 		public override void Init(Controller owner)
 		{
 			OpenHud();
 			_placeTileOnGrid = owner.GetStateComponent<PlaceTileOnGridAbility>();
+			_nextTurnSlider.maxValue = _placeTileOnGrid.MaxTimeTurn;
+			_greyFilter.gameObject.SetActive(false);
 		}
 
 		public override void OnEnable()
@@ -57,6 +68,26 @@ namespace CardGame.Turns
 			_nextTurnButton.onClick.RemoveListener(NextTurn);
 			GameManager.Instance.ScoreEvent -= UpdateScore;
 		}
+
+		public override void Update(float deltaTime)
+		{
+			_nextTurnSlider.value = _placeTileOnGrid.Timer;
+			
+			float percent = _nextTurnSlider.value / _nextTurnSlider.maxValue;
+
+			if (percent > 0.8f)
+			{
+				if (_nextTurnFillImage.color != _endSliderColor)
+					_nextTurnFillImage.color = _endSliderColor;
+			}
+			else
+			{
+				if (_nextTurnFillImage.color != _startSliderColor)
+					_nextTurnFillImage.color = _startSliderColor;
+			}
+		}
+
+		#endregion
 
 		public void InitScores()
 		{
@@ -81,6 +112,11 @@ namespace CardGame.Turns
 					_scoreList.Add(playerScore);
 				}
 			}
+		}
+
+		public void ToggleNextTurnButton(bool toggle)
+		{
+			_nextTurnButton.gameObject.SetActive(toggle);
 		}
 		
 		private void NextTurn()
@@ -115,13 +151,28 @@ namespace CardGame.Turns
 
 		public void OpenHud()
 		{
+			Debug.Log($"Opening hud");
+			if (_isHudOpen)
+				return;
+			
+			_isHudOpen = true;
 			CloseAllScreens();
-			_hudScreen.SetActive(true);
+			_hudScreen.gameObject.SetActive(true);
+			_hudScreen.alpha = 0f;
+			_lastHudTween.Kill();
+			_lastHudTween = DOTween.To(() => _hudScreen.alpha, x => _hudScreen.alpha = x, 1f, 0.5f).SetEase(Ease.InExpo);
 		}
 
-		public void HideHud()
+		public void CloseHud()
 		{
-			CloseAllScreens();
+			Debug.Log($"Closing hud");
+			if (!_isHudOpen)
+				return;
+			
+			_isHudOpen = false;
+			_hudScreen.alpha = 1f;
+			_lastHudTween.Kill();
+			_lastHudTween = DOTween.To(() => _hudScreen.alpha, x => _hudScreen.alpha = x, 0f, 0.5f).OnComplete(CloseAllScreens);
 		}
 		
 		public void OpenWin()
@@ -149,7 +200,7 @@ namespace CardGame.Turns
 		{
 			_winScreen.SetActive(false);
 			_looseScreen.SetActive(false);
-			_hudScreen.SetActive(false);
+			_hudScreen.gameObject.SetActive(false);
 		}
 		
 		#endregion

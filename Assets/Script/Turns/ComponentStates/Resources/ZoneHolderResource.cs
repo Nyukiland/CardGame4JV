@@ -14,6 +14,13 @@ namespace CardGame.Turns
 		public List<GameObject> TileInHand;
 
 		public int TileInHandCount => TileInHand.Count;
+		
+		private HUDResource _hudResource;
+
+		public override void Init(Controller owner)
+		{
+			_hudResource = owner.GetStateComponent<HUDResource>();
+		}
 
 		public override void LateInit()
 		{
@@ -104,6 +111,11 @@ namespace CardGame.Turns
 			{
 				TileInHand[i].SetActive(!isHidden);
 			}
+
+			if (isHidden)
+				_hudResource.CloseHud();
+			else
+				_hudResource.OpenHud();
 		}
 
 		public void EndDestroyTile()
