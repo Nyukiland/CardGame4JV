@@ -12,8 +12,13 @@ namespace CardGame.Turns
 		{
 			base.OnEnter();
 			GetStateComponent(ref _scoring);
+
+			//exception
 			if (_scoring.TilePlacedPosition == new Vector2Int(-100, -100))
+			{
+				Controller.SetState<PlaceTileCombinedState>();
 				return;
+			}
 
 			_scoring.CallScoring();
 		}
