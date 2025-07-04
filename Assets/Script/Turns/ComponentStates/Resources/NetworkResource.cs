@@ -23,6 +23,8 @@ namespace CardGame.Turns
 		[SerializeField]
 		private DrawPile _drawPile;
 
+		private bool _doOnce = false;
+
 		public bool IsWaitNetComplete { get; private set; } = false;
 
 		public bool IsFinished
@@ -85,6 +87,19 @@ namespace CardGame.Turns
 
 		private void GameStart()
 		{
+			UnityEngine.Debug.Log("init");
+
+			if (_doOnce)
+				return;
+
+			_doOnce = true;
+			WaitStart().Forget();
+		}
+
+		private async UniTask WaitStart()
+		{
+			await UniTask.WaitUntil(() => GameManager.Instance.OnlinePlayersID.Count != 0);
+
 			_hud.InitScores();
 		}
 
