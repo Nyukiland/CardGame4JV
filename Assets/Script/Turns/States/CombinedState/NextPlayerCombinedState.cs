@@ -33,6 +33,7 @@ namespace CardGame.Turns
 				GetStateComponent(ref _autoPlayAbility);
 				_autoPlayAbility.CallBotTurn();
 			}
+			Controller.GetStateComponent<HUDResource>().UpdateTurnValue();
 		}
 
 		public override void OnExit()
