@@ -105,5 +105,13 @@ namespace CardGame.Turns
 				TileInHand[i].SetActive(!isHidden);
 			}
 		}
+
+		public void EndDestroyTile()
+		{
+			for (int i = TileInHand.Count-1; i >= 0; i--)
+			{
+				GameObject.Destroy(TileInHand[i]);
+			}
+		}
 	}
 }

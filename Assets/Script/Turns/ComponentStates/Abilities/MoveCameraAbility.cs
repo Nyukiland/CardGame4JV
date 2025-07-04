@@ -10,7 +10,7 @@ namespace CardGame.Turns
 		[SerializeField]
 		private float _moveFactor;
 
-		[SerializeField, Min(0)]
+		[SerializeField]
 		private float _limitCamMove;
 
 		private Vector2 _startPos;
@@ -24,6 +24,8 @@ namespace CardGame.Turns
 
 		private GridManagerResource _gridManager;
 		private ZoneHolderResource _zoneHolder;
+
+		public bool InUse => _inUse;
 
 		public override void LateInit()
 		{

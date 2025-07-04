@@ -1,4 +1,5 @@
 using CardGame.StateMachine;
+using UnityEngine;
 
 namespace CardGame.Turns
 {
@@ -21,7 +22,8 @@ namespace CardGame.Turns
 
 		public override void OnDisable()
 		{
-			_hudResource?.WaitingScreen.SetActive(false);
+			if (_hudResource.WaitingScreen != null)
+				_hudResource.WaitingScreen.SetActive(false);
 			base.OnDisable();
 		}
 	}

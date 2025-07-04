@@ -2564,7 +2564,6 @@ MonoBehaviour:
         Enabled: 0
         _sceneName: RomanTest
         WaitingScreen: {fileID: 974108918}
-        _nextTurnButton: {fileID: 520585803}
         _hudScreen: {fileID: 1109365389}
         _winScreen: {fileID: 1366003218}
         _winContinueButton: {fileID: 723519714}
@@ -2575,6 +2574,9 @@ MonoBehaviour:
         _firstCircle: {fileID: 6692161183673154460}
         _secondCircle: {fileID: 2997434690421868953}
         _flag: {fileID: 3283191470327796586}
+        _nextTurnSlider: {fileID: 1733481954}
+        _nextTurnButton: {fileID: 520585803}
+        _nextTurnFillImage: {fileID: 1398389799}
     - rid: 542522273821360219
       type: {class: HUDAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:

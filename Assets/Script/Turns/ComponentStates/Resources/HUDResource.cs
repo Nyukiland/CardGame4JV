@@ -13,7 +13,6 @@ namespace CardGame.Turns
 	{
 		[SerializeField] private string _sceneName;
 		public GameObject WaitingScreen;
-		[SerializeField] private Button _nextTurnButton;
 		[Header("Hud")]
 		[SerializeField] private GameObject _hudScreen;
 		[Header("WinScreen")]
@@ -29,6 +28,10 @@ namespace CardGame.Turns
 		[SerializeField] private Image _firstCircle;
 		[SerializeField] private Image _secondCircle;
 		[SerializeField] private Image _flag;
+		[Header("Next Turn Button")]
+		[SerializeField] private Slider _nextTurnSlider;
+		[SerializeField] private Button _nextTurnButton;
+		[SerializeField] private Image _nextTurnFillImage;
 		
 		private PlaceTileOnGridAbility _placeTileOnGrid;
 
@@ -114,6 +117,11 @@ namespace CardGame.Turns
 		{
 			CloseAllScreens();
 			_hudScreen.SetActive(true);
+		}
+
+		public void HideHud()
+		{
+			CloseAllScreens();
 		}
 		
 		public void OpenWin()
