@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Clay_voroi 1
-  m_Shader: {fileID: -6465566751694194690, guid: 45e7609a29160254ab152e4b3a91f2fd, type: 3}
+  m_Name: M_Gradient
+  m_Shader: {fileID: -6465566751694194690, guid: 82ba346748b752d4a97c8aa8170876c4, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -38,24 +38,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Albedo_Scale_noise: 0.8
-    - _Albedo_Time_speed: 1.2
-    - _DisplaceX_General_Multiplier_1: 0
-    - _DisplaceY_General_Multiplier_2: 0
-    - _DisplaceZ_General_Multiplier: 0
-    - _Displace_Scale_noise: 1.38
-    - _Displace_Time_speed: 2
-    - _Hard_edges_Albeldo_1: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _Albedo_Tiling: {r: 1, g: 1, b: 0, a: 0}
-    - _Color_A: {r: 0.6306267, g: 0.7207546, b: 0.49908856, a: 0}
-    - _Color_B: {r: 0.48892415, g: 0.7283019, b: 0.31742966, a: 0}
-    - _Displace_Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _Bottom_Color: {r: 0.5245282, g: 0.38991976, b: 0.22069769, a: 0}
+    - _Top_Color: {r: 0.74509805, g: 0.6745098, b: 0.5568628, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &8119799446477659813
+--- !u!114 &1454711974371111554
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

@@ -7,22 +7,19 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Outline
-  m_Shader: {fileID: -6465566751694194690, guid: fc2c32e4ad727604e9d4d4bab56c6d2d, type: 3}
+  m_Name: M_Outline2
+  m_Shader: {fileID: -6465566751694194690, guid: 7d3a8b763c6036a4eb2c9cc64b12e800, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - _SURFACE_TYPE_TRANSPARENT
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Transparent
+  stringTagMap: {}
   disabledShaderPasses:
   - MOTIONVECTORS
-  - DepthOnly
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -41,32 +38,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AlphaClip: 0
-    - _AlphaToMask: 0
-    - _Blend: 0
-    - _CastShadows: 1
-    - _Cull: 2
-    - _DstBlend: 10
-    - _Opacity: 4
-    - _Outline_Hue: 0
-    - _Outline_intensity: 1.71
-    - _Outline_max: 1.96
-    - _Outline_min: 0.76
-    - _Outline_radius: 39.21
+    - _Glow: 0.91
+    - _Outline_Thickness: 0.1
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _SrcBlend: 5
-    - _Surface: 1
-    - _ZTest: 4
-    - _ZWrite: 0
-    - _ZWriteControl: 0
     m_Colors:
-    - _Inner_Color: {r: 0.23848987, g: 0.5698112, b: 0.23545027, a: 0}
-    - _Outline_Color: {r: 0.7340198, g: 0.9471697, b: 0.33419007, a: 0}
-    - _Vector2: {r: 0, g: 0, b: 0, a: 0}
+    - _Outline_Color: {r: 0.46324623, g: 0.78113204, b: 0.37582764, a: 0}
+    - _Outline_glow: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &4234153949975751515
+--- !u!114 &6911283225299598737
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
