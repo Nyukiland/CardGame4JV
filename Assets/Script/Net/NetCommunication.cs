@@ -121,7 +121,11 @@ namespace CardGame.Net
 			for (int i = 0; i < connectionCount; i++)
 			{
 				int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
-				if (tileId == -1) return;
+				if (tileId == -1)
+				{
+					UnityEngine.Debug.LogError($"[{nameof(NetCommunication)}] no Tile to draw");
+					return;
+				}
 				instance.GiveNewTileInHandClientRPC(tileId);
 			}
 		}
