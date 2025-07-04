@@ -22,6 +22,7 @@ namespace CardGame.Turns
 		[SerializeField]
 		private DrawPile _drawPile;
 
+		public bool IsWaitNetComplete { get; private set; } = false;
 
 		public bool IsFinished
 		{
@@ -63,6 +64,7 @@ namespace CardGame.Turns
 				await UniTask.Yield();
 			}
 
+			IsWaitNetComplete = true;
 			NetCom = netCom;
 
 			if (NetCom != null)

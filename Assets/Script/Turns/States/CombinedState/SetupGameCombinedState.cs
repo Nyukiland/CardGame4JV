@@ -36,11 +36,12 @@ namespace CardGame.Turns
 		private async UniTask WaitStart()
 		{
 			await UniTask.Delay(200);
+			await UniTask.WaitUntil(() => _net.IsWaitNetComplete);
 			await UniTask.WaitUntil(() => Storage.Instance.GetElement<DrawPile>().AllTileSettings.Count != 0);
 
 			if (_net.IsNetActive())
 			{
-				await UniTask.Delay(100);
+				await UniTask.Delay(500);
 				_sender.SendGridToOthers();
 				await UniTask.Delay(100);
 				_sender.AskForSetUp();
