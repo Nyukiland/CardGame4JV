@@ -118,6 +118,8 @@ namespace CardGame.Net
 
 			Instances.TryGetValue(senderClientId, out NetCommunication instance);
 
+			UnityEngine.Debug.Log(connectionCount);
+
 			for (int i = 0; i < connectionCount; i++)
 			{
 				int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
