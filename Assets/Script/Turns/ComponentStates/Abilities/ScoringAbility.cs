@@ -75,7 +75,7 @@ namespace CardGame.Turns
 					//Debug.Log("Score tile : " + TilePlacedPosition.x + " - " + TilePlacedPosition.y);
 					ScoreClassicTiles(zone.Region);
 					ScoreFlagTiles(zone.Region);
-					Debug.Log("-------------------------");
+					//Debug.Log("-------------------------");
 					zone.Region.AlreadyScored = true;
 
 				}
@@ -104,7 +104,7 @@ namespace CardGame.Turns
 		private void ScoreClassicTiles(Region Region)
 		{
 			Dictionary<int, int> playersTileNumber = new();
-			Debug.Log("Score tuiles classiques ? ");
+			//Debug.Log("Score tuiles classiques ? ");
 			foreach (TileVisu tileVisu in Region.Tiles)
 			{
 				TileData tile = tileVisu.TileData;
@@ -124,7 +124,7 @@ namespace CardGame.Turns
 			{
 				// Le joueur score le nombre de tuiles lui appartenant présentes dans la zone (hors tuile avec flag) :
 				int playerScore = CalculateScore(playerTileNumber.Value);
-				Debug.Log("Score tuiles classiques : " + playerScore + " pour le joueur " + playerTileNumber.Key);
+				//Debug.Log("Score tuiles classiques : " + playerScore + " pour le joueur " + playerTileNumber.Key);
 				GameManager.Instance.AddScore(playerScore, playerTileNumber.Key);
 			}
 		}
@@ -132,7 +132,7 @@ namespace CardGame.Turns
 		private void ScoreFlagTiles(Region Region)
 		{
 			Dictionary<int, int> playersTileNumber = new();
-			Debug.Log("Score tuiles Flag ? ");
+			//Debug.Log("Score tuiles Flag ? ");
 			foreach (TileVisu tileVisu in Region.Tiles)
 			{
 				TileData tile = tileVisu.TileData;
@@ -148,12 +148,12 @@ namespace CardGame.Turns
 
 			foreach (var playerVar in playersTileNumber)
 			{
-				Debug.Log("foreach : PlayerIndex : " + playerVar.Key);
+				//Debug.Log("foreach : PlayerIndex : " + playerVar.Key);
 
 				// Le joueur score le nombre total de tuiles présentes dans la zone par case flag lui appartenant présente dans la zone :
 				int playerScore = CalculateScore(Region.Tiles.Count) * playerVar.Value;
 
-				Debug.Log("Score tuiles Flag : " + playerScore);
+				//Debug.Log("Score tuiles Flag : " + playerScore);
 				GameManager.Instance.AddScore(playerScore, playerVar.Key);
 			}
 		}

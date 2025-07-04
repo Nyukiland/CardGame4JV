@@ -109,12 +109,6 @@ namespace CardGame.UI
 			_baseVisualMesh.GetComponentInChildren<MeshRenderer>().material = _greyBase;
 		}
 
-		//public void SetNewOwner()
-		//{
-		//    Debug.Log($"Second show, Played tile by player {GameManager.Instance.PlayerIndex}");
-		//    Debug.Log($"{GameManager.Instance.GetInfo()}");
-		//}
-
 		private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
 		{
 			switch (type)

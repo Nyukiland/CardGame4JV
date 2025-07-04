@@ -42,12 +42,12 @@ namespace CardGame
 			// Etape 2 : Fusionner les données des Régions
 			Tiles.UnionWith(otherRegion.Tiles);
 			OpeningCount += otherRegion.OpeningCount;
-			Debug.Log("FUUUUUUSION !!! " + Tiles.Count + " > " + OpeningCount);
+			//Debug.Log("FUUUUUUSION !!! " + Tiles.Count + " > " + OpeningCount);
 			// - QUAND FERA LE SCORING FAUDRA PAS OUBLIER DE COPIER LES AUTRES DATAS DE LA REGION LORS DU MERGE
 			if (OpeningCount == 0)
 			{
-				Debug.Log("La région est fermée");
-				Debug.Log("Il y a " + Tiles.Count + " dans la zone");
+				//Debug.Log("La région est fermée");
+				//Debug.Log("Il y a " + Tiles.Count + " dans la zone");
 			}
 		}
 	}
