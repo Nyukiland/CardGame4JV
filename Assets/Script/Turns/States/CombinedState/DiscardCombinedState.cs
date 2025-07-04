@@ -51,6 +51,7 @@ namespace CardGame.Turns
 
 			if (context.phase == InputActionPhase.Canceled)
 			{
+				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(NextPlayerCombinedState));
 				_discardCard.ReleaseCard(Controller.GetActionValue<Vector2>("TouchPos"));
 			}
 		}
