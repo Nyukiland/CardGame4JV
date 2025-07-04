@@ -94,11 +94,11 @@ namespace CardGame.Card
     }
 
     [System.Serializable]
-    public class ZoneData // Je laisse publique car il y a rien qui modifie ca, en dehors du tools
+    public struct ZoneData // Je laisse publique car il y a rien qui modifie ca, en dehors du tools
     {
         public ENVIRONEMENT_TYPE environment;
         public bool isOpen;
-        public Region Region = null;
+        public Region Region;
     }
 
 	// Aide a la generation des tiles

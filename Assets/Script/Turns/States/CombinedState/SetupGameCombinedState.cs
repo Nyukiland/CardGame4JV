@@ -41,7 +41,6 @@ namespace CardGame.Turns
 
 			if (_net.IsNetActive())
 			{
-				await UniTask.Delay(500);
 				_sender.SendGridToOthers();
 				await UniTask.Delay(100);
 				_sender.AskForSetUp();
