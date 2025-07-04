@@ -18,6 +18,7 @@ namespace CardGame.Turns
 		private TauntShakeTileAbility _tauntShakeTile;
 		private GridManagerResource _grid;
 		private ScoringAbility _scoring;
+		private HUDResource _hud;
 
 		[SerializeField]
 		private DrawPile _drawPile;
@@ -38,6 +39,7 @@ namespace CardGame.Turns
 			_tauntShakeTile = owner.GetStateComponent<TauntShakeTileAbility>();
 			_grid = owner.GetStateComponent<GridManagerResource>();
 			_scoring = owner.GetStateComponent<ScoringAbility>();
+			_hud = owner.GetStateComponent<HUDResource>();
 
 			if (GameManager.Instance.IsNetCurrentlyActive())
 			{
@@ -77,8 +79,13 @@ namespace CardGame.Turns
 				NetCom.TileForHand += UpdateHand;
 				NetCom.SendYourTurn += GoMyTurn;
 				NetCom.SendTauntShake += ShakeTile;
-
+				NetCom.SendGameStart += GameStart;
 			}
+		}
+
+		private void GameStart()
+		{
+			_hud.InitScores();
 		}
 
 		public override void OnDisable()

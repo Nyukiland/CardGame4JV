@@ -256,8 +256,11 @@ namespace CardGame.Turns
 					TileData data = neighbor.TileData;
 					if (data != null)
 					{
-						if (myZones[myZone].environment != data.Zones[otherZone].environment)
+						if (myZones[myZone].environment != ENVIRONEMENT_TYPE.None &&
+							data.Zones[otherZone].environment != ENVIRONEMENT_TYPE.None && 
+							myZones[myZone].environment != data.Zones[otherZone].environment)
 							return 0;
+
 
 						return 1;
 					}

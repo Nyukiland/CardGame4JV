@@ -27,6 +27,7 @@ namespace CardGame.Net
 
 		public delegate void TransmitValidation();
 		public event TransmitValidation SendYourTurn;
+		public event TransmitValidation SendGameStart;
 
 		public Action OnDestroyEvent;
 		public Action OnLaunchGameEvent;
@@ -118,8 +119,6 @@ namespace CardGame.Net
 
 			Instances.TryGetValue(senderClientId, out NetCommunication instance);
 
-			UnityEngine.Debug.Log(connectionCount);
-
 			for (int i = 0; i < connectionCount; i++)
 			{
 				int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
@@ -196,18 +195,25 @@ namespace CardGame.Net
 				instance.Value.SetUpOnClientRPC(instance.Value.OwnerClientId);
 			}
 
+			ForEachOtherClient(0, _ => CallGameStartClientRPC());
 			Instances[_manager.OnlinePlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
 		}
 
 		[ServerRpc(RequireOwnership = true)]
 		public void LoadSceneServerRPC(string sceneName)
 		{
-			ForEachOtherClient(0, communication => communication.LoadSceneClientRPC(sceneName));
+			ForEachOtherClient(1000000, communication => communication.LoadSceneClientRPC(sceneName));
 		}
 
 		#endregion
 
 		#region Client
+
+		[ClientRpc(RequireOwnership = false)]
+		public void CallGameStartClientRPC()
+		{
+			SendGameStart?.Invoke();
+		}
 
 		[ClientRpc(RequireOwnership = false)]
 		public void DistributeTilePlacedClientRPC(DataToSend data)
