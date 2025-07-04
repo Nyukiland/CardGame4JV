@@ -41,7 +41,6 @@ namespace CardGame.Turns
 			_hudResource = Controller.GetStateComponent<HUDResource>();
 			_hudResource.UpdateFlag();
 			_hudResource.ToggleNextTurnButton(true);
-			_hudResource.UpdateTurnValue();
 		}
 
 		public override void OnExit()
