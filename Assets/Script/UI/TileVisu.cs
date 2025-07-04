@@ -1,11 +1,12 @@
 using CardGame.Card;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CardGame.UI
 {
-    public class TileVisu : MonoBehaviour
+    public class TileVisu : MonoBehaviour, ISelectableInfo
     {
         [SerializeField]
         private string _layerGrid;
@@ -200,5 +201,13 @@ namespace CardGame.UI
             RotateTileVisual();
 		}
 
+		public string GetInfo()
+		{
+			string text = $"[{nameof(TileVisu)}]";
+
+			text += "\n";
+
+			return text;
+		}
 	}
 }
