@@ -104,7 +104,7 @@ namespace CardGame.Turns
 		private void ScoreClassicTiles(Region Region)
 		{
 			Dictionary<int, int> playersTileNumber = new();
-			//Debug.Log("Score tuiles classiques ? ");
+			Debug.Log("Score tuiles classiques ? ");
 			foreach (TileVisu tileVisu in Region.Tiles)
 			{
 				TileData tile = tileVisu.TileData;
@@ -122,10 +122,9 @@ namespace CardGame.Turns
 
 			foreach (var playerTileNumber in playersTileNumber)
 			{
-				//Debug.Log("foreach : PlayerIndex : " + playerTileNumber.Key);
 				// Le joueur score le nombre de tuiles lui appartenant présentes dans la zone (hors tuile avec flag) :
 				int playerScore = CalculateScore(playerTileNumber.Value);
-				//Debug.Log("Score tuiles classiques : " + playerScore + "/ " + playerTileNumber.Key);
+				Debug.Log("Score tuiles classiques : " + playerScore + " pour le joueur " + playerTileNumber.Key);
 				GameManager.Instance.AddScore(playerScore, playerTileNumber.Key);
 			}
 		}
