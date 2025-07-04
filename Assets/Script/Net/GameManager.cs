@@ -143,6 +143,8 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 
 	public int EnemyScore
 	{
+		// later will return an array of enemies scores instead of one int
+		// didnt have time for the tests
 		get
 		{
 			if (IsNetCurrentlyActive())
@@ -204,8 +206,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			else
 			{
 				if (SoloNames.Count <= 0) return false;
-				// return GlobalTurn >= 12 * SoloNames.Count;
-				return GlobalTurn >= 2 * SoloNames.Count;
+				return GlobalTurn >= 12 * SoloNames.Count;
 			}
 		}
 	}
