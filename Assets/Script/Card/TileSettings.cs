@@ -61,6 +61,26 @@ namespace CardGame.Card
 			_southZone = s;
 			_westZone = w;
 		}
+
+		public float GetEnvironementAltitude(ENVIRONEMENT_TYPE environement) // Chaque environement voit son mesh set a une hauteur différente
+		{
+			switch (environement)
+			{
+				case ENVIRONEMENT_TYPE.Neutral:
+					return 0.0f;
+				case ENVIRONEMENT_TYPE.Terrain:
+					return 0.0f;
+				case ENVIRONEMENT_TYPE.Grass:
+					return 0.2f;
+				case ENVIRONEMENT_TYPE.Fields:
+					return 0.4f;
+				case ENVIRONEMENT_TYPE.Water:
+					return -0.2f;
+				case ENVIRONEMENT_TYPE.None:
+				default:
+					return 0f;
+			}
+		}
 	}
 
     public enum ENVIRONEMENT_TYPE
