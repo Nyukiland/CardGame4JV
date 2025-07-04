@@ -65,11 +65,17 @@ namespace CardGame.Turns
 
 			if (!special)
 			{
+				tile.transform.position = tile.PositionOnGrid;
+				tile.transform.localScale = Vector3.one;
+
 				seq.Append(tile.transform.DOShakePosition(_duration, _shakeStrength, _shakeIntensity));
 				seq.Join(tile.transform.DOPunchScale(_scaleDown, _duration));
 			}
 			else
 			{
+				tile.transform.rotation = Quaternion.identity;
+				tile.transform.localScale = Vector3.one;
+
 				seq.Append(tile.transform.DOPunchScale(_scaleDown, _duration));
 				seq.Join(tile.transform.DOShakeRotation(_specialRotDuration, _shakeIntensitySpecial))
 					.OnComplete(() => tile.transform.rotation = Quaternion.identity);
