@@ -3,6 +3,7 @@ using CardGame.StateMachine;
 using CardGame.UI;
 using CardGame.Utility;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
@@ -29,7 +30,8 @@ namespace CardGame.Turns
 		[SerializeField] private Image _firstCircle;
 		[SerializeField] private Image _secondCircle;
 		[SerializeField] private Image _flag;
-		[Header("Next Turn Button")]
+		[Header("Next Turn")]
+		[SerializeField] private TextMeshProUGUI _turnCounter;
 		[SerializeField] private Slider _nextTurnSlider;
 		[SerializeField] private Button _nextTurnButton;
 		[SerializeField] private Image _nextTurnFillImage;
@@ -112,6 +114,11 @@ namespace CardGame.Turns
 					_scoreList.Add(playerScore);
 				}
 			}
+		}
+
+		public void UpdateTurnValue()
+		{
+			_turnCounter.text = $"Turn : {GameManager.Instance.GlobalTurn.ToString()}";
 		}
 
 		public void ToggleNextTurnButton(bool toggle)
