@@ -6,8 +6,9 @@ namespace CardGame.Turns
 {
 	public class ZoomAbility : Ability
 	{
-		[SerializeField]
-		private float _minZoom = 2f;
+
+		[SerializeField] private float _minZoom = 2f;
+		private float _maxZoom = 10f;
 
 		private float _startdist = 0;
 		private float _startZoom = 0;
@@ -18,7 +19,6 @@ namespace CardGame.Turns
 		private ZoneHolderResource _zoneHolder;
 		private GridManagerResource _gridManager;
 
-		private float _maxZoom = 10f;
 
 		public bool InZoom => _inZoom;
 
