@@ -1,12 +1,13 @@
 using CardGame.Card;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 
 namespace CardGame.UI
 {
-	public class TileVisu : MonoBehaviour
+	public class TileVisu : MonoBehaviour, ISelectableInfo
 	{
 		[SerializeField]
 		private string _layerGrid;
@@ -210,6 +211,31 @@ namespace CardGame.UI
 			seq.Append(visual.DOLocalRotate(new Vector3(0, 0, targetRotation), 0.1f).SetEase(Ease.OutQuad)); // Rota to real location
 
 			seq.Play();
+		}
+		public string GetInfo()
+		{
+			string text = $"[{nameof(TileVisu)}] : {PositionOnGrid.x} - {PositionOnGrid.y}\n " +
+				$"Flag : {TileData.HasFlag}\n \n";
+
+			if (TileData == null) return text;
+
+			text += $"Direction 0 (Nord) :\n Region {TileData.Zones[0].Region.GetHashCode()} de type {TileData.Zones[0].environment} \n " +
+					$"Nombre d'Ouverture :  {TileData.Zones[0].Region.OpeningCount} \n" +
+					$"Nombre de Tuiles :  {TileData.Zones[0].Region.Tiles.Count} \n \n" +
+
+					$"Direction 1 (Est) :\n Region {TileData.Zones[1].Region.GetHashCode()} de type {TileData.Zones[1].environment} \n" +
+										$"Nombre d'Ouverture :  {TileData.Zones[1].Region.OpeningCount} \n" +
+					$"Nombre de Tuiles :  {TileData.Zones[1].Region.Tiles.Count} \n \n" +
+
+					$"Direction 2 (Sud) :\n Region {TileData.Zones[2].Region.GetHashCode()} de type {TileData.Zones[2].environment} \n" +
+					$"Nombre d'Ouverture :  {TileData.Zones[2].Region.OpeningCount} \n" +
+					$"Nombre de Tuiles :  {TileData.Zones[2].Region.Tiles.Count} \n \n" +
+
+					$"Direction 3 (Ouest) :\n Region {TileData.Zones[3].Region.GetHashCode()} de type {TileData.Zones[3].environment} \n" +
+					$"Nombre d'Ouverture :  {TileData.Zones[3].Region.OpeningCount} \n" +
+					$"Nombre de Tuiles :  {TileData.Zones[3].Region.Tiles.Count}  \n";
+
+			return text;
 		}
 	}
 }

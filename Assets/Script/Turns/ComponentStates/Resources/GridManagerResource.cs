@@ -4,7 +4,6 @@ using CardGame.StateMachine;
 using CardGame.UI;
 using CardGame.Utility;
 using DG.Tweening;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,7 +26,7 @@ namespace CardGame.Turns
 
 		public List<Vector2Int> SurroundingTilePos { get; private set; } = new();
 
-		// Tile bonus
+		// tile bonus
 		private List<Vector2Int> BonusTilePositions = new();
 		private List<TileData> BonusTilePool = new();
 
@@ -66,6 +65,7 @@ namespace CardGame.Turns
 			TileData tileData = new();
 			tileData.InitTile(_startingTileSettings);
 			SetTile(tileData, _width / 2, _height / 2);
+			//tileData.DetermineTileRegions(_width / 2, _height / 2);
 
 			Camera.main.transform.position = new Vector3(_width / 2, (_height / 2) - 5, Camera.main.transform.position.z);
 		}
@@ -162,6 +162,7 @@ namespace CardGame.Turns
 			ActivateSurroundingTiles(x, y);
 			SetNeighborBonusTileLinked(new(x, y));
 			PlayTileEffect(tileVisu);
+			DetermineTileRegions(x, y);
 			return true;
 		}
 
@@ -357,6 +358,85 @@ namespace CardGame.Turns
 			}
 
 			return list;
+		}
+
+		private TileData DetermineNeighborTile(int DirectionIndex, int x, int y)
+		{
+			return DirectionIndex switch
+			{
+				0 => GetTile(x, y + 1).TileData,
+				1 => GetTile(x + 1, y).TileData,
+				2 => GetTile(x, y - 1).TileData,
+				3 => GetTile(x - 1, y).TileData,
+				_ => null,
+			};
+		}
+
+		private int DetermineCorrespondingZoneIndex(int ZoneIndex)
+		{
+			return ZoneIndex switch
+			{
+				0 => 2,
+				1 => 3,
+				2 => 0,
+				3 => 1,
+				_ => -1
+			};
+		}
+
+		public void DetermineTileRegions(int x, int y)
+		{
+			Debug.Log("----------------------------- TILE : " + x + " - " + y + "-----------------------------");
+			TileVisu tileObject = GetTile(x, y);
+			TileData tile = tileObject.TileData;
+
+			// Etape 1 : Check pour chaque zone, s'il y a une tuile à côté.
+			for (int i = 0; i <= 3; i++)
+			{
+				Debug.Log("Direction : " + i);
+				TileData neighborTile = DetermineNeighborTile(i, x, y);
+
+				// si une tuile jouxte la zone :
+				if (neighborTile != null)
+				{
+					Debug.Log("Il y a une tuile à côté");
+					int correspondingZoneIndex = DetermineCorrespondingZoneIndex(i);
+
+					// Si oui, copie cette région comme étant celle de la zone
+					tile.Zones[i].Region = neighborTile.Zones[correspondingZoneIndex].Region;
+					tile.Zones[i].Region.Tiles.Add(tileObject);
+					// baisse le compteur de la zone en question de 1
+					tile.Zones[i].Region.OpeningCount--;
+					if (tile.Zones[i].Region.OpeningCount == 0)
+					{
+						Debug.Log("La région dans la direction " + i + " est fermée");
+						Debug.Log("Il y a " + tile.Zones[i].Region.Tiles.Count + " dans la zone");
+					}
+				}
+				else
+				{
+					Debug.Log("Il n'y a pas une tuile à côté > on créé une région");
+					// Sinon Crée une nouvelle zone. 
+					tile.Zones[i].Region = new Region(1);
+				}
+				tile.Zones[i].Region.Tiles.Add(tileObject);
+			}
+
+			// Etape 2 : check pour chaque zone si elle est connectée à une autre zone de la tuile
+			for (int i = 0; i <= 3; i++)
+			{
+				Debug.Log("Direction I : " + i);
+				if (tile.Zones[i].isOpen == false) continue;
+				for (int j = i + 1; j <= 3; j++)
+				{
+					Debug.Log("Direction I : " + i + " + J : " + j);
+
+					if (tile.Zones[i].environment != tile.Zones[j].environment) continue;
+					if (tile.Zones[i].Region == tile.Zones[j].Region) continue;
+					// On merge :
+					tile.Zones[i].Region.Merge(tile.Zones[j].Region);
+				}
+			}
 		}
 	}
 }
