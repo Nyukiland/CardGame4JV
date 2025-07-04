@@ -20,9 +20,11 @@ namespace CardGame.Turns
 		[Header("WinScreen")]
 		[SerializeField] private GameObject _winScreen;
 		[SerializeField] private Button _winContinueButton;
+		[SerializeField] private TextMeshProUGUI _winScore;
 		[Header("LooseScreen")]
 		[SerializeField] private GameObject _looseScreen;
 		[SerializeField] private Button _looseContinueButton;
+		[SerializeField] private TextMeshProUGUI _looseScore;
 		[Header("Score")]
 		[SerializeField] private Transform _scoreContainer;
 		[SerializeField] private ScoreUI _scorePrefab;
@@ -186,12 +188,14 @@ namespace CardGame.Turns
 		{
 			CloseAllScreens();
 			_winScreen.SetActive(true);
+			_winScore.text = $"Your score : {GameManager.Instance.PlayerScore}\n Their score : {GameManager.Instance.EnemyScore}";
 		}
 
 		public void OpenLoose()
 		{
 			CloseAllScreens();
 			_looseScreen.SetActive(true);
+			_looseScore.text = $"Your score : {GameManager.Instance.PlayerScore}\n Their score : {GameManager.Instance.EnemyScore}";
 		}
 
 		private void OpenLobby()

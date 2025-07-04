@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 
 public class GameManager : NetworkBehaviour, ISelectableInfo
@@ -140,6 +141,35 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 	}
 
+	public int EnemyScore
+	{
+		get
+		{
+			if (IsNetCurrentlyActive())
+			{
+				if (OnlineScores.Count == 0) return 0;
+				for (int i = 0; i < OnlineScores.Count; i++)
+				{
+					if (i == PlayerIndex) continue;
+					return OnlineScores[i];
+				}
+
+				return 0;
+			}
+			else
+			{
+				if (SoloScores.Count == 0) return 0;
+				for (int i = 0; i < SoloScores.Count; i++)
+				{
+					if (i == 0) continue;
+					return SoloScores[i];
+				}
+
+				return 0;
+			}
+		}
+	}
+
 	public int PlayerScore
 	{
 		get
@@ -174,7 +204,8 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			else
 			{
 				if (SoloNames.Count <= 0) return false;
-				return GlobalTurn >= 12 * SoloNames.Count;
+				// return GlobalTurn >= 12 * SoloNames.Count;
+				return GlobalTurn >= 2 * SoloNames.Count;
 			}
 		}
 	}
