@@ -372,7 +372,7 @@ namespace CardGame.Turns
 			};
 		}
 
-		private int? DetermineCorrespondingZoneIndex(int ZoneIndex)
+		private int DetermineCorrespondingZoneIndex(int ZoneIndex)
 		{
 			return ZoneIndex switch
 			{
@@ -380,7 +380,7 @@ namespace CardGame.Turns
 				1 => 3,
 				2 => 0,
 				3 => 1,
-				_ => null,
+				_ => -1
 			};
 		}
 
@@ -400,11 +400,10 @@ namespace CardGame.Turns
 				if (neighborTile != null)
 				{
 					Debug.Log("Il y a une tuile à côté");
-					int? correspondingZoneIndex = DetermineCorrespondingZoneIndex(i);
-					if (correspondingZoneIndex == null) Debug.LogWarning($"[{nameof(TileData)}] > [{nameof(DetermineCorrespondingZoneIndex)}] > renvoie null");
+					int correspondingZoneIndex = DetermineCorrespondingZoneIndex(i);
 
 					// Si oui, copie cette région comme étant celle de la zone
-					tile.Zones[i].Region = neighborTile.Zones[i].Region;
+					tile.Zones[i].Region = neighborTile.Zones[correspondingZoneIndex].Region;
 					tile.Zones[i].Region.Tiles.Add(tileObject);
 					// baisse le compteur de la zone en question de 1
 					tile.Zones[i].Region.OpeningCount--;
