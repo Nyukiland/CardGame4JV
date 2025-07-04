@@ -26,7 +26,7 @@ namespace CardGame.Turns
 
 		public List<Vector2Int> SurroundingTilePos { get; private set; } = new();
 
-		// Tile bonus
+		// tile bonus
 		private List<Vector2Int> BonusTilePositions = new();
 		private List<TileData> BonusTilePool = new();
 
@@ -362,90 +362,80 @@ namespace CardGame.Turns
 
 		private TileData DetermineNeighborTile(int DirectionIndex, int x, int y)
 		{
-			switch (DirectionIndex)
+			return DirectionIndex switch
 			{
-				case 0:
-					return GetTile(x, y + 1).TileData;
-				case 1:
-					return GetTile(x + 1, y).TileData;
-				case 2:
-					return GetTile(x, y - 1).TileData;
-				case 3:
-					return GetTile(x - 1, y).TileData;
-				default:
-					return null;
-			}
+				0 => GetTile(x, y + 1).TileData,
+				1 => GetTile(x + 1, y).TileData,
+				2 => GetTile(x, y - 1).TileData,
+				3 => GetTile(x - 1, y).TileData,
+				_ => null,
+			};
 		}
 
 		private int? DetermineCorrespondingZoneIndex(int ZoneIndex)
 		{
-			switch (ZoneIndex)
+			return ZoneIndex switch
 			{
-				case 0:
-					return 2;
-				case 1:
-					return 3;
-				case 2:
-					return 0;
-				case 3:
-					return 1;
-				default:
-					return null;
-			}
+				0 => 2,
+				1 => 3,
+				2 => 0,
+				3 => 1,
+				_ => null,
+			};
 		}
 
 		public void DetermineTileRegions(int x, int y)
 		{
 			//Debug.Log("TILE : " + x + " - " + y);
-			TileData Tile = GetTile(x, y).TileData;
-			TileVisu TileObject = GetTile(x, y);
+			TileVisu tileObject = GetTile(x, y);
+			TileData tile = tileObject.TileData;
 
 			// Etape 1 : Check pour chaque zone, s'il y a une tuile à côté.
 			for (int i = 0; i <= 3; i++)
 			{
 				//Debug.Log("Direction : " + i);
-				TileData NeighborTile = DetermineNeighborTile(i, x, y);
+				TileData neighborTile = DetermineNeighborTile(i, x, y);
 
 				// si une tuile jouxte la zone :
-				if (NeighborTile != null)
+				if (neighborTile != null)
 				{
 					//Debug.Log("Il y a une tuile à côté");
-					int? CorrespondingZoneIndex = DetermineCorrespondingZoneIndex(i);
-					if (CorrespondingZoneIndex == null) Debug.LogWarning($"[{nameof(TileData)}] > [{nameof(DetermineCorrespondingZoneIndex)}] > renvoie null");
+					int? correspondingZoneIndex = DetermineCorrespondingZoneIndex(i);
+					if (correspondingZoneIndex == null) Debug.LogWarning($"[{nameof(TileData)}] > [{nameof(DetermineCorrespondingZoneIndex)}] > renvoie null");
 
 					// Si oui, copie cette région comme étant celle de la zone
-					Tile.Zones[i].Region = NeighborTile.Zones[i].Region;
-					Tile.Zones[i].Region.Tiles.Add(TileObject);
+					tile.Zones[i].Region = neighborTile.Zones[i].Region;
+					tile.Zones[i].Region.Tiles.Add(tileObject);
 					// baisse le compteur de la zone en question de 1
-					Tile.Zones[i].Region.OpeningCount--;
-					if (Tile.Zones[i].Region.OpeningCount == 0)
+					tile.Zones[i].Region.OpeningCount--;
+					if (tile.Zones[i].Region.OpeningCount == 0)
 					{
 						Debug.Log("La région dans la direction " + i + " est fermée");
-						Debug.Log("Il y a " + Tile.Zones[i].Region.Tiles.Count + " dans la zone");
+						Debug.Log("Il y a " + tile.Zones[i].Region.Tiles.Count + " dans la zone");
 					}
 				}
 				else
 				{
 					//Debug.Log("Il n'y a pas une tuile à côté");
 					// Sinon Crée une nouvelle zone. 
-					Tile.Zones[i].Region = new Region(1);
+					tile.Zones[i].Region = new Region(1);
 				}
-				Tile.Zones[i].Region.Tiles.Add(TileObject);
+				tile.Zones[i].Region.Tiles.Add(tileObject);
 			}
 
 			// Etape 2 : check pour chaque zone si elle est connectée à une autre zone de la tuile
 			for (int i = 0; i <= 3; i++)
 			{
 				//Debug.Log("Direction I : " + i);
-				if (Tile.Zones[i].isOpen == false) continue;
+				if (tile.Zones[i].isOpen == false) continue;
 				for (int j = i + 1; j <= 3; j++)
 				{
 					//Debug.Log("Direction I : " + i + " + J : " + j);
 
-					if (Tile.Zones[i].environment != Tile.Zones[j].environment) continue;
-					if (Tile.Zones[i].Region == Tile.Zones[j].Region) continue;
+					if (tile.Zones[i].environment != tile.Zones[j].environment) continue;
+					if (tile.Zones[i].Region == tile.Zones[j].Region) continue;
 					// On merge :
-					Tile.Zones[i].Region.Merge(Tile.Zones[j].Region);
+					tile.Zones[i].Region.Merge(ref tile.Zones[j]);
 				}
 			}
 		}

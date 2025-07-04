@@ -64,18 +64,19 @@ namespace CardGame.Turns
 		public void CallScoring()
 		{
 			_tilePlaced = _gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).TileData;
-			foreach (ZoneData Zone in _tilePlaced.Zones)
+			foreach (ZoneData zone in _tilePlaced.Zones)
 			{
 				if (
-					Zone.Region.OpeningCount == 0 &&
-					Zone.environment != ENVIRONEMENT_TYPE.Neutral &&
-					Zone.Region.AlreadyScored == false)
+					zone.Region.OpeningCount == 0 &&
+					zone.environment != ENVIRONEMENT_TYPE.Neutral &&
+					zone.Region.AlreadyScored == false)
 				{
-					_closedRegionsInTurn.Add(Zone.Region);
-					Debug.Log("Score tile : " + TilePlacedPosition.x + " - " + TilePlacedPosition.y);
-					ScoreClassicTiles(Zone.Region);
-					ScoreFlagTiles(Zone.Region);
-					Zone.Region.AlreadyScored = true;
+					_closedRegionsInTurn.Add(zone.Region);
+					//Debug.Log("Score tile : " + TilePlacedPosition.x + " - " + TilePlacedPosition.y);
+					ScoreClassicTiles(zone.Region);
+					ScoreFlagTiles(zone.Region);
+					Debug.Log("-------------------------");
+					zone.Region.AlreadyScored = true;
 
 				}
 			}
@@ -86,75 +87,75 @@ namespace CardGame.Turns
 		private async UniTask VisualFeedbackAtScoringAsync()
 		{
 
-			foreach (var ClosedRegion in _closedRegionsInTurn)
+			foreach (Region closedRegion in _closedRegionsInTurn)
 			{
-				foreach (var TileVisu in ClosedRegion.Tiles)
+				foreach (TileVisu tileVisu in closedRegion.Tiles)
 				{
-					Debug.Log("Shake tile : " + TileVisu.PositionOnGrid.x + " - " + TileVisu.PositionOnGrid.y);
+					//Debug.Log("Shake tile : " + tileVisu.PositionOnGrid.x + " - " + tileVisu.PositionOnGrid.y);
 
-					TileVisu.transform.DOShakePosition(0.1f);
+					tileVisu.transform.DOShakePosition(0.1f);
 					await UniTask.WaitForSeconds(0.5f);
 				}
 			}
-			await UniTask.WaitForSeconds(3.0f);
+			//await UniTask.WaitForSeconds(3.0f);
 			IsScoringFinished = true; //fin
 		}
 
 		private void ScoreClassicTiles(Region Region)
 		{
-			Dictionary<int, int> PlayersTileNumber = new();
-			Debug.Log("Score tuiles classiques ? ");
-			foreach (TileVisu TileVisu in Region.Tiles)
+			Dictionary<int, int> playersTileNumber = new();
+			//Debug.Log("Score tuiles classiques ? ");
+			foreach (TileVisu tileVisu in Region.Tiles)
 			{
-				TileData Tile = TileVisu.TileData;
+				TileData tile = tileVisu.TileData;
 
 				// les tuiles avec flag ou sans player défini (-1) ne sont pas comptabilisées :
-				if (Tile.HasFlag == true) continue;
-				if (Tile.OwnerPlayerIndex == -1) continue;
+				if (tile.HasFlag == true) continue;
+				if (tile.OwnerPlayerIndex == -1) continue;
 
-				if (PlayersTileNumber.ContainsKey(Tile.OwnerPlayerIndex) == false)
+				if (!playersTileNumber.ContainsKey(tile.OwnerPlayerIndex))
 				{
-					PlayersTileNumber.Add(Tile.OwnerPlayerIndex, 0);
+					playersTileNumber.Add(tile.OwnerPlayerIndex, 0);
 				}
-				PlayersTileNumber[Tile.OwnerPlayerIndex] = PlayersTileNumber[Tile.OwnerPlayerIndex] + 1;
+				playersTileNumber[tile.OwnerPlayerIndex] = playersTileNumber[tile.OwnerPlayerIndex] + 1;
 			}
 
-			foreach (var PlayerTileNumber in PlayersTileNumber)
+			foreach (var playerTileNumber in playersTileNumber)
 			{
-				Debug.Log("foreach : PlayerIndex : " + PlayerTileNumber.Key);
+				//Debug.Log("foreach : PlayerIndex : " + playerTileNumber.Key);
 				// Le joueur score le nombre de tuiles lui appartenant présentes dans la zone (hors tuile avec flag) :
-				int PlayerScore = CalculateScore(PlayerTileNumber.Value);
-				Debug.Log("Score tuiles classiques : " + PlayerScore);
-				GameManager.Instance.AddScore(PlayerScore, PlayerTileNumber.Key);
+				int playerScore = CalculateScore(playerTileNumber.Value);
+				//Debug.Log("Score tuiles classiques : " + playerScore + "/ " + playerTileNumber.Key);
+				GameManager.Instance.AddScore(playerScore, playerTileNumber.Key);
 			}
 		}
 
 		private void ScoreFlagTiles(Region Region)
 		{
-			Dictionary<int, int> PlayersTileNumber = new();
+			Dictionary<int, int> playersTileNumber = new();
 			Debug.Log("Score tuiles Flag ? ");
-			foreach (TileVisu TileVisu in Region.Tiles)
+			foreach (TileVisu tileVisu in Region.Tiles)
 			{
-				TileData Tile = TileVisu.TileData;
+				TileData tile = tileVisu.TileData;
 
 				// on ne veut comptabiliser que les tuiles avec un flag :
-				if (Tile.HasFlag == false) continue;
-				if (PlayersTileNumber.ContainsKey(Tile.OwnerPlayerIndex) == false)
+				if (tile.HasFlag == false) continue;
+				if (playersTileNumber.ContainsKey(tile.OwnerPlayerIndex) == false)
 				{
-					PlayersTileNumber.TryAdd(Tile.OwnerPlayerIndex, 0);
+					playersTileNumber.TryAdd(tile.OwnerPlayerIndex, 0);
 				}
-				PlayersTileNumber[Tile.OwnerPlayerIndex] = PlayersTileNumber[Tile.OwnerPlayerIndex] + 1;
+				playersTileNumber[tile.OwnerPlayerIndex] = playersTileNumber[tile.OwnerPlayerIndex] + 1;
 			}
 
-			foreach (int PlayerIndex in PlayersTileNumber.Keys)
+			foreach (var playerVar in playersTileNumber)
 			{
-				Debug.Log("foreach : PlayerIndex : " + PlayerIndex);
+				Debug.Log("foreach : PlayerIndex : " + playerVar.Key);
 
 				// Le joueur score le nombre total de tuiles présentes dans la zone par case flag lui appartenant présente dans la zone :
-				int PlayerScore = CalculateScore(Region.Tiles.Count) * PlayersTileNumber[PlayerIndex];
+				int playerScore = CalculateScore(Region.Tiles.Count) * playerVar.Value;
 
-				Debug.Log("Score tuiles Flag : " + PlayerScore);
-				GameManager.Instance.AddScore(PlayerScore, PlayerIndex);
+				Debug.Log("Score tuiles Flag : " + playerScore);
+				GameManager.Instance.AddScore(playerScore, playerVar.Key);
 			}
 		}
 
