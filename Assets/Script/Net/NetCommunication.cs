@@ -193,16 +193,21 @@ namespace CardGame.Net
 				_manager.SetPlayerInfo(instance.Value.OwnerClientId, "Client" + _manager.OnlinePlayersID.Count);
 
 				instance.Value.SetUpOnClientRPC(instance.Value.OwnerClientId);
+				instance.Value.CallGameStartClientRPC();
 			}
 
-			ForEachOtherClient(0, _ => CallGameStartClientRPC());
+			foreach (var instance in Instances)
+			{
+				instance.Value.CallGameStartClientRPC();
+			}
+
 			Instances[_manager.OnlinePlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
 		}
 
 		[ServerRpc(RequireOwnership = true)]
 		public void LoadSceneServerRPC(string sceneName)
 		{
-			ForEachOtherClient(1000000, communication => communication.LoadSceneClientRPC(sceneName));
+			ForEachOtherClient(0, communication => communication.LoadSceneClientRPC(sceneName));
 		}
 
 		#endregion

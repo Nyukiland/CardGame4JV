@@ -14,11 +14,6 @@ namespace CardGame.Turns
 		private GridManagerResource _gridManager;
 		private HUDResource _hudResource;
 
-		public SetupGameCombinedState()
-		{
-			AddSubState(new PlaceElementsSubState());
-		}
-
 		public override void OnEnter()
 		{
 			base.OnEnter();
