@@ -99,11 +99,7 @@ namespace CardGame.Turns
 			Vector2Int gridPos = Vector2Int.FloorToInt(pos);
 			TileVisu target = _gridManager.GetTile(gridPos);
 
-			if (target == null || target.TileData != null)
-			{
-				CurrentTile.ChangeValidityVisual(false); // noir
-			}
-			else
+			if (target != null)
 			{
 				if (_prevPos != new Vector2Int(-100, -100))
 				{
@@ -113,7 +109,14 @@ namespace CardGame.Turns
 				_prevActivity = _gridManager.GetTile(gridPos).gameObject.activeSelf;
 				_gridManager.GetTile(gridPos).gameObject.SetActive(false);
 				_prevPos = gridPos;
+			}
 
+			if (target == null || target.TileData != null)
+			{
+				CurrentTile.ChangeValidityVisual(false); // noir
+			}
+			else
+			{
 				int connections = _gridManager.GetPlacementConnectionCount(CurrentTile.TileData, gridPos);
 				int linkedNeighbor = _gridManager.CheckNeighborTileLinked(gridPos);
 				//Debug.Log($"placement : {connections}, {linkedNeighbor}, {connections > 0 && linkedNeighbor > 0}");

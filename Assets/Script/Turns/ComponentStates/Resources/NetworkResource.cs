@@ -87,8 +87,6 @@ namespace CardGame.Turns
 
 		private void GameStart()
 		{
-			UnityEngine.Debug.Log("init");
-
 			if (_doOnce)
 				return;
 

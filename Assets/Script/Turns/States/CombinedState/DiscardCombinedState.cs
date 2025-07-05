@@ -8,6 +8,7 @@ namespace CardGame.Turns
 	{
 		private DiscardCardAbility _discardCard;
 		private MoveTileAbility _moveTile;
+		private SendInfoAbility _sendInfo;
 		private ZoneHolderResource _zoneHolder;
 
 		public DiscardCombinedState()
@@ -20,14 +21,14 @@ namespace CardGame.Turns
 			base.OnEnter();
 			GetStateComponent(ref _discardCard);
 			GetStateComponent(ref _moveTile);
+			GetStateComponent(ref _sendInfo);
 			GetStateComponent(ref _zoneHolder);
 
 			_moveTile.CanPlaceOnGrid = false;
 
 			if (_discardCard.DiscardFinished())
 			{
-				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(NextPlayerCombinedState));
-				Controller.SetState<ScoringCombinedState>();
+				CallEndTurn();
 			}
 		}
 
@@ -51,7 +52,6 @@ namespace CardGame.Turns
 
 			if (context.phase == InputActionPhase.Canceled)
 			{
-				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(NextPlayerCombinedState));
 				_discardCard.ReleaseCard(Controller.GetActionValue<Vector2>("TouchPos"));
 			}
 		}
@@ -61,7 +61,17 @@ namespace CardGame.Turns
 			base.Update(deltaTime);
 
 			if (_discardCard.DiscardFinished())
-				Controller.SetState<ScoringCombinedState>();
+			{
+				CallEndTurn();
+			}
+		}
+
+		private void CallEndTurn()
+		{
+			_sendInfo.SendTurnFinished();
+
+			Controller.GetStateComponent<ScoringAbility>().SetState(typeof(NextPlayerCombinedState));
+			Controller.SetState<ScoringCombinedState>();
 		}
 	}
 }

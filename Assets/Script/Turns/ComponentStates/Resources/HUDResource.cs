@@ -160,7 +160,6 @@ namespace CardGame.Turns
 
 		public void OpenHud()
 		{
-			Debug.Log($"Opening hud");
 			if (_isHudOpen)
 				return;
 			
@@ -174,7 +173,6 @@ namespace CardGame.Turns
 
 		public void CloseHud()
 		{
-			Debug.Log($"Closing hud");
 			if (!_isHudOpen)
 				return;
 			

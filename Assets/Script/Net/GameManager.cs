@@ -31,9 +31,16 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 
 	#region Net
 
+	public override void OnNetworkSpawn()
+	{
+		base.OnNetworkSpawn();
+		OnlineScores.OnListChanged += OnOnlineScoresChanged;
+	}
+
 	public override void OnNetworkDespawn()
 	{
 		base.OnNetworkDespawn();
+		OnlineScores.OnListChanged -= OnOnlineScoresChanged;
 		_instance = null;
 	}
 
@@ -189,8 +196,8 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 	}
 
-	public ScoreEventDelegate ScoreEvent;
 	public delegate void ScoreEventDelegate(int playerId, float floatEvent);
+	public ScoreEventDelegate ScoreEvent;
 
 	#endregion
 
@@ -266,16 +273,13 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		if (IsNetCurrentlyActive())
 		{
+			if (!IsHost)
+				return;
+
 			if (index == -1)
-			{
 				OnlineScores[PlayerIndex] += score;
-				ScoreEvent?.Invoke(PlayerIndex, OnlineScores[PlayerIndex]);
-			}
 			else
-			{
 				OnlineScores[index] += score;
-				ScoreEvent?.Invoke(index, OnlineScores[index]);
-			}
 		}
 		else
 		{
@@ -290,6 +294,12 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 				ScoreEvent?.Invoke(index, SoloScores[index]);
 			}
 		}
+	}
+
+	private void OnOnlineScoresChanged(NetworkListEvent<int> changeEvent)
+	{
+		if (changeEvent.Type == NetworkListEvent<int>.EventType.Value)
+			ScoreEvent?.Invoke(changeEvent.Index, changeEvent.Value);
 	}
 
 	public void SetPlayerInfo(ulong ID, string name)

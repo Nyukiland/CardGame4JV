@@ -10,6 +10,12 @@ namespace CardGame.Turns
 		[SerializeField]
 		private RectTransform _handZone;
 
+		[SerializeField]
+		private float _offsetTop;
+
+		[SerializeField]
+		private float _offsetSides;
+
 		[Disable]
 		public List<GameObject> TileInHand;
 
@@ -79,8 +85,8 @@ namespace CardGame.Turns
 			Vector3[] worldCorners = new Vector3[4];
 			_handZone.GetWorldCorners(worldCorners);
 
-			Vector3 pos1 = Camera.main.ScreenToWorldPoint(worldCorners[1]);
-			Vector3 pos2 = Camera.main.ScreenToWorldPoint(worldCorners[2]);
+			Vector3 pos1 = Camera.main.ScreenToWorldPoint(worldCorners[1]) + new Vector3(_offsetSides, _offsetTop, 0);
+			Vector3 pos2 = Camera.main.ScreenToWorldPoint(worldCorners[2]) + new Vector3(-_offsetSides, _offsetTop,  0);
 
 			int count = TileInHand.Count;
 

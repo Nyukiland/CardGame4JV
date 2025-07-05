@@ -67,7 +67,7 @@ namespace CardGame.Turns
 			SetTile(tileData, _width / 2, _height / 2);
 			//tileData.DetermineTileRegions(_width / 2, _height / 2);
 
-			Camera.main.transform.position = new Vector3(_width / 2, (_height / 2) - 5, Camera.main.transform.position.z);
+			Camera.main.transform.position = new Vector3(_width / 2, (_height / 2) - 10, Camera.main.transform.position.z);
 		}
 
 		public void GenerateBonusTiles()

@@ -86,6 +86,7 @@ namespace CardGame.Turns
 
 		private async UniTask VisualFeedbackAtScoringAsync()
 		{
+			await UniTask.WaitForSeconds(1f); //wait a little for tile placement feedback
 
 			foreach (Region closedRegion in _closedRegionsInTurn)
 			{
@@ -93,11 +94,11 @@ namespace CardGame.Turns
 				{
 					//Debug.Log("Shake tile : " + tileVisu.PositionOnGrid.x + " - " + tileVisu.PositionOnGrid.y);
 
-					tileVisu.transform.DOShakePosition(0.1f);
-					await UniTask.WaitForSeconds(0.5f);
+					tileVisu.transform.DOShakePosition(0.1f, 0.2f, 5);
+					await UniTask.WaitForSeconds(0.25f);
 				}
 			}
-			//await UniTask.WaitForSeconds(3.0f);
+
 			IsScoringFinished = true; //fin
 		}
 

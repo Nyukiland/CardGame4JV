@@ -23,6 +23,7 @@ namespace CardGame.Turns
 		private CreateHandAbility _createHandAbility;
 		private SendInfoAbility _sender;
 		private ScoringAbility _scoring;
+		private NetworkResource _network;
 
 		public float Timer { get; private set; } = 0;
 
@@ -42,6 +43,7 @@ namespace CardGame.Turns
 			_createHandAbility = owner.GetStateComponent<CreateHandAbility>();
 			_sender = owner.GetStateComponent<SendInfoAbility>();
 			_scoring = owner.GetStateComponent<ScoringAbility>();
+			_network = owner.GetStateComponent<NetworkResource>();
 		}
 
 		public override void OnEnable()
@@ -130,7 +132,7 @@ namespace CardGame.Turns
 			_sender.SendInfoTilePlaced(TempPlacedTile.TileData, _tempPos);
 			_scoring.SetScoringPos(_tempPos);
 
-			if (!_sender.SendTurnFinished())
+			if (!_network.IsNetActive())
 			{
 				for (int i = 0; i < connectionCount; i++)
 				{
