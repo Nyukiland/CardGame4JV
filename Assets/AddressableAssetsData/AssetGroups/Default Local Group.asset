@@ -75,6 +75,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - TileSetting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a40add1b1e417e47aa97a583d089b63
+    m_Address: Assets/Script/Data\NewTile_32.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 350ed28d44a90e843ae8d8e339597447
     m_Address: Assets/Script/Data\NewTile_27.asset
     m_ReadOnly: 0

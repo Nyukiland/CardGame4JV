@@ -57,7 +57,9 @@ namespace CardGame.Turns
 				}
 			}
 
-			_maxZoom = Vector3.Distance(bottomLeft, topRight);
+			float width = topRight.x - bottomLeft.x;
+			float height = topRight.y - bottomLeft.y;
+			_maxZoom = Mathf.Max(width, height) * 0.5f + 1f; // +1f c'est la marge
 			_zoneHolder.HideMyHand(true);
 		}
 
@@ -68,7 +70,7 @@ namespace CardGame.Turns
 			float currentDist = Vector2.Distance(posTouch1, posTouch2);
 			float zoomFactor = _startdist / currentDist;
 
-			_cam.orthographicSize = Mathf.Clamp(_startZoom * zoomFactor, _minZoom, _maxZoom);
+			_cam.orthographicSize = Mathf.Clamp(_startZoom * zoomFactor, _minZoom, _maxZoom); // Half size, d'ou le *.5 sur maxzoom
 
 			_zoneHolder.UpdatePlacementInHand(true);
 		}
