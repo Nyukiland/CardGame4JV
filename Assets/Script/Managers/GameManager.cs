@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 
 public class GameManager : NetworkBehaviour, ISelectableInfo

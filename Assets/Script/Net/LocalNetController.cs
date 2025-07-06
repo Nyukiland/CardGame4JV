@@ -1,9 +1,8 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using Cysharp.Threading.Tasks;
-using Unity.Android.Gradle.Manifest;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -11,21 +10,21 @@ using UnityEngine.SceneManagement;
 
 namespace CardGame.Net
 {
-    public class LocalNetController : NetControllerParent
-    {
-        [SerializeField, Disable] private LanSearchBeacon _lanSearch;
-                
-        #region Unity Methods
+	public class LocalNetController : NetControllerParent
+	{
+		[SerializeField, Disable] private LanSearchBeacon _lanSearch;
 
-        protected override void Start()
-        {
+		#region Unity Methods
+
+		protected override void Start()
+		{
 			base.Start();
-            _networkUI.TogglePublicEvent += TogglePublicSearch;
-            _networkUI.StartHostEvent += StartHost;
-            _networkUI.JoinGameEvent += JoinGame;
-            _networkUI.UnhostEvent += StopHosting;
-            _networkUI.CopyCodeEvent += CopyJoinCode;
-            _networkUI.QuitGameEvent += DisconnectFromGame;
+			_networkUI.TogglePublicEvent += TogglePublicSearch;
+			_networkUI.StartHostEvent += StartHost;
+			_networkUI.JoinGameEvent += JoinGame;
+			_networkUI.UnhostEvent += StopHosting;
+			_networkUI.CopyCodeEvent += CopyJoinCode;
+			_networkUI.QuitGameEvent += DisconnectFromGame;
 			_networkUI.PlayGameEvent += LaunchGame;
 			_networkUI.ToggleDistantEvent += ToggleDistant;
 
@@ -33,47 +32,47 @@ namespace CardGame.Net
 			Launch();
 		}
 
-        protected override void Launch()
+		protected override void Launch()
 		{
 			base.Launch();
 			_lanSearch = GetComponent<LanSearchBeacon>();
 			_lanSearch.OnHostsUpdated += UpdateConnectionList;
 		}
 
-        private void OnDestroy()
-        {
-            if (_lanSearch != null)
-            {
-                _lanSearch.OnHostsUpdated -= UpdateConnectionList;
-            }
-            
-            _networkUI.TogglePublicEvent -= TogglePublicSearch;
-            _networkUI.StartHostEvent -= StartHost;
-            _networkUI.JoinGameEvent -= JoinGame;
-            _networkUI.UnhostEvent -= StopHosting;
-            _networkUI.CopyCodeEvent -= CopyJoinCode;
-            _networkUI.QuitGameEvent -= DisconnectFromGame;
+		private void OnDestroy()
+		{
+			if (_lanSearch != null)
+			{
+				_lanSearch.OnHostsUpdated -= UpdateConnectionList;
+			}
+
+			_networkUI.TogglePublicEvent -= TogglePublicSearch;
+			_networkUI.StartHostEvent -= StartHost;
+			_networkUI.JoinGameEvent -= JoinGame;
+			_networkUI.UnhostEvent -= StopHosting;
+			_networkUI.CopyCodeEvent -= CopyJoinCode;
+			_networkUI.QuitGameEvent -= DisconnectFromGame;
 			_networkUI.PlayGameEvent -= LaunchGame;
 			_networkUI.ToggleDistantEvent -= ToggleDistant;
-        }
-        
-        #endregion
-        
-        #region Connection
+		}
 
-        protected override void StartHost()
-        {
-	        if (_isDistant) return;
-			
-	        base.StartHost();
+		#endregion
 
-	        StartHostAsync().Forget();
-        }
+		#region Connection
 
-        private async UniTask StartHostAsync()
-        {
+		protected override void StartHost()
+		{
 			if (_isDistant) return;
-			
+
+			base.StartHost();
+
+			StartHostAsync().Forget();
+		}
+
+		private async UniTask StartHostAsync()
+		{
+			if (_isDistant) return;
+
 			if (string.IsNullOrEmpty(_networkUI.SessionName)) return;
 
 			NetworkManager.Singleton.ConnectionApprovalCallback = ApproveConnection;
@@ -110,7 +109,7 @@ namespace CardGame.Net
 			NetworkManager.Singleton.OnConnectionEvent += CallOnConnect;
 			NetworkManager.Singleton.OnClientDisconnectCallback += CallOnDisconnect;
 			await GetNetComForThisClientAsync();
-			
+
 			_networkUI.UpdateCodeAfterHost();
 		}
 
@@ -149,14 +148,14 @@ namespace CardGame.Net
 		private void JoinGame()
 		{
 			if (_isDistant) return;
-			
+
 			JoinGame(null);
 		}
 
 		public override void JoinGame(string joinCode)
 		{
 			if (_isDistant) return;
-			
+
 			if (string.IsNullOrEmpty(joinCode)) joinCode = _networkUI.Code;
 
 			//if still empty return
@@ -180,23 +179,23 @@ namespace CardGame.Net
 		protected override void StopHosting()
 		{
 			if (_isDistant) return;
-			
+
 			if (_netCommunication == null || !_netCommunication.IsHost) return;
 
 			NetworkManager.Singleton.OnConnectionEvent -= CallOnConnect;
 			NetworkManager.Singleton.OnClientDisconnectCallback -= CallOnDisconnect;
 
 			NetworkManager.Singleton.Shutdown();
-			
+
 			_lanSearch.StopBroadcast();
-			
+
 			DisconnectLogic();
 		}
 
 		protected override void DisconnectFromGame()
 		{
 			if (_isDistant) return;
-			
+
 			base.DisconnectFromGame();
 
 			DisconnectLogic();
@@ -272,7 +271,7 @@ namespace CardGame.Net
 		protected override void TogglePublicSearch(bool isOn)
 		{
 			if (_isDistant) return;
-				
+
 			if (isOn)
 				_lanSearch.StartListening();
 			else
@@ -299,9 +298,9 @@ namespace CardGame.Net
 		protected override void LaunchGame()
 		{
 			if (_isDistant) return;
-			
+
 			_networkUI.CloseMenu();
-			
+
 			if (NetworkManager.Singleton.ConnectedClients.Count <= 1)
 			{
 				SceneManager.LoadScene(_sceneName, LoadSceneMode.Additive);
