@@ -100,6 +100,7 @@ namespace CardGame.UI
 		{
 			Screen.autorotateToPortrait = false;
 			Screen.autorotateToPortraitUpsideDown = false;
+			Screen.orientation = ScreenOrientation.LandscapeLeft;
 			_popUpContainer.SetActive(false);
 		}
 		
