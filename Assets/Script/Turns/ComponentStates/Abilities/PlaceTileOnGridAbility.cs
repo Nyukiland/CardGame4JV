@@ -24,6 +24,7 @@ namespace CardGame.Turns
 		private SendInfoAbility _sender;
 		private ScoringAbility _scoring;
 		private NetworkResource _network;
+		private SoundResource _sound;
 
 		public float Timer { get; private set; } = 0;
 
@@ -44,6 +45,7 @@ namespace CardGame.Turns
 			_sender = owner.GetStateComponent<SendInfoAbility>();
 			_scoring = owner.GetStateComponent<ScoringAbility>();
 			_network = owner.GetStateComponent<NetworkResource>();
+			_sound = owner.GetStateComponent<SoundResource>();
 		}
 
 		public override void OnEnable()
@@ -128,6 +130,7 @@ namespace CardGame.Turns
 			TempPlacedTile.TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex; // On donne l'index du joueur a la tileObject
 			TempPlacedTile.TileData.HasFlag = GameManager.Instance.FlagTurn; // Check si flag turn
 
+			_sound.PlayTilePlaced();
 			_gridManager.SetTile(TempPlacedTile.TileData, _tempPos);
 			_sender.SendInfoTilePlaced(TempPlacedTile.TileData, _tempPos);
 			_scoring.SetScoringPos(_tempPos);

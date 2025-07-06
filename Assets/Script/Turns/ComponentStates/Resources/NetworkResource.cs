@@ -19,6 +19,7 @@ namespace CardGame.Turns
 		private GridManagerResource _grid;
 		private ScoringAbility _scoring;
 		private HUDResource _hud;
+		private SoundResource _sound;
 
 		[SerializeField]
 		private DrawPile _drawPile;
@@ -42,6 +43,7 @@ namespace CardGame.Turns
 			_grid = owner.GetStateComponent<GridManagerResource>();
 			_scoring = owner.GetStateComponent<ScoringAbility>();
 			_hud = owner.GetStateComponent<HUDResource>();
+			_sound = owner.GetStateComponent<SoundResource>();
 
 			if (GameManager.Instance.IsNetCurrentlyActive())
 			{
@@ -76,7 +78,7 @@ namespace CardGame.Turns
 
 			if (NetCom != null)
 			{
-				NetCom.TilePlaced += UpdateGridPlaced;
+				NetCom.TilePlaced += UpdateTilePlaced;
 				NetCom.GridUpdated += UpdateGrid;
 				NetCom.TileForHand += UpdateHand;
 				NetCom.SendYourTurn += GoMyTurn;
@@ -107,7 +109,7 @@ namespace CardGame.Turns
 
 			if (NetCom != null)
 			{
-				NetCom.TilePlaced -= UpdateGridPlaced;
+				NetCom.TilePlaced -= UpdateTilePlaced;
 				NetCom.GridUpdated -= UpdateGrid;
 				NetCom.TileForHand -= UpdateHand;
 				NetCom.SendYourTurn -= GoMyTurn;
@@ -115,9 +117,10 @@ namespace CardGame.Turns
 			}
 		}
 
-		private void UpdateGridPlaced(DataToSend data)
+		private void UpdateTilePlaced(DataToSend data)
 		{
 			TileData tileReceived = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);
+			_sound.PlayTilePlaced(false);
 			_grid.SetTile(tileReceived, data.Position.x, data.Position.y);
 			_scoring.SetScoringPos(new(data.Position.x, data.Position.y));
 		}

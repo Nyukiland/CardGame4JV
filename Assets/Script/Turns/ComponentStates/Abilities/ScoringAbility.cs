@@ -12,6 +12,7 @@ namespace CardGame.Turns
 	public class ScoringAbility : Ability
 	{
 		private GridManagerResource _gridManager;
+		private SoundResource _sound;
 
 		public Vector2Int TilePlacedPosition
 		{
@@ -39,6 +40,7 @@ namespace CardGame.Turns
 		{
 			base.Init(owner);
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
+			_sound = owner.GetStateComponent<SoundResource>();
 		}
 
 		public void SetScoringPos(Vector2Int pos)
@@ -93,6 +95,8 @@ namespace CardGame.Turns
 				foreach (TileVisu tileVisu in closedRegion.Tiles)
 				{
 					//Debug.Log("Shake tile : " + tileVisu.PositionOnGrid.x + " - " + tileVisu.PositionOnGrid.y);
+
+					_sound.PlayScoring(tileVisu.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex);
 
 					tileVisu.transform.DOShakePosition(0.1f, 0.2f, 5);
 					await UniTask.WaitForSeconds(0.25f);

@@ -3062,6 +3062,7 @@ MonoBehaviour:
   - rid: 1922521404052602971
   - rid: 1922521404052602972
   - rid: 2787434653344333914
+  - rid: 5245693158766149720
   references:
     version: 2
     RefIds:
@@ -3188,6 +3189,38 @@ MonoBehaviour:
       data:
         Enabled: 0
         _waitSec: 1
+    - rid: 5245693158766149720
+      type: {class: SoundResource, ns: CardGame.Turns, asm: Assembly-CSharp}
+      data:
+        Enabled: 0
+        _tilePlaced:
+          Guid:
+            Data1: 928880032
+            Data2: 1329536262
+            Data3: 1727721372
+            Data4: 667984720
+          Path: event:/Tile/TilePlacedSelf
+        _tilePlacedOther:
+          Guid:
+            Data1: 1861623851
+            Data2: 1139118754
+            Data3: 387442835
+            Data4: -75222371
+          Path: event:/Tile/TilePlacedOther
+        _scoring:
+          Guid:
+            Data1: 1016800151
+            Data2: 1259287606
+            Data3: 71462057
+            Data4: 1983089793
+          Path: event:/Scoring/AddScoreSelf
+        _scoringOther:
+          Guid:
+            Data1: -496835798
+            Data2: 1328684044
+            Data3: 883112841
+            Data4: -905525644
+          Path: event:/Scoring/AddScoreOther
     - rid: 7534538971935670362
       type: {class: RotateTileAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
