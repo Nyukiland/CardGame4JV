@@ -54,39 +54,20 @@ namespace CardGame.Net
 			Instances.Remove(OwnerClientId);
 		}
 
-		public void SendTilePlaced(DataToSend data)
+		private void ForEachOtherClient(ulong senderClientId, Action<NetCommunication> action)
 		{
-			if (IsLocalPlayer)
-				SendTilePlacedServerRPC(data);
-		}
-
-		public void SendDiscard(int ID)
-		{
-			if (IsLocalPlayer)
-				SendDiscardTileServerRPC(ID);
-		}
-
-		public void GenerateFirstGrid()
-		{
-			if (IsHost)
+			foreach (var kvp in Instances)
 			{
-				Storage.Instance.GetElement<GridManagerResource>().GenerateBonusTiles();
-				SendGridServerRPC();
+				ulong targetClientId = kvp.Key;
+				NetCommunication instance = kvp.Value;
+
+				if (targetClientId != senderClientId)
+					action(instance);
 			}
 		}
 
-		public void SendTauntShakeNet(Vector2 pos, bool special)
-		{
-			if (IsLocalPlayer)
-				SendTauntShakeServerRPC(pos, special);
-		}
-
-		public void TurnFinished()
-		{
-			if (IsLocalPlayer)
-				TurnCompletedServerRPC();
-		}
-
+		//---------------------------------------------
+		#region SetUP
 		public void SetUp(int tileInHand)
 		{
 			if (IsHost)
@@ -97,76 +78,6 @@ namespace CardGame.Net
 		{
 			if (IsHost)
 				LoadSceneServerRPC(sceneName);
-		}
-
-		#region Server
-
-		[ServerRpc(RequireOwnership = false)]
-		public void SendTilePlacedServerRPC(DataToSend data, ServerRpcParams rpcParams = default)
-		{
-			//not working for some reason
-			//if (Storage.Instance.GetElement<GridManager>().GetTile(data.Position.x, data.Position.y).TileData != null)
-			//	return;
-
-			ulong senderClientId = rpcParams.Receive.SenderClientId;
-
-			ForEachOtherClient(senderClientId, x => x.DistributeTilePlacedClientRPC(data));
-
-			TileData tileData = NetUtility.FromDataToTile(data, Storage.Instance.GetElement<DrawPile>().AllTileSettings);
-
-			int connectionCount = Storage.Instance.GetElement<GridManagerResource>()
-				.GetPlacementConnectionCount(tileData, data.Position);
-
-			Instances.TryGetValue(senderClientId, out NetCommunication instance);
-
-			for (int i = 0; i < connectionCount; i++)
-			{
-				int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
-				if (tileId == -1)
-				{
-					UnityEngine.Debug.LogError($"[{nameof(NetCommunication)}] no Tile to draw");
-					return;
-				}
-				instance.GiveNewTileInHandClientRPC(tileId);
-			}
-		}
-
-		[ServerRpc (RequireOwnership = false)]
-		public void SendDiscardTileServerRPC(int ID)
-		{
-			Storage.Instance.GetElement<DrawPile>().DiscardTile(ID);
-		}
-
-		[ServerRpc(RequireOwnership = false)]
-		public void SendGridServerRPC(ServerRpcParams rpcParams = default)
-		{
-			ulong senderClientId = rpcParams.Receive.SenderClientId;
-
-			GridManagerResource grid = Storage.Instance.GetElement<GridManagerResource>();
-			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
-
-			DataToSendList list = grid.GetListOfPlacedTile();
-
-			ForEachOtherClient(senderClientId, x => x.DistributeGridClientRPC(list));
-		}
-
-		[ServerRpc(RequireOwnership = false)]
-		public void TurnCompletedServerRPC()
-		{
-			_manager.OnlineTurns.Value++;
-
-			if (_manager.GameIsFinished)
-				return;
-
-			Instances[_manager.OnlinePlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
-		}
-
-		[ServerRpc(RequireOwnership = false)]
-		public void SendTauntShakeServerRPC(Vector2 pos, bool special, ServerRpcParams rpcParams = default)
-		{
-			ulong senderClientId = rpcParams.Receive.SenderClientId;
-
-			ForEachOtherClient(senderClientId, x => x.CallTauntShakeClientRPC(pos, special));
 		}
 
 		[ServerRpc(RequireOwnership = true)]
@@ -210,44 +121,10 @@ namespace CardGame.Net
 			ForEachOtherClient(0, communication => communication.LoadSceneClientRPC(sceneName));
 		}
 
-		#endregion
-
-		#region Client
-
 		[ClientRpc(RequireOwnership = false)]
 		public void CallGameStartClientRPC()
 		{
 			SendGameStart?.Invoke();
-		}
-
-		[ClientRpc(RequireOwnership = false)]
-		public void DistributeTilePlacedClientRPC(DataToSend data)
-		{
-			TilePlaced?.Invoke(data);
-		}
-
-		[ClientRpc(RequireOwnership = false)]
-		public void GiveNewTileInHandClientRPC(int ID)
-		{
-			TileForHand?.Invoke(ID);
-		}
-
-		[ClientRpc(RequireOwnership = false)]
-		public void DistributeGridClientRPC(DataToSendList dataList)
-		{
-			GridUpdated?.Invoke(dataList);
-		}
-
-		[ClientRpc(RequireOwnership = false)]
-		public void CallTauntShakeClientRPC(Vector2 pos, bool special)
-		{
-			SendTauntShake?.Invoke(pos, special);
-		}
-
-		[ClientRpc(RequireOwnership = false)]
-		public void CallTurnClientRPC()
-		{
-			SendYourTurn?.Invoke();
 		}
 
 		[ClientRpc(RequireOwnership = false)]
@@ -262,6 +139,149 @@ namespace CardGame.Net
 		{
 			_manager = GameManager.Instance;
 			_manager.SetLocalPlayerInfo();
+		}
+		#endregion
+
+		//---------------------------------------------
+		#region SendGrid
+		public void GenerateFirstGrid()
+		{
+			if (IsHost)
+			{
+				Storage.Instance.GetElement<GridManagerResource>().GenerateBonusTiles();
+				SendGridServerRPC();
+			}
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		public void SendGridServerRPC(ServerRpcParams rpcParams = default)
+		{
+			ulong senderClientId = rpcParams.Receive.SenderClientId;
+
+			GridManagerResource grid = Storage.Instance.GetElement<GridManagerResource>();
+			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
+
+			DataToSendList list = grid.GetListOfPlacedTile();
+
+			ForEachOtherClient(senderClientId, x => x.DistributeGridClientRPC(list));
+		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void DistributeGridClientRPC(DataToSendList dataList)
+		{
+			GridUpdated?.Invoke(dataList);
+		}
+
+		#endregion
+
+		//---------------------------------------------
+		#region SendTile
+		public void SendTilePlaced(DataToSend data)
+		{
+			if (IsLocalPlayer)
+				SendTilePlacedServerRPC(data);
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		public void SendTilePlacedServerRPC(DataToSend data, ServerRpcParams rpcParams = default)
+		{
+			ulong senderClientId = rpcParams.Receive.SenderClientId;
+
+			ForEachOtherClient(senderClientId, x => x.DistributeTilePlacedClientRPC(data));
+
+			TileData tileData = NetUtility.FromDataToTile(data, Storage.Instance.GetElement<DrawPile>().AllTileSettings);
+
+			int connectionCount = Storage.Instance.GetElement<GridManagerResource>()
+				.GetPlacementConnectionCount(tileData, data.Position);
+
+			Instances.TryGetValue(senderClientId, out NetCommunication instance);
+
+			for (int i = 0; i < connectionCount; i++)
+			{
+				int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
+				if (tileId == -1)
+				{
+					UnityEngine.Debug.LogError($"[{nameof(NetCommunication)}] no Tile to draw");
+					return;
+				}
+				instance.GiveNewTileInHandClientRPC(tileId);
+			}
+		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void DistributeTilePlacedClientRPC(DataToSend data)
+		{
+			TilePlaced?.Invoke(data);
+		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void GiveNewTileInHandClientRPC(int ID)
+		{
+			TileForHand?.Invoke(ID);
+		}
+		#endregion
+
+		//---------------------------------------------
+		#region SendDiscard
+		public void SendDiscard(int ID)
+		{
+			if (IsLocalPlayer)
+				SendDiscardTileServerRPC(ID);
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		public void SendDiscardTileServerRPC(int ID)
+		{
+			Storage.Instance.GetElement<DrawPile>().DiscardTile(ID);
+		}
+		#endregion
+
+		//---------------------------------------------
+		#region SendTurnFinished
+		public void TurnFinished()
+		{
+			if (IsLocalPlayer)
+				TurnCompletedServerRPC();
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		public void TurnCompletedServerRPC()
+		{
+			_manager.OnlineTurns.Value++;
+
+			if (_manager.GameIsFinished)
+				return;
+
+			Instances[_manager.OnlinePlayersID[_manager.PlayerIndexTurn]].CallTurnClientRPC();
+		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void CallTurnClientRPC()
+		{
+			SendYourTurn?.Invoke();
+		}
+		#endregion
+
+		//---------------------------------------------
+		#region SendTaunt
+		public void SendTauntShakeNet(Vector2 pos, bool special)
+		{
+			if (IsLocalPlayer)
+				SendTauntShakeServerRPC(pos, special);
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		public void SendTauntShakeServerRPC(Vector2 pos, bool special, ServerRpcParams rpcParams = default)
+		{
+			ulong senderClientId = rpcParams.Receive.SenderClientId;
+
+			ForEachOtherClient(senderClientId, x => x.CallTauntShakeClientRPC(pos, special));
+		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void CallTauntShakeClientRPC(Vector2 pos, bool special)
+		{
+			SendTauntShake?.Invoke(pos, special);
 		}
 		#endregion
 
@@ -292,17 +312,5 @@ namespace CardGame.Net
 			ReceiveEventTest?.Invoke(current);
 		}
 		#endregion
-
-		private void ForEachOtherClient(ulong senderClientId, Action<NetCommunication> action)
-		{
-			foreach (var kvp in Instances)
-			{
-				ulong targetClientId = kvp.Key;
-				NetCommunication instance = kvp.Value;
-
-				if (targetClientId != senderClientId)
-					action(instance);
-			}
-		}
 	}
 }

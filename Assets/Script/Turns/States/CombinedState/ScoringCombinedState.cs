@@ -7,11 +7,13 @@ namespace CardGame.Turns
 	public class ScoringCombinedState : CombinedState
 	{
 		private ScoringAbility _scoring;
+		private HUDResource _hud;
 
 		public override void OnEnter()
 		{
 			base.OnEnter();
 			GetStateComponent(ref _scoring);
+			GetStateComponent(ref _hud);
 
 			//exception
 			if (_scoring.TilePlacedPosition == new Vector2Int(-100, -100))
@@ -20,7 +22,14 @@ namespace CardGame.Turns
 				return;
 			}
 
+			_hud.OpenScoringScreen();
 			_scoring.CallScoring();
+		}
+
+		public override void OnExit()
+		{
+			base.OnExit();
+			_hud.CloseScoringScreen();
 		}
 
 		public override void Update(float deltaTime)

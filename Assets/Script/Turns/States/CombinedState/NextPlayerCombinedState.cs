@@ -6,7 +6,7 @@ namespace CardGame.Turns
 	public class NextPlayerCombinedState : CombinedState
 	{
 		private NetworkResource _net;
-		private HUDAbility _hudAbility;
+		private HUDResource _hud;
 		private AutoPlayAbility _autoPlayAbility;
 		private ZoneHolderResource _handResource;
 		private MoveTileAbility _moveTile;
@@ -22,9 +22,11 @@ namespace CardGame.Turns
 			base.OnEnter();
 			GetStateComponent(ref _net);
 			GetStateComponent(ref _handResource);
-			GetStateComponent(ref _hudAbility);
+			GetStateComponent(ref _hud);
 			GetStateComponent(ref _moveTile);
 	        GetStateComponent(ref _autoPlayAbility);
+
+			_hud.OpenWaitingScreen();
 
 			_moveTile.CanPlaceOnGrid = false;
 
@@ -39,6 +41,8 @@ namespace CardGame.Turns
 		public override void OnExit()
 		{
 			base.OnExit();
+
+			_hud.CloseWaitingScreen();
 
 			if (_moveTile.CurrentTile != null)
 			{

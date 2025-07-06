@@ -96,7 +96,7 @@ namespace CardGame.Turns
 				return;
 			}
 
-			Vector2Int gridPos = Vector2Int.FloorToInt(pos);
+			Vector2Int gridPos = Vector2Int.RoundToInt(pos);
 			TileVisu target = _gridManager.GetTile(gridPos);
 
 			if (target != null)

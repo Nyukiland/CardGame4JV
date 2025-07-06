@@ -14,7 +14,8 @@ namespace CardGame.Turns
     public class HUDResource : Resource
 	{
 		[SerializeField] private string _sceneName;
-		public GameObject WaitingScreen;
+		[SerializeField] private GameObject _waitingScreen;
+		[SerializeField] private GameObject _scoringScreen;
 		[Header("Hud")]
 		[SerializeField] private CanvasGroup _hudScreen;
 		[Header("WinScreen")]
@@ -205,11 +206,19 @@ namespace CardGame.Turns
 			SceneManager.UnloadSceneAsync(_sceneName);
 		}
 
+		public void OpenWaitingScreen() => _waitingScreen.SetActive(true);
+		public void CloseWaitingScreen() =>	_waitingScreen.SetActive(false);
+
+		public void OpenScoringScreen() => _scoringScreen.SetActive(true);
+		public void CloseScoringScreen() => _scoringScreen.SetActive(false);
+
 		private void CloseAllScreens()
 		{
 			_winScreen.SetActive(false);
 			_looseScreen.SetActive(false);
 			_hudScreen.gameObject.SetActive(false);
+			_waitingScreen.SetActive(false);
+			_scoringScreen.SetActive(false);
 		}
 		
 		#endregion
