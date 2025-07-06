@@ -18,7 +18,11 @@ namespace CardGame.StateMachine
 			Owner = owner;
 
 			//i don't like the cast but i guess should do it
-			if (this is Resource) Enabled = true;
+			if (this is Resource)
+			{
+				Enabled = true;
+				OnEnable();
+			}
 
 			Init(owner);
 		}
@@ -38,6 +42,9 @@ namespace CardGame.StateMachine
 
 		public void OnEnableController()
 		{
+			if (Enabled == true)
+				return;
+
 			//i don't like the cast but i guess should do it
 			if (this is Ability) Enabled = true;
 
@@ -46,6 +53,9 @@ namespace CardGame.StateMachine
 
 		public void OnDisableController()
 		{
+			if(Enabled == false)
+				return;
+
 			//i don't like the cast but i guess should do it
 			if (this is Ability) Enabled = false;
 

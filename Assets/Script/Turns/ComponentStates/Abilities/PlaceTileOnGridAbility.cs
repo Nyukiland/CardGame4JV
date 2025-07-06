@@ -77,7 +77,7 @@ namespace CardGame.Turns
 
 			Ray ray = Camera.main.ScreenPointToRay(position);
 			_planeForCast.Raycast(ray, out float dist);
-			Vector2Int pos = Vector2Int.FloorToInt(ray.GetPoint(dist));
+			Vector2Int pos = Vector2Int.RoundToInt(ray.GetPoint(dist));
 
 			TileVisu targetTile = _gridManager.GetTile(pos);
 
@@ -124,7 +124,7 @@ namespace CardGame.Turns
 			if (TempPlacedTile == null) return;
 
 			int connectionCount = _gridManager.GetPlacementConnectionCount(TempPlacedTile.TileData, _tempPos);
-			
+
 			if (connectionCount == 0) return;
 
 			TempPlacedTile.TileData.OwnerPlayerIndex = GameManager.Instance.PlayerIndex; // On donne l'index du joueur a la tileObject

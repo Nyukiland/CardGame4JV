@@ -85,7 +85,7 @@ namespace CardGame.Turns
 			Ray ray = Camera.main.ScreenPointToRay(position);
 			_planeForCast.Raycast(ray, out float dist);
 			Vector3 pos = ray.GetPoint(dist);
-			pos = Vector3Int.FloorToInt(pos);
+			pos = Vector3Int.RoundToInt(pos);
 
 			CurrentTile.transform.DOMove(pos, 0.1f);
 
