@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CardGame.StateMachine;
 using CardGame.UI;
 using CardGame.Utility;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -146,13 +147,16 @@ namespace CardGame.Turns
 			{
 				case 0:
 					_flag.enabled = true;
+					_flag.transform.DOMoveX(_secondCircle.transform.position.x, 1f).From();
 					break;
 				case -1:
 				case 1:
 					_firstCircle.enabled = true;
+					_firstCircle.transform.DOMoveX(_flag.transform.position.x, 1f).From();
 					break;
 				default:
 					_secondCircle.enabled = true;
+					_secondCircle.transform.DOMoveX(_firstCircle.transform.position.x, 1f).From();
 					break;
 			}
 		}
@@ -201,7 +205,7 @@ namespace CardGame.Turns
 		{
 			CloseAllScreens();
 
-			Storage.Instance.GetElement<NetworkUI>().OpenMainMenu();
+			Storage.Instance.GetElement<NetworkUI>().OpenMainMenu().Forget();
 				
 			SceneManager.UnloadSceneAsync(_sceneName);
 		}
