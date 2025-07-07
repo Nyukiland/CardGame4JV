@@ -18,6 +18,7 @@ namespace CardGame.Turns
 		private MoveTileAbility _moveTile;
 		private SendInfoAbility _sendInfo;
 		private ZoneHolderResource _holderResource;
+		private NetworkResource _networkResource;
 
 		public override void Init(Controller owner)
 		{
@@ -25,6 +26,7 @@ namespace CardGame.Turns
 			_moveTile = owner.GetStateComponent<MoveTileAbility>();
 			_sendInfo = owner.GetStateComponent<SendInfoAbility>();
 			_holderResource = owner.GetStateComponent<ZoneHolderResource>();
+			_networkResource = owner.GetStateComponent<NetworkResource>();
 
 			_discardArea.gameObject.SetActive(false);
 		}
@@ -68,7 +70,10 @@ namespace CardGame.Turns
 
 		public bool DiscardFinished()
 		{
-			return _holderResource.TileInHandCount <= _maxTileInHand && _moveTile.CurrentTile == null;
+			if (_networkResource.IsNetActive())
+				return _holderResource.TileInHandCount <= _maxTileInHand && _moveTile.CurrentTile == null && _networkResource.IsTileReceived;
+			else
+				return _holderResource.TileInHandCount <= _maxTileInHand && _moveTile.CurrentTile == null;
 		}
 	}
 }

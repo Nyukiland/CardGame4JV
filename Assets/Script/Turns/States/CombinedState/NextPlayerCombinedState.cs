@@ -1,4 +1,5 @@
 using CardGame.StateMachine;
+using Cysharp.Threading.Tasks;
 using UnityEngine.InputSystem;
 
 namespace CardGame.Turns
@@ -10,6 +11,8 @@ namespace CardGame.Turns
 		private AutoPlayAbility _autoPlayAbility;
 		private ZoneHolderResource _handResource;
 		private MoveTileAbility _moveTile;
+
+		private int _prevTurn = -1;
 
 		public NextPlayerCombinedState()
 		{
@@ -36,6 +39,8 @@ namespace CardGame.Turns
 				_autoPlayAbility.CallBotTurn();
 			}
 			Controller.GetStateComponent<HUDResource>().UpdateTurnValue();
+
+			_prevTurn = GameManager.Instance.GlobalTurn;
 		}
 
 		public override void OnExit()
@@ -89,9 +94,21 @@ namespace CardGame.Turns
 			else if (_net.IsFinished)
 			{
 				_net.IsFinished = false;
-				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(PlaceTileCombinedState));
-				Controller.SetState<ScoringCombinedState>();
+				WaitALittle().Forget();
 			}
+		}
+
+		private async UniTask WaitALittle()
+		{
+			await UniTask.WaitUntil(() => GameManager.Instance.GlobalTurn != _prevTurn);
+
+			if (GameManager.Instance.GameIsFinished)
+				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(EndGameCombinedState));
+			else
+				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(PlaceTileCombinedState));
+
+
+			Controller.SetState<ScoringCombinedState>();
 		}
 	}
 }

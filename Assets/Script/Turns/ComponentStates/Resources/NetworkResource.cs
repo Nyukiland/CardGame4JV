@@ -28,6 +28,8 @@ namespace CardGame.Turns
 
 		public bool IsWaitNetComplete { get; private set; } = false;
 
+		public bool IsTileReceived { get; set; } = false;
+
 		public bool IsFinished
 		{
 			get;
@@ -130,6 +132,8 @@ namespace CardGame.Turns
 			TileSettings tileSettings = _drawPile.GetTileFromID(ID);
 
 			_createHand.CreateTile(tileSettings);
+
+			IsTileReceived = true;
 		}
 
 		private void UpdateGrid(DataToSendList dataList)

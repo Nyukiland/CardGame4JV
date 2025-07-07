@@ -10,6 +10,7 @@ namespace CardGame.Turns
 		private MoveTileAbility _moveTile;
 		private SendInfoAbility _sendInfo;
 		private ZoneHolderResource _zoneHolder;
+		private NetworkResource _networkResource;
 
 		public DiscardCombinedState()
 		{
@@ -23,6 +24,7 @@ namespace CardGame.Turns
 			GetStateComponent(ref _moveTile);
 			GetStateComponent(ref _sendInfo);
 			GetStateComponent(ref _zoneHolder);
+			GetStateComponent(ref _networkResource);
 
 			_moveTile.CanPlaceOnGrid = false;
 
@@ -68,6 +70,7 @@ namespace CardGame.Turns
 
 		private void CallEndTurn()
 		{
+			_networkResource.IsTileReceived = false;
 			_sendInfo.SendTurnFinished();
 
 			Controller.GetStateComponent<ScoringAbility>().SetState(typeof(NextPlayerCombinedState));
