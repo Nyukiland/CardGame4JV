@@ -9341,6 +9341,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _inputBlocker: {fileID: 1591250248}
   _transitionScreenCanvasGroup: {fileID: 1145718284}
+  _backgroundImage: {fileID: 683335176}
   _mainMenuGameObject: {fileID: 278460202}
   _mainHostButton: {fileID: 101003214}
   _mainHostRectTransform: {fileID: 101003213}

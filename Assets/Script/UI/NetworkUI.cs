@@ -15,6 +15,7 @@ namespace CardGame.UI
 
 		[SerializeField] private GameObject _inputBlocker;
 		[SerializeField] private CanvasGroup _transitionScreenCanvasGroup;
+		[SerializeField] private Image _backgroundImage;
 
 		[Header("MainMenu")]
 		[SerializeField] private GameObject _mainMenuGameObject;
@@ -367,6 +368,7 @@ namespace CardGame.UI
 		{
 			StopTweens();
 			bool fadeIn = false;
+			_backgroundImage.gameObject.SetActive(true);
 			
 			Sequence fadeSequence = DOTween.Sequence();
 			if (_transitionScreenCanvasGroup.alpha < 0.5f)
@@ -391,7 +393,8 @@ namespace CardGame.UI
 
 			void ShowPanel()
 			{
-				if (closeAll) return;
+				if (closeAll)
+					return;
 				
 				panel.SetActive(true);
 				_currentScreen = nextScreen;
@@ -427,6 +430,7 @@ namespace CardGame.UI
 		private void StartGame()
 		{
 			PlayGameEvent?.Invoke();
+			_backgroundImage.gameObject.SetActive(false);
 		}
 
 		public void QuitClientGame()
