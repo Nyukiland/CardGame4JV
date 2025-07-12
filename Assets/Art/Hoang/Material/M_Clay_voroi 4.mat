@@ -40,18 +40,19 @@ Material:
     m_Floats:
     - _Albedo_Scale_noise: 0.8
     - _Albedo_Time_speed: 1.2
-    - _DisplaceX_General_Multiplier_1: 0.051
-    - _DisplaceY_General_Multiplier_2: 0.005
-    - _DisplaceZ_General_Multiplier: 0.016
+    - _DisplaceX_General_Multiplier_1: 0
+    - _DisplaceY_General_Multiplier_2: 0
+    - _DisplaceZ_General_Multiplier: 0
     - _Displace_Scale_noise: 1.38
     - _Displace_Time_speed: 2
+    - _Glow: 1
     - _Hard_edges_Albeldo_1: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
     - _Albedo_Tiling: {r: 1, g: 1, b: 0, a: 0}
-    - _Color_A: {r: 0.5018867, g: 0.42165545, b: 0.4005624, a: 0}
-    - _Color_B: {r: 0.3509434, g: 0.32220948, b: 0.29863295, a: 0}
+    - _Color_A: {r: 0.3207547, g: 0.30329707, b: 0.2980598, a: 0}
+    - _Color_B: {r: 0.13315706, g: 0.11302953, b: 0.18867922, a: 0}
     - _Displace_Tiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

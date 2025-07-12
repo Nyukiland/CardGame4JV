@@ -64,7 +64,7 @@ Material:
     - _ZWrite: 0
     - _ZWriteControl: 0
     m_Colors:
-    - _Inner_Color: {r: 0.18086433, g: 1, b: 0, a: 0}
+    - _Inner_Color: {r: 0.41216156, g: 0.93962264, b: 0.29606974, a: 0}
     - _Outline_Color: {r: 0.7340198, g: 0.9471697, b: 0.33419007, a: 0}
     - _Vector2: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

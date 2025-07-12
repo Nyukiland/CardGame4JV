@@ -49,10 +49,10 @@ Material:
     - _DstBlend: 10
     - _Opacity: 4
     - _Outline_Hue: 0
-    - _Outline_intensity: 1.71
+    - _Outline_intensity: 5
     - _Outline_max: 1.96
     - _Outline_min: 0.76
-    - _Outline_radius: 39.21
+    - _Outline_radius: 12.2
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SrcBlend: 5
@@ -62,7 +62,7 @@ Material:
     - _ZWriteControl: 0
     m_Colors:
     - _Inner_Color: {r: 0.23848987, g: 0.5698112, b: 0.23545027, a: 0}
-    - _Outline_Color: {r: 0.7340198, g: 0.9471697, b: 0.33419007, a: 0}
+    - _Outline_Color: {r: 0.75560695, g: 0.8490566, b: 0.6047526, a: 0}
     - _Vector2: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
