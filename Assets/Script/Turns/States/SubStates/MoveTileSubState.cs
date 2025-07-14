@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 namespace CardGame.Turns
@@ -141,6 +142,25 @@ namespace CardGame.Turns
 
 			_moveCameraAbility.MoveCamera(currentPos);
 			_zoomAbility.ZoomInProcess(currentPos, Controller.GetActionValue<Vector2>("TouchPos2"));
+			
+			if (IsTouchOverUI()) Debug.Log("TRUE");
+		}
+
+		public static bool IsTouchOverUI()
+		{
+#if UNITY_EDITOR
+			return Mouse.current != null &&
+			       Mouse.current.leftButton.wasPressedThisFrame &&
+			       EventSystem.current != null &&
+			       EventSystem.current.IsPointerOverGameObject(Pointer.current.deviceId);
+#else
+			if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
+			{
+				return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(Pointer.current.deviceId);
+			}
+
+        return false;
+#endif
 		}
 	}
 }
