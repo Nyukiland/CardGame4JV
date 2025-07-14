@@ -20,6 +20,7 @@ namespace CardGame.Turns
 		private MoveCameraAbility _moveCameraAbility;
 		private TauntShakeTileAbility _tauntShakeTileAbility;
 		private ZoomAbility _zoomAbility;
+		private HUDResource _hudResource;
 
 		private bool _isHolding;
 		private CancellationTokenSource _cancelToken;
@@ -46,6 +47,7 @@ namespace CardGame.Turns
 			GetStateComponent(ref _moveCameraAbility);
 			GetStateComponent(ref _tauntShakeTileAbility);
 			GetStateComponent(ref _zoomAbility);
+			GetStateComponent(ref _hudResource);
 		}
 
 		public override void OnActionTriggered(InputAction.CallbackContext context)
@@ -57,6 +59,8 @@ namespace CardGame.Turns
 				if (context.phase == InputActionPhase.Performed)
 				{
 					_startPos = Controller.GetActionValue<Vector2>("TouchPos");
+					if (_hudResource.AmIClickingOnUI(_startPos))
+						return;
 					//Debug.Log("Start touching");
 
 					_cancelToken = new CancellationTokenSource();
@@ -142,25 +146,6 @@ namespace CardGame.Turns
 
 			_moveCameraAbility.MoveCamera(currentPos);
 			_zoomAbility.ZoomInProcess(currentPos, Controller.GetActionValue<Vector2>("TouchPos2"));
-			
-			if (IsTouchOverUI()) Debug.Log("TRUE");
-		}
-
-		public static bool IsTouchOverUI()
-		{
-#if UNITY_EDITOR
-			return Mouse.current != null &&
-			       Mouse.current.leftButton.wasPressedThisFrame &&
-			       EventSystem.current != null &&
-			       EventSystem.current.IsPointerOverGameObject(Pointer.current.deviceId);
-#else
-			if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
-			{
-				return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(Pointer.current.deviceId);
-			}
-
-        return false;
-#endif
 		}
 	}
 }

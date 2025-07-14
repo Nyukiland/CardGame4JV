@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace CardGame.Turns
 {
-    public class HUDResource : Resource
+	public class HUDResource : Resource
 	{
 		[SerializeField] private string _sceneName;
 		[SerializeField] private GameObject _waitingScreen;
@@ -41,7 +41,7 @@ namespace CardGame.Turns
 		[SerializeField] private Image _greyFilter;
 		[SerializeField] private Color _startSliderColor;
 		[SerializeField] private Color _endSliderColor;
-		
+
 		private PlaceTileOnGridAbility _placeTileOnGrid;
 
 		private readonly List<ScoreUI> _scoreList = new();
@@ -50,7 +50,7 @@ namespace CardGame.Turns
 		private Tween _lastHudTween;
 
 		#region Unity Methods
-		
+
 		public override void Init(Controller owner)
 		{
 			OpenHud();
@@ -77,7 +77,7 @@ namespace CardGame.Turns
 		public override void Update(float deltaTime)
 		{
 			_nextTurnSlider.value = _placeTileOnGrid.Timer;
-			
+
 			float percent = _nextTurnSlider.value / _nextTurnSlider.maxValue;
 
 			if (percent > 0.8f)
@@ -123,12 +123,12 @@ namespace CardGame.Turns
 		{
 			_turnCounter.text = $"Turn : {GameManager.Instance.GlobalTurn.ToString()}";
 		}
-		
+
 		public void ToggleNextTurnButton(bool toggle)
 		{
 			_nextTurnButton.gameObject.SetActive(toggle);
 		}
-		
+
 		private void NextTurn()
 		{
 			_placeTileOnGrid.CallEndTurn();
@@ -139,9 +139,9 @@ namespace CardGame.Turns
 			_firstCircle.enabled = false;
 			_secondCircle.enabled = false;
 			_flag.enabled = false;
-			
+
 			int turn = GameManager.Instance.LocalPlayerTurn % 3;
-			
+
 			switch (turn)
 			{
 				case 0:
@@ -159,14 +159,14 @@ namespace CardGame.Turns
 					break;
 			}
 		}
-		
+
 		#region Panels
 
 		public void OpenHud()
 		{
 			if (_isHudOpen)
 				return;
-			
+
 			_isHudOpen = true;
 			CloseAllScreens();
 			_hudScreen.gameObject.SetActive(true);
@@ -179,13 +179,13 @@ namespace CardGame.Turns
 		{
 			if (!_isHudOpen)
 				return;
-			
+
 			_isHudOpen = false;
 			_hudScreen.alpha = 1f;
 			_lastHudTween.Kill();
 			_lastHudTween = DOTween.To(() => _hudScreen.alpha, x => _hudScreen.alpha = x, 0f, 0.5f).OnComplete(CloseAllScreens);
 		}
-		
+
 		public void OpenWin()
 		{
 			CloseAllScreens();
@@ -205,12 +205,12 @@ namespace CardGame.Turns
 			CloseAllScreens();
 
 			Storage.Instance.GetElement<NetworkUI>().OpenMainMenu().Forget();
-				
+
 			SceneManager.UnloadSceneAsync(_sceneName);
 		}
 
 		public void OpenWaitingScreen() => _waitingScreen.SetActive(true);
-		public void CloseWaitingScreen() =>	_waitingScreen.SetActive(false);
+		public void CloseWaitingScreen() => _waitingScreen.SetActive(false);
 
 		public void OpenScoringScreen() => _scoringScreen.SetActive(true);
 		public void CloseScoringScreen() => _scoringScreen.SetActive(false);
@@ -220,12 +220,13 @@ namespace CardGame.Turns
 			_winScreen.SetActive(false);
 			_looseScreen.SetActive(false);
 			_hudScreen.gameObject.SetActive(false);
-			_waitingScreen.SetActive(false);
+			//Temporairement retiré pcq il réapparaissait pas
+			//_waitingScreen.SetActive(false); 
 			_scoringScreen.SetActive(false);
 		}
-		
+
 		#endregion
-		
+
 		private void UpdateScore(int playerIndex, float score)
 		{
 			foreach (ScoreUI scoreUI in _scoreList)
@@ -233,6 +234,16 @@ namespace CardGame.Turns
 				if (scoreUI.PlayerIndex != playerIndex) continue;
 				scoreUI.SetScore(score);
 			}
+		}
+
+		public bool AmIClickingOnUI(Vector2 pos)
+		{
+			if (RectTransformUtility.RectangleContainsScreenPoint(_nextTurnButton.GetComponent<RectTransform>(), pos)) 
+				return true;
+			//ajouter autre element UI au besoin 
+			//voili voilou
+
+			return false;
 		}
 	}
 }
