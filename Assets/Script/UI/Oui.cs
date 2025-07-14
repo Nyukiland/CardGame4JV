@@ -30,5 +30,10 @@ namespace CardGame
         {
             Storage.Instance.GetElement<Controller>().GetStateComponent<HUDResource>().CloseHud();
         }
+
+        public void TestContinue()
+        {
+            Debug.Log($"clic");
+        }
     }
 }

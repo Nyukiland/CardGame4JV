@@ -1018,7 +1018,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8cc62f299ac0acf45aff6aeceb779df5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e8f2f7cd34761174f97f63c060774db6, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1055,7 +1055,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 2
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1065,10 +1065,10 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
+    m_HighlightedSprite: {fileID: 21300000, guid: 8cc62f299ac0acf45aff6aeceb779df5, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 8cc62f299ac0acf45aff6aeceb779df5, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: 8cc62f299ac0acf45aff6aeceb779df5, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: 8cc62f299ac0acf45aff6aeceb779df5, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -1079,7 +1079,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 723519712}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1415483559}
+        m_TargetAssemblyTypeName: CardGame.Oui, Assembly-CSharp
+        m_MethodName: TestContinue
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &892366409
 GameObject:
   m_ObjectHideFlags: 0
@@ -2295,7 +2307,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1366003219
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2334,7 +2346,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1396406284
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3276,7 +3288,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8cc62f299ac0acf45aff6aeceb779df5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e8f2f7cd34761174f97f63c060774db6, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3313,7 +3325,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 2
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -3323,10 +3335,10 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
+    m_HighlightedSprite: {fileID: 21300000, guid: 8cc62f299ac0acf45aff6aeceb779df5, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 8cc62f299ac0acf45aff6aeceb779df5, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: 8cc62f299ac0acf45aff6aeceb779df5, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: 8cc62f299ac0acf45aff6aeceb779df5, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -3337,7 +3349,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1828728336}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1415483559}
+        m_TargetAssemblyTypeName: CardGame.Oui, Assembly-CSharp
+        m_MethodName: TestContinue
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1947298397
 GameObject:
   m_ObjectHideFlags: 0
