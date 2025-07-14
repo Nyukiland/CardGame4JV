@@ -100,7 +100,7 @@ namespace CardGame.Turns
 
 		private async UniTask WaitALittle()
 		{
-			await UniTask.WaitUntil(() => GameManager.Instance.GlobalTurn != _prevTurn);
+			await UniTask.WaitUntil(() => GameManager.Instance.GlobalTurn != _prevTurn || GameManager.Instance.GlobalTurn == 0);
 
 			if (GameManager.Instance.GameIsFinished)
 				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(EndGameCombinedState));

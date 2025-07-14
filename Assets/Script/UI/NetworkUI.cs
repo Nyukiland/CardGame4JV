@@ -72,15 +72,15 @@ namespace CardGame.UI
 		[SerializeField] private GameObject _popUpContainer;
 		[SerializeField] private RectTransform _popUpRectTransform;
 		[SerializeField] private TextMeshProUGUI _popUpTMP;
-		
+
 		// public variables
 		public GameObject PublicHostsContainer => _publicHostsContainer;
 		public const string NONE_BASE_VALUE = "- None -";
 		public string Code { get; set; } = "No code found";
 		public string Password { get; set; } = "No password found";
 		public string SessionName { get; set; } = "No session name found";
-		public bool IsPublicShown { get; private set; } = true;     
-		
+		public bool IsPublicShown { get; private set; } = true;
+
 		private List<Tween> _currentMenuTweens = new List<Tween>();
 		private List<Vector3> _currentMenuPosition = new List<Vector3>();
 		private List<RectTransform> _currentMenuRectTransform = new List<RectTransform>();
@@ -115,27 +115,27 @@ namespace CardGame.UI
 			Screen.orientation = ScreenOrientation.LandscapeLeft;
 			_popUpContainer.SetActive(false);
 		}
-		
+
 		private void Awake()
 		{
 			Storage.Instance.Register(this);
-			
+
 			// Buttons
 			_mainHostButton.onClick.AddListener(OpenBeforeHost);
 			_mainConnectButton.onClick.AddListener(OpenBeforeClient);
 			_mainSoloButton.onClick.AddListener(StartGame);
 			_hostButton.onClick.AddListener(CallStartHostEvent);
-			_hostBackButton.onClick.AddListener(()=>OpenMainMenu().Forget());
+			_hostBackButton.onClick.AddListener(() => OpenMainMenu().Forget());
 			_copyCodeButton.onClick.AddListener(CallCopyEvent);
 			_unHostButton.onClick.AddListener(CallUnhostEvent);
 			_playButton.onClick.AddListener(StartGame);
 			_connectButton.onClick.AddListener(CallJoinGameEvent);
 			_quitGameButton.onClick.AddListener(QuitClientGame);
-			_clientBackButton.onClick.AddListener(()=>OpenMainMenu().Forget());
-			_hostDistantButton.onClick.AddListener(()=>ToggleDistant(true));
-			_hostLocalButton.onClick.AddListener(()=>ToggleDistant(false));
-			_clientDistantButton.onClick.AddListener(()=>ToggleDistant(true));
-			_clientLocalButton.onClick.AddListener(()=>ToggleDistant(false));
+			_clientBackButton.onClick.AddListener(() => OpenMainMenu().Forget());
+			_hostDistantButton.onClick.AddListener(() => ToggleDistant(true));
+			_hostLocalButton.onClick.AddListener(() => ToggleDistant(false));
+			_clientDistantButton.onClick.AddListener(() => ToggleDistant(true));
+			_clientLocalButton.onClick.AddListener(() => ToggleDistant(false));
 
 			// Inputs fields
 			_sessionNameInput.onEndEdit.AddListener(UpdateHostInputs);
@@ -148,7 +148,7 @@ namespace CardGame.UI
 			// Toggles
 			_publicHostToggle.onValueChanged.AddListener(TogglePublicGames);
 			_publicFindToggle.onValueChanged.AddListener(TogglePublicGames);
-			
+
 			_transitionScreenCanvasGroup.alpha = 1f;
 
 			OpenMainMenu().Forget();
@@ -161,17 +161,17 @@ namespace CardGame.UI
 			_mainConnectButton.onClick.RemoveListener(OpenBeforeClient);
 			_mainSoloButton.onClick.RemoveListener(StartGame);
 			_hostButton.onClick.RemoveListener(CallStartHostEvent);
-			_hostBackButton.onClick.RemoveListener(()=>OpenMainMenu().Forget());
+			_hostBackButton.onClick.RemoveListener(() => OpenMainMenu().Forget());
 			_copyCodeButton.onClick.RemoveListener(CallCopyEvent);
 			_unHostButton.onClick.RemoveListener(CallUnhostEvent);
 			_playButton.onClick.RemoveListener(StartGame);
 			_connectButton.onClick.RemoveListener(CallJoinGameEvent);
 			_quitGameButton.onClick.RemoveListener(QuitClientGame);
-			_clientBackButton.onClick.RemoveListener(()=>OpenMainMenu().Forget());
-			_hostDistantButton.onClick.RemoveListener(()=>ToggleDistant(true));
-			_hostLocalButton.onClick.RemoveListener(()=>ToggleDistant(false));
-			_clientDistantButton.onClick.RemoveListener(()=>ToggleDistant(true));
-			_clientLocalButton.onClick.RemoveListener(()=>ToggleDistant(false));
+			_clientBackButton.onClick.RemoveListener(() => OpenMainMenu().Forget());
+			_hostDistantButton.onClick.RemoveListener(() => ToggleDistant(true));
+			_hostLocalButton.onClick.RemoveListener(() => ToggleDistant(false));
+			_clientDistantButton.onClick.RemoveListener(() => ToggleDistant(true));
+			_clientLocalButton.onClick.RemoveListener(() => ToggleDistant(false));
 
 			// Inputs fields
 			_sessionNameInput.onEndEdit.RemoveListener(UpdateHostInputs);
@@ -202,7 +202,7 @@ namespace CardGame.UI
 		{
 			ToggleDistant(_isDistant);
 			TogglePublicGames(IsPublicShown);
-				
+
 			if (string.IsNullOrEmpty(_sessionNameInput.text))
 			{
 				_hostButtonGrey.gameObject.SetActive(true);
@@ -235,7 +235,7 @@ namespace CardGame.UI
 		{
 			ToggleDistant(_isDistant);
 			TogglePublicGames(IsPublicShown);
-				
+
 			_publicHostsContainer.SetActive(IsPublicShown);
 			if (string.IsNullOrEmpty(_codeInput.text))
 			{
@@ -275,7 +275,7 @@ namespace CardGame.UI
 		#endregion
 
 		#region Change Panels
-		
+
 		public async UniTask OpenMainMenu()
 		{
 			OpenPanel(_mainMenuGameObject, CurrentScreen.MainMenu);
@@ -306,7 +306,7 @@ namespace CardGame.UI
 			_sessionNameText.text = SessionName;
 			_codeText.text = Code;
 			_passwordText.text = Password;
-			
+
 			_inputBlocker.SetActive(true);
 		}
 
@@ -325,18 +325,19 @@ namespace CardGame.UI
 		public void CloseMenu()
 		{
 			OpenPanel(null, CurrentScreen.None, true);
+			_backgroundImage.gameObject.SetActive(false);
 		}
 
 		private async UniTask<Tween> SaveTween(RectTransform target, float xOffset, float yOffset, float duration = 0, bool reverse = false)
 		{
 			if (duration == 0) duration = 1f;
-			
+
 			Canvas.ForceUpdateCanvases();
 			await UniTask.WaitForFixedUpdate();
-			
+
 			Vector2 fromPosition = new(target.anchoredPosition.x + xOffset, target.anchoredPosition.y + yOffset);
 			Tween currentTween = reverse ? target.DOAnchorPos(fromPosition, duration) : target.DOAnchorPos(fromPosition, duration).From();
-			
+
 			_currentMenuTweens.Add(currentTween);
 			_currentMenuPosition.Add(fromPosition);
 			_currentMenuRectTransform.Add(target);
@@ -369,7 +370,7 @@ namespace CardGame.UI
 			StopTweens();
 			bool fadeIn = false;
 			_backgroundImage.gameObject.SetActive(true);
-			
+
 			Sequence fadeSequence = DOTween.Sequence();
 			if (_transitionScreenCanvasGroup.alpha < 0.5f)
 			{
@@ -378,9 +379,9 @@ namespace CardGame.UI
 					x => _transitionScreenCanvasGroup.alpha = x, 1f, 0.3f).OnComplete(ShowPanel));
 			}
 
-			fadeSequence.Append(DOTween.To(()=>_transitionScreenCanvasGroup.alpha, x => _transitionScreenCanvasGroup.alpha = x, 0f, 0.3f));
+			fadeSequence.Append(DOTween.To(() => _transitionScreenCanvasGroup.alpha, x => _transitionScreenCanvasGroup.alpha = x, 0f, 0.3f));
 			fadeSequence.Play();
-			
+
 			// Warning : only open from Change Panel methods 
 			_mainMenuGameObject.SetActive(false);
 			_beforeHostGameObject.SetActive(false);
@@ -395,7 +396,7 @@ namespace CardGame.UI
 			{
 				if (closeAll)
 					return;
-				
+
 				panel.SetActive(true);
 				_currentScreen = nextScreen;
 			}
@@ -406,7 +407,7 @@ namespace CardGame.UI
 			_codeText.text = Code;
 			_inputBlocker.SetActive(false);
 		}
-		
+
 		private void TogglePublicGames(bool toggle)
 		{
 			IsPublicShown = toggle;
@@ -450,12 +451,12 @@ namespace CardGame.UI
 			_popUpTMP.text = text;
 			_popUpContainer.SetActive(true);
 			StopTweens();
-			
+
 			// Sequence popUpSequence = DOTween.Sequence();
 			// popUpSequence.Append(await SaveTween(_popUpRectTransform, 0f, -100f));
 			// popUpSequence.Append(await SaveTween(_popUpRectTransform, 0f, 100f, 1.5f, true));
 			// popUpSequence.Play();
-			
+
 			await UniTask.WaitForSeconds(duration);
 			_popUpContainer.SetActive(false);
 		}
