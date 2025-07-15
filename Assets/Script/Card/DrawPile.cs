@@ -27,6 +27,7 @@ namespace CardGame
 
         private async UniTask AsyncAwake()
         {
+			await UniTask.Delay(200); // proper way would be to wait for the state machine to launch completly
             await LoadTiles();
 
             _tileInDrawPile = new List<TileSettings>();

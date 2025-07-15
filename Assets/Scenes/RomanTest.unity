@@ -3527,7 +3527,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cddcbf3021420243847a46664363d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isDestroyOnLoad: 1
+  _isDestroyOnLoad: 0
   _eventSystem: {fileID: 588357961}
   _scoreText: {fileID: 0}
 --- !u!4 &1952468377
