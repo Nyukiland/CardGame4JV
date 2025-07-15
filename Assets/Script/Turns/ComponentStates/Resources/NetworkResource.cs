@@ -7,6 +7,7 @@ using CardGame.Net;
 using UnityEngine;
 using CardGame.UI;
 using System;
+using CardGame.Utility;
 
 namespace CardGame.Turns
 {
@@ -129,6 +130,13 @@ namespace CardGame.Turns
 
 		private void UpdateHand(int ID)
 		{
+			UpdateHandAsync(ID).Forget();
+		}
+
+		private async UniTask UpdateHandAsync(int ID)
+		{
+			await UniTask.WaitUntil(() => Storage.Instance.GetElement<DrawPile>().TilesLoadedComplete);
+
 			TileSettings tileSettings = _drawPile.GetTileFromID(ID);
 
 			_createHand.CreateTile(tileSettings);
@@ -138,6 +146,13 @@ namespace CardGame.Turns
 
 		private void UpdateGrid(DataToSendList dataList)
 		{
+			UpdateGridAsync(dataList).Forget();
+		}
+
+		private async UniTask UpdateGridAsync(DataToSendList dataList)
+		{
+			await UniTask.WaitUntil(() => Storage.Instance.GetElement<DrawPile>().TilesLoadedComplete);
+
 			foreach (DataToSend data in dataList.DataList)
 			{
 				TileData tile = NetUtility.FromDataToTile(data, _drawPile.AllTileSettings);

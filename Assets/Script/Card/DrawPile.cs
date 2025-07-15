@@ -19,6 +19,7 @@ namespace CardGame
 		private static HashSet<TileSettings> _hashSet;
 
         public event System.Action OnTilesLoaded; // Pour call la grid generation
+		public bool TilesLoadedComplete { get; private set; } = false;
 
         private void Awake()
 		{
@@ -50,6 +51,7 @@ namespace CardGame
             }
 
             OnTilesLoaded?.Invoke(); // start la grid
+			TilesLoadedComplete = true;
         }
 
 
