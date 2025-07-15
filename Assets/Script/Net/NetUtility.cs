@@ -98,12 +98,6 @@ namespace CardGame.Net
 				tile.RotateTile();
 			}
 
-			// Override zones in case of changes during gameplay
-			for (int i = 0; i < 4; i++)
-			{
-				tile.Zones[i] = data.Zones[i];
-			}
-
 			return tile;
 		}
 	}

@@ -14,7 +14,6 @@ namespace CardGame.Net
 		// === DONNÉES TILE ===
 		public int TileSettingsId { get; private set; }
 		public int TileRotationCount { get; private set; }
-		public ZoneData[] Zones { get; private set; } = new ZoneData[4];
 		public bool HasFlag { get; private set; }
 		public int PlayerOwner { get; private set; }
 
@@ -26,11 +25,6 @@ namespace CardGame.Net
 			TileRotationCount = tileData.TileRotationCount;
 			HasFlag = tileData.HasFlag;
 			PlayerOwner = tileData.OwnerPlayerIndex;
-
-			for (int i = 0; i < 4; i++)
-			{
-				Zones[i] = tileData.Zones[i];
-			}
 		}
 
 		// === CONSTRUCTEUR PAR DÉFAUT POUR LE RÉSEAU ===
@@ -56,24 +50,6 @@ namespace CardGame.Net
 			if (serializer.IsReader)
 				TileRotationCount = rot;
 
-			if (serializer.IsReader)
-				Zones = new ZoneData[4];
-
-			for (int i = 0; i < 4; i++)
-			{
-				ENVIRONEMENT_TYPE env = default;
-				bool isOpen = false;
-
-				serializer.SerializeValue(ref env);
-				serializer.SerializeValue(ref isOpen);
-
-				if (serializer.IsReader)
-				{
-					Zones[i].environment = env;
-					Zones[i].isOpen = isOpen;
-				}
-			}
-
 			int playerIndex = PlayerOwner;
 			serializer.SerializeValue(ref playerIndex);
 			if (serializer.IsReader)
@@ -94,18 +70,13 @@ namespace CardGame.Net
 			if (HasFlag != other.HasFlag) return false;
 			if (PlayerOwner != other.PlayerOwner) return false;
 
-			for (int i = 0; i < 4; i++)
-				if (!Zones[i].Equals(other.Zones[i]))
-					return false;
-
 			return true;
 		}
 
 		public override int GetHashCode()
 		{
 			int hash = HashCode.Combine(Position, TileSettingsId, TileRotationCount, HasFlag, PlayerOwner);
-			foreach (var zone in Zones)
-				hash = HashCode.Combine(hash, zone.environment, zone.isOpen);
+			
 			return hash;
 		}
 	}
