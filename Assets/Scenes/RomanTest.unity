@@ -3666,12 +3666,12 @@ MonoBehaviour:
       data:
         Enabled: 0
         _drawPile: {fileID: 1031992356}
-        _maxTimeTurn: 30
+        _maxTimeTurn: 0.1
     - rid: 542522587139801179
       type: {class: DiscardCardAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        _maxTileInHand: 7
+        _maxTileInHand: 20
         _drawPile: {fileID: 1031992356}
         _discardArea: {fileID: 892366410}
     - rid: 542522706916278362
@@ -3716,7 +3716,7 @@ MonoBehaviour:
       type: {class: AutoPlayAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        _waitSec: 1
+        _waitSec: 0.1
     - rid: 5245693158766149720
       type: {class: SoundResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:

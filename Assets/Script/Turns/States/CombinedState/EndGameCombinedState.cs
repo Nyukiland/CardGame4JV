@@ -1,5 +1,7 @@
 using CardGame.StateMachine;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CardGame.Turns
 {
@@ -11,6 +13,8 @@ namespace CardGame.Turns
 		{
 			base.OnEnter();
 
+			RestartPlaymodeFromRuntime();
+
 			GetStateComponent(ref _hud);
 
 			if (GameManager.Instance.AmIWinning())
@@ -18,5 +22,28 @@ namespace CardGame.Turns
 			else
 				_hud.OpenLoose();
 		}
+
+#if UNITY_EDITOR
+		private static bool restartRequested = false;
+
+		public void RestartPlaymodeFromRuntime()
+		{
+			restartRequested = true;
+			EditorApplication.isPlaying = false;
+		}
+
+		[InitializeOnLoadMethod]
+		static void OnProjectLoadedInEditor()
+		{
+			EditorApplication.update += () =>
+			{
+				if (restartRequested && !EditorApplication.isPlaying)
+				{
+					restartRequested = false;
+					EditorApplication.isPlaying = true;
+				}
+			};
+		}
+#endif
 	}
 }

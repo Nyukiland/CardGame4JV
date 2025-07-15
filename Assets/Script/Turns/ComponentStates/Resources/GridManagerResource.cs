@@ -265,7 +265,10 @@ namespace CardGame.Turns
 					if (data != null)
 					{
 						if (myZones[myZone].environment == ENVIRONEMENT_TYPE.None)
-							UnityEngine.Debug.LogWarning($"[{nameof(GridManagerResource)}] tile placed environement is none");
+						{
+							UnityEngine.Debug.LogError($"[{nameof(GridManagerResource)}] tile placed environement is none");
+							UnityEditor.EditorApplication.isPaused = true;
+						}
 
 						if (myZones[myZone].environment != ENVIRONEMENT_TYPE.None &&
 							data.Zones[otherZone].environment != ENVIRONEMENT_TYPE.None && 
