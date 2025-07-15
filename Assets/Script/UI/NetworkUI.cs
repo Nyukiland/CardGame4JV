@@ -147,7 +147,9 @@ namespace CardGame.UI
 
 			// Toggles
 			_publicHostToggle.onValueChanged.AddListener(TogglePublicGames);
+			_publicHostToggle.isOn = IsPublicShown;
 			_publicFindToggle.onValueChanged.AddListener(TogglePublicGames);
+			_publicFindToggle.isOn = IsPublicShown;
 
 			_transitionScreenCanvasGroup.alpha = 1f;
 
