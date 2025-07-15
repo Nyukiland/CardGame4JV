@@ -9342,6 +9342,7 @@ MonoBehaviour:
   _inputBlocker: {fileID: 1591250248}
   _transitionScreenCanvasGroup: {fileID: 1145718284}
   _backgroundImage: {fileID: 683335176}
+  _sceneName: RomanTest
   _mainMenuGameObject: {fileID: 278460202}
   _mainHostButton: {fileID: 101003214}
   _mainHostRectTransform: {fileID: 101003213}
@@ -9415,9 +9416,9 @@ MonoBehaviour:
   _netCommunication: {fileID: 0}
   _networkUI: {fileID: 1914167660}
   _displayPublicPrefab: {fileID: 5517502184698046060, guid: 75282f85b0baf2c47add13a6bbb1982c, type: 3}
-  _sceneName: RomanTest
   _maxPlayer: 4
   _lanSearch: {fileID: 0}
+  _sceneName: RomanTest
 --- !u!4 &1914167663
 Transform:
   m_ObjectHideFlags: 0
@@ -9448,8 +9449,8 @@ MonoBehaviour:
   _netCommunication: {fileID: 0}
   _networkUI: {fileID: 1914167660}
   _displayPublicPrefab: {fileID: 5517502184698046060, guid: 75282f85b0baf2c47add13a6bbb1982c, type: 3}
-  _sceneName: RomanTest
   _maxPlayer: 4
+  _sceneName: RomanTest
 --- !u!1 &1923664815
 GameObject:
   m_ObjectHideFlags: 0

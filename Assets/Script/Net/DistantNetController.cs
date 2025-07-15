@@ -17,6 +17,8 @@ namespace CardGame.Net
 {
 	public class DistantNetController : NetControllerParent
 	{
+		[SerializeField] private string _sceneName;
+		
 		private string _lobbyId;
 		private bool _publicSearchOn;
 		private CancellationTokenSource _heartbeatCancellationToken;
@@ -175,7 +177,7 @@ namespace CardGame.Net
 			if (string.IsNullOrEmpty(code)) code = _networkUI.Code;
 			if (string.IsNullOrEmpty(code)) return;
 			
-			_networkUI.OpenAfterClient();
+			await _networkUI.OpenAfterClient();
 
 			try
 			{
@@ -191,7 +193,7 @@ namespace CardGame.Net
 			catch (RelayServiceException e)
 			{
 				Debug.LogError($"Failed to join relay: {e.Message}");
-				_networkUI.OpenBeforeClient();
+				await _networkUI.OpenBeforeClient();
 				_networkUI.SpawnPopUp("No game has been found", 2f).Forget();
 			}
 			

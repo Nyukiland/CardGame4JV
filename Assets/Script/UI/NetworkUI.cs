@@ -5,6 +5,7 @@ using DG.Tweening;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace CardGame.UI
@@ -16,7 +17,10 @@ namespace CardGame.UI
 		[SerializeField] private GameObject _inputBlocker;
 		[SerializeField] private CanvasGroup _transitionScreenCanvasGroup;
 		[SerializeField] private Image _backgroundImage;
-
+		
+		[Header("SceneManagement")]
+		[SerializeField] private string _sceneName;
+		
 		[Header("MainMenu")]
 		[SerializeField] private GameObject _mainMenuGameObject;
 		[SerializeField] private Button _mainHostButton;
@@ -121,14 +125,14 @@ namespace CardGame.UI
 			Storage.Instance.Register(this);
 
 			// Buttons
-			_mainHostButton.onClick.AddListener(OpenBeforeHost);
-			_mainConnectButton.onClick.AddListener(OpenBeforeClient);
-			_mainSoloButton.onClick.AddListener(StartGame);
+			_mainHostButton.onClick.AddListener(() => OpenBeforeHost().Forget());
+			_mainConnectButton.onClick.AddListener(() => OpenBeforeClient().Forget());
+			_mainSoloButton.onClick.AddListener(StartSoloGame);
 			_hostButton.onClick.AddListener(CallStartHostEvent);
 			_hostBackButton.onClick.AddListener(() => OpenMainMenu().Forget());
 			_copyCodeButton.onClick.AddListener(CallCopyEvent);
 			_unHostButton.onClick.AddListener(CallUnhostEvent);
-			_playButton.onClick.AddListener(StartGame);
+			_playButton.onClick.AddListener(StartMultiGame);
 			_connectButton.onClick.AddListener(CallJoinGameEvent);
 			_quitGameButton.onClick.AddListener(QuitClientGame);
 			_clientBackButton.onClick.AddListener(() => OpenMainMenu().Forget());
@@ -147,9 +151,7 @@ namespace CardGame.UI
 
 			// Toggles
 			_publicHostToggle.onValueChanged.AddListener(TogglePublicGames);
-			_publicHostToggle.isOn = IsPublicShown;
 			_publicFindToggle.onValueChanged.AddListener(TogglePublicGames);
-			_publicFindToggle.isOn = IsPublicShown;
 
 			_transitionScreenCanvasGroup.alpha = 1f;
 
@@ -159,14 +161,14 @@ namespace CardGame.UI
 		private void OnDestroy()
 		{
 			// Buttons
-			_mainHostButton.onClick.RemoveListener(OpenBeforeHost);
-			_mainConnectButton.onClick.RemoveListener(OpenBeforeClient);
-			_mainSoloButton.onClick.RemoveListener(StartGame);
+			_mainHostButton.onClick.RemoveListener(() => OpenBeforeHost().Forget());
+			_mainConnectButton.onClick.RemoveListener(() => OpenBeforeClient().Forget());
+			_mainSoloButton.onClick.RemoveListener(StartSoloGame);
 			_hostButton.onClick.RemoveListener(CallStartHostEvent);
 			_hostBackButton.onClick.RemoveListener(() => OpenMainMenu().Forget());
 			_copyCodeButton.onClick.RemoveListener(CallCopyEvent);
 			_unHostButton.onClick.RemoveListener(CallUnhostEvent);
-			_playButton.onClick.RemoveListener(StartGame);
+			_playButton.onClick.RemoveListener(StartMultiGame);
 			_connectButton.onClick.RemoveListener(CallJoinGameEvent);
 			_quitGameButton.onClick.RemoveListener(QuitClientGame);
 			_clientBackButton.onClick.RemoveListener(() => OpenMainMenu().Forget());
@@ -200,7 +202,7 @@ namespace CardGame.UI
 			UpdateBeforeClient();
 		}
 
-		private void UpdateBeforeHost()
+		private UniTask UpdateBeforeHost()
 		{
 			ToggleDistant(_isDistant);
 			TogglePublicGames(IsPublicShown);
@@ -215,9 +217,11 @@ namespace CardGame.UI
 				_hostButtonGrey.gameObject.SetActive(false);
 				_hostButton.interactable = true;
 			}
+			
+			return UniTask.CompletedTask;
 		}
 
-		public void UpdateAfterHost()
+		public UniTask UpdateAfterHost()
 		{
 			int playerNumber = NetworkManager.Singleton.ConnectedClients.Count;
 			_playersNumberText.text = $"{playerNumber}/4 players";
@@ -231,6 +235,8 @@ namespace CardGame.UI
 				_playButtonGrey.gameObject.SetActive(false);
 				_playButton.interactable = true;
 			}
+			
+			return UniTask.CompletedTask;
 		}
 
 		private void UpdateBeforeClient()
@@ -280,7 +286,7 @@ namespace CardGame.UI
 
 		public async UniTask OpenMainMenu()
 		{
-			OpenPanel(_mainMenuGameObject, CurrentScreen.MainMenu);
+			await OpenPanel(_mainMenuGameObject, CurrentScreen.MainMenu);
 			Sequence mainMenuSequence = DOTween.Sequence();
 			mainMenuSequence.Join(await SaveTween(_mainHostRectTransform, -500f, 0f));
 			mainMenuSequence.Join(await SaveTween(_mainConnectRectTransform, -500f, 0f, 1.5f));
@@ -288,20 +294,20 @@ namespace CardGame.UI
 			mainMenuSequence.Play();
 		}
 
-		private void OpenBeforeHost()
+		private async UniTask OpenBeforeHost()
 		{
-			OpenPanel(_beforeHostGameObject, CurrentScreen.BeforeHost);
+			await OpenPanel(_beforeHostGameObject, CurrentScreen.BeforeHost);
 
 			UpdateBeforeHost();
 		}
 
-		private void OpenAfterHost()
+		private async UniTask OpenAfterHost()
 		{
 			SessionName = _sessionNameInput.text;
 			Password = _passwordInputHost.text;
 			if (string.IsNullOrEmpty(Password)) Password = NONE_BASE_VALUE;
 
-			OpenPanel(_afterHostGameObject, CurrentScreen.AfterHost);
+			await OpenPanel(_afterHostGameObject, CurrentScreen.AfterHost);
 
 			UpdateAfterHost();
 
@@ -312,21 +318,25 @@ namespace CardGame.UI
 			_inputBlocker.SetActive(true);
 		}
 
-		public void OpenBeforeClient()
+		public async UniTask OpenBeforeClient()
 		{
-			OpenPanel(_beforeClientGameObject, CurrentScreen.BeforeClient);
+			await OpenPanel(_beforeClientGameObject, CurrentScreen.BeforeClient);
 
 			UpdateBeforeClient();
 		}
 
-		public void OpenAfterClient()
+		public async UniTask OpenAfterClient()
 		{
-			OpenPanel(_afterClientGameObject, CurrentScreen.AfterClient);
+			await OpenPanel(_afterClientGameObject, CurrentScreen.AfterClient);
 		}
 
 		public void CloseMenu()
 		{
-			OpenPanel(null, CurrentScreen.None, true);
+			ClosePrivateMenu().Forget();
+		}
+		private async UniTask ClosePrivateMenu()
+		{
+			await OpenPanel(null, CurrentScreen.None, true);
 			_backgroundImage.gameObject.SetActive(false);
 		}
 
@@ -367,7 +377,7 @@ namespace CardGame.UI
 
 		#region Methods
 
-		private void OpenPanel(GameObject panel, CurrentScreen nextScreen, bool closeAll = false)
+		private async UniTask OpenPanel(GameObject panel, CurrentScreen nextScreen, bool closeAll = false)
 		{
 			StopTweens();
 			bool fadeIn = false;
@@ -380,9 +390,11 @@ namespace CardGame.UI
 				fadeSequence.Append(DOTween.To(() => _transitionScreenCanvasGroup.alpha,
 					x => _transitionScreenCanvasGroup.alpha = x, 1f, 0.3f).OnComplete(ShowPanel));
 			}
-
+			
 			fadeSequence.Append(DOTween.To(() => _transitionScreenCanvasGroup.alpha, x => _transitionScreenCanvasGroup.alpha = x, 0f, 0.3f));
 			fadeSequence.Play();
+			
+			// await fadeSequence.AsyncWaitForCompletion();
 
 			// Warning : only open from Change Panel methods 
 			_mainMenuGameObject.SetActive(false);
@@ -417,30 +429,43 @@ namespace CardGame.UI
 			if (_currentScreen == CurrentScreen.BeforeHost)
 			{
 				// Hosting will be public
+				_publicHostToggle.isOn = IsPublicShown;
 				return;
 			}
 
 			if (_currentScreen == CurrentScreen.BeforeClient)
 			{
-				_publicHostsContainer.SetActive(toggle);
-				TogglePublicEvent?.Invoke(toggle);
+				_publicHostsContainer.SetActive(IsPublicShown);
+				TogglePublicEvent?.Invoke(IsPublicShown);
+				
+				_publicFindToggle.isOn = IsPublicShown;
 				return;
 			}
 
 			Debug.LogWarning($"The public hosting just got toggled in a screen that shouldn't be able to do it ({_currentScreen}).)");
 		}
 
-		private void StartGame()
+		private void StartMultiGame()
 		{
 			PlayGameEvent?.Invoke();
 			_backgroundImage.gameObject.SetActive(false);
+		}
+
+		private void StartSoloGame()
+		{
+			CloseMenu();
+
+			if (NetworkManager.Singleton.ConnectedClients.Count <= 1)
+			{
+				SceneManager.LoadScene(_sceneName, LoadSceneMode.Additive);
+			}
 		}
 
 		public void QuitClientGame()
 		{
 			QuitGameEvent?.Invoke();
 
-			OpenBeforeClient();
+			OpenBeforeClient().Forget();
 		}
 
 		public void ToggleInputBlock(bool toggle)
@@ -470,7 +495,7 @@ namespace CardGame.UI
 		private void CallStartHostEvent()
 		{
 			StartHostEvent?.Invoke();
-			OpenAfterHost();
+			OpenAfterHost().Forget();
 		}
 
 		private void CallJoinGameEvent()
@@ -480,13 +505,13 @@ namespace CardGame.UI
 				Password = _passwordInputClient.text;
 
 			JoinGameEvent?.Invoke();
-			OpenAfterClient();
+			OpenAfterClient().Forget();
 		}
 
 		private void CallUnhostEvent()
 		{
 			UnhostEvent?.Invoke();
-			OpenBeforeHost();
+			OpenBeforeHost().Forget();
 		}
 
 		private void CallCopyEvent()

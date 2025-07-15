@@ -13,7 +13,6 @@ namespace CardGame.Turns
 {
 	public class HUDResource : Resource
 	{
-		[SerializeField] private string _sceneName;
 		[SerializeField] private GameObject _waitingScreen;
 		[SerializeField] private GameObject _scoringScreen;
 		[Header("Hud")]
@@ -41,6 +40,8 @@ namespace CardGame.Turns
 		[SerializeField] private Image _greyFilter;
 		[SerializeField] private Color _startSliderColor;
 		[SerializeField] private Color _endSliderColor;
+		
+		public string SceneName;
 
 		private PlaceTileOnGridAbility _placeTileOnGrid;
 
@@ -206,7 +207,7 @@ namespace CardGame.Turns
 
 			Storage.Instance.GetElement<NetworkUI>().OpenMainMenu().Forget();
 
-			SceneManager.UnloadSceneAsync(_sceneName);
+			SceneManager.UnloadSceneAsync(SceneName);
 		}
 
 		public void OpenWaitingScreen() => _waitingScreen.SetActive(true);
@@ -220,7 +221,7 @@ namespace CardGame.Turns
 			_winScreen.SetActive(false);
 			_looseScreen.SetActive(false);
 			_hudScreen.gameObject.SetActive(false);
-			//Temporairement retiré pcq il réapparaissait pas
+			//Temporairement retirï¿½ pcq il rï¿½apparaissait pas
 			//_waitingScreen.SetActive(false); 
 			_scoringScreen.SetActive(false);
 		}
@@ -234,7 +235,7 @@ namespace CardGame.Turns
 				if (scoreUI.PlayerIndex != playerIndex) continue;
 				scoreUI.SetScore(score);
 			}
-		}
+		}	
 
 		public bool AmIClickingOnUI(Vector2 pos)
 		{

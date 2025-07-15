@@ -14,7 +14,6 @@ namespace CardGame.Net
 
 		[SerializeField] protected NetworkUI _networkUI;
 		[SerializeField] protected GameObject _displayPublicPrefab;
-		[SerializeField] protected string _sceneName;
 		[SerializeField, LockUser] protected int _maxPlayer = 4;
 		
 		protected bool _isDistant;

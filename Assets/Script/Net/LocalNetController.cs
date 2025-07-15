@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using CardGame.UI;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace CardGame.Net
 	public class LocalNetController : NetControllerParent
 	{
 		[SerializeField, Disable] private LanSearchBeacon _lanSearch;
+		[SerializeField] private string _sceneName;
 
 		#region Unity Methods
 
@@ -173,7 +175,7 @@ namespace CardGame.Net
 
 			SafeConnectAsync().Forget();
 
-			_networkUI.OpenAfterClient();
+			_networkUI.OpenAfterClient().Forget();
 		}
 
 		protected override void StopHosting()
@@ -226,7 +228,7 @@ namespace CardGame.Net
 			}
 			else
 			{
-				_networkUI.OpenBeforeClient();
+				await _networkUI.OpenBeforeClient();
 				_networkUI.SpawnPopUp("No game has been found", 2f).Forget();
 			}
 			_networkUI.ToggleInputBlock(false);
@@ -301,14 +303,7 @@ namespace CardGame.Net
 
 			_networkUI.CloseMenu();
 
-			if (NetworkManager.Singleton.ConnectedClients.Count <= 1)
-			{
-				SceneManager.LoadScene(_sceneName, LoadSceneMode.Additive);
-			}
-			else
-			{
-				_netCommunication.LoadScene(_sceneName);
-			}
+			_netCommunication.LoadScene(_sceneName);
 		}
 
 		#endregion
