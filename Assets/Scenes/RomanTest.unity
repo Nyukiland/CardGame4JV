@@ -3602,8 +3602,8 @@ MonoBehaviour:
       data:
         Enabled: 0
         _handZone: {fileID: 2013116586}
-        _offsetTop: -1.1
-        _offsetSides: 1
+        _offsetTop: -25
+        _offsetSides: 50
         TileInHand: []
     - rid: 542522248351187035
       type: {class: CreateHandAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
@@ -3639,7 +3639,6 @@ MonoBehaviour:
       type: {class: HUDResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        _sceneName: RomanTest
         _waitingScreen: {fileID: 974108918}
         _scoringScreen: {fileID: 499257716}
         _hudScreen: {fileID: 1109365391}
@@ -3661,6 +3660,7 @@ MonoBehaviour:
         _greyFilter: {fileID: 1502019484}
         _startSliderColor: {r: 1, g: 1, b: 1, a: 1}
         _endSliderColor: {r: 1, g: 0.3820755, b: 0.3820755, a: 1}
+        SceneName: 
     - rid: 542522587139801178
       type: {class: PlaceTileOnGridAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:

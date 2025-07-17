@@ -81,6 +81,8 @@ namespace CardGame.Turns
 			_startdist = 0;
 			_startZoom = 0;
 
+			_zoneHolder.UpdateTileInHandSize();
+			_zoneHolder.UpdatePlacementInHand(true);
 			_zoneHolder.HideMyHand(false);
 		}
 	}
