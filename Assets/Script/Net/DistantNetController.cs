@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.Services.Analytics;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
@@ -64,6 +65,8 @@ namespace CardGame.Net
 			await UnityServices.InitializeAsync();
 			if (!AuthenticationService.Instance.IsSignedIn)
 				await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+			AnalyticsService.Instance.StartDataCollection();
 		}
 
 		protected override void StopHosting()

@@ -224,6 +224,9 @@ namespace CardGame.StateMachine
 		private void OnDestroy()
 		{
 			GetStateComponent<ZoneHolderResource>().EndDestroyTile();
+
+			if (Storage.CheckInstance()) 
+				Storage.Instance.Delete(this);
 		}
 	}
 }

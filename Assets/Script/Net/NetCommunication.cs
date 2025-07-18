@@ -6,6 +6,7 @@ using Unity.Netcode;
 using CardGame.Card;
 using UnityEngine;
 using System;
+using Unity.Services.Analytics;
 
 namespace CardGame.Net
 {
@@ -196,6 +197,8 @@ namespace CardGame.Net
 
 			Instances.TryGetValue(senderClientId, out NetCommunication instance);
 
+			AnalyticsService.Instance.RecordEvent(new ConnectionCountEvent(connectionCount));
+
 			for (int i = 0; i < connectionCount; i++)
 			{
 				int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
@@ -311,6 +314,21 @@ namespace CardGame.Net
 		{
 			ReceiveEventTest?.Invoke(current);
 		}
+		#endregion
+
+		//---------------------------------------------
+		#region Analitics
+
+		public class ConnectionCountEvent : Unity.Services.Analytics.Event
+		{
+			public int ConnectionCount { set { SetParameter("ConnectionCount", value); } }
+
+			public ConnectionCountEvent(int connection) : base("ConnectionCountEvent")
+			{
+				ConnectionCount = connection;
+			}
+		}
+
 		#endregion
 	}
 }

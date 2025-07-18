@@ -2,10 +2,14 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.Services.Analytics;
 using UnityEngine;
 
 public class GameManager : NetworkBehaviour, ISelectableInfo
 {
+	public delegate void ScoreEventDelegate(int playerId, float floatEvent);
+	public ScoreEventDelegate ScoreEvent;
+
 	private static GameManager _instance;
 	public static GameManager Instance
 	{
@@ -195,11 +199,6 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 	}
 
-	public delegate void ScoreEventDelegate(int playerId, float floatEvent);
-	public ScoreEventDelegate ScoreEvent;
-
-	#endregion
-
 	public bool GameIsFinished
 	{
 		get
@@ -217,6 +216,9 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		}
 	}
 
+	#endregion
+
+	#region Methods
 	public bool AmIWinning()
 	{
 		bool isHigher = true;
@@ -230,6 +232,8 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 					isHigher = false;
 					break;
 				}
+
+				AnalyticsService.Instance.RecordEvent(new EndScoringEvent(score));
 			}
 		}
 		else
@@ -246,8 +250,6 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 
 		return isHigher;
 	}
-
-	#region Methods
 
 	public void ResetManager()
 	{
@@ -279,6 +281,8 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 				OnlineScores[PlayerIndex] += score;
 			else
 				OnlineScores[index] += score;
+
+			AnalyticsService.Instance.RecordEvent(new ScoringEvent(score));
 		}
 		else
 		{
@@ -333,4 +337,29 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	}
 
 	#endregion
+
+	#region Analitics
+
+	public class ScoringEvent : Unity.Services.Analytics.Event
+	{
+		public int ScoreInt { set { SetParameter("ScoreInt", value); } }
+
+		public ScoringEvent(int score) : base("ScoringEvent")
+		{
+			ScoreInt = score;
+		}
+	}
+
+	public class EndScoringEvent : Unity.Services.Analytics.Event
+	{
+		public int ScoreInt { set { SetParameter("ScoreInt", value); } }
+
+		public EndScoringEvent(int score) : base("EndScoringEvent")
+		{
+			ScoreInt = score;
+		}
+	}
+
+	#endregion
+
 }
