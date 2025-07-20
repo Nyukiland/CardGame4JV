@@ -286,12 +286,13 @@ namespace CardGame.UI
 
 		public async UniTask OpenMainMenu()
 		{
+			QuitGameEvent?.Invoke();
 			await OpenPanel(_mainMenuGameObject, CurrentScreen.MainMenu);
-			Sequence mainMenuSequence = DOTween.Sequence();
-			mainMenuSequence.Join(await SaveTween(_mainHostRectTransform, -500f, 0f));
-			mainMenuSequence.Join(await SaveTween(_mainConnectRectTransform, -500f, 0f, 1.5f));
-			mainMenuSequence.Join(await SaveTween(_mainSoloRectTransform, -500f, 0f, 2f));
-			mainMenuSequence.Play();
+			// Sequence mainMenuSequence = DOTween.Sequence();
+			// mainMenuSequence.Join(await SaveTween(_mainHostRectTransform, -500f, 0f));
+			// mainMenuSequence.Join(await SaveTween(_mainConnectRectTransform, -500f, 0f, 1.5f));
+			// mainMenuSequence.Join(await SaveTween(_mainSoloRectTransform, -500f, 0f, 2f));
+			// mainMenuSequence.Play();
 		}
 
 		private async UniTask OpenBeforeHost()
@@ -379,20 +380,21 @@ namespace CardGame.UI
 
 		private async UniTask OpenPanel(GameObject panel, CurrentScreen nextScreen, bool closeAll = false)
 		{
-			StopTweens();
+			// StopTweens();
 			bool fadeIn = false;
 			_backgroundImage.gameObject.SetActive(true);
+			_transitionScreenCanvasGroup.alpha = 0f;
 
-			Sequence fadeSequence = DOTween.Sequence();
-			if (_transitionScreenCanvasGroup.alpha < 0.5f)
-			{
-				fadeIn = true;
-				fadeSequence.Append(DOTween.To(() => _transitionScreenCanvasGroup.alpha,
-					x => _transitionScreenCanvasGroup.alpha = x, 1f, 0.3f).OnComplete(ShowPanel));
-			}
-			
-			fadeSequence.Append(DOTween.To(() => _transitionScreenCanvasGroup.alpha, x => _transitionScreenCanvasGroup.alpha = x, 0f, 0.3f));
-			fadeSequence.Play();
+			// Sequence fadeSequence = DOTween.Sequence();
+			// if (_transitionScreenCanvasGroup.alpha < 0.5f)
+			// {
+			// 	fadeIn = true;
+			// 	fadeSequence.Append(DOTween.To(() => _transitionScreenCanvasGroup.alpha,
+			// 		x => _transitionScreenCanvasGroup.alpha = x, 1f, 0.3f).OnComplete(ShowPanel));
+			// }
+			//
+			// fadeSequence.Append(DOTween.To(() => _transitionScreenCanvasGroup.alpha, x => _transitionScreenCanvasGroup.alpha = x, 0f, 0.3f));
+			// fadeSequence.Play();
 			
 			// await fadeSequence.AsyncWaitForCompletion();
 
@@ -403,7 +405,7 @@ namespace CardGame.UI
 			_beforeClientGameObject.SetActive(false);
 			_afterClientGameObject.SetActive(false);
 
-			if (!fadeIn)
+			// if (!fadeIn)
 				ShowPanel();
 
 			void ShowPanel()
