@@ -80,6 +80,17 @@ namespace CardGame.Turns
 					{
 						//Debug.Log("Tap detected -> Rotate");
 						_rotateCardAbility.RotateCard(_startPos);
+						
+						// Check si la tile temporairement posée est encore valide après rotation
+						var placeTileAbility = Controller.GetStateComponent<PlaceTileOnGridAbility>();
+						var gridManager = Controller.GetStateComponent<GridManagerResource>();
+
+						var tile = placeTileAbility.TempPlacedTile;
+						if (tile != null)
+						{
+							int connections = gridManager.GetPlacementConnectionCount(tile.TileData, placeTileAbility.TempPos);
+							tile.SetWrongRotationFeedbackActive(connections == 0);
+						}
 					}
 
 					_moveCameraAbility.StopMoving();

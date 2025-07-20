@@ -31,7 +31,7 @@ namespace CardGame.Turns
 		public event System.Action OnCardReleased; //Pour la preview d'ou on peut poser la tileObject de maniere valide
 
 		public TileVisu TempPlacedTile { get; set; } = null;
-		private Vector2Int _tempPos;
+		public Vector2Int TempPos;
 
 		public bool TilePlaced { get; private set; }
 
@@ -78,6 +78,7 @@ namespace CardGame.Turns
 
 			if (_zoneHolder.IsInHand(position))
 			{
+				tempTile.SetWrongRotationFeedbackActive(false);
 				_zoneHolder.GiveTileToHand(tempTile.gameObject);
 				return;
 			}
@@ -100,7 +101,7 @@ namespace CardGame.Turns
 				}
 
 				TempPlacedTile = tempTile;
-				_tempPos = pos;
+				TempPos = pos;
 			}
 			else
 			{
@@ -130,7 +131,7 @@ namespace CardGame.Turns
 		{
 			if (TempPlacedTile == null) return;
 
-			int connectionCount = _gridManager.GetPlacementConnectionCount(TempPlacedTile.TileData, _tempPos);
+			int connectionCount = _gridManager.GetPlacementConnectionCount(TempPlacedTile.TileData, TempPos);
 
 			if (connectionCount == 0) return;
 
@@ -138,9 +139,9 @@ namespace CardGame.Turns
 			TempPlacedTile.TileData.HasFlag = GameManager.Instance.FlagTurn; // Check si flag turn
 
 			_sound.PlayTilePlaced();
-			_gridManager.SetTile(TempPlacedTile.TileData, _tempPos);
-			_sender.SendInfoTilePlaced(TempPlacedTile.TileData, _tempPos);
-			_scoring.SetScoringPos(_tempPos);
+			_gridManager.SetTile(TempPlacedTile.TileData, TempPos);
+			_sender.SendInfoTilePlaced(TempPlacedTile.TileData, TempPos);
+			_scoring.SetScoringPos(TempPos);
 
 			if (!_network.IsNetActive())
 			{
@@ -208,7 +209,7 @@ namespace CardGame.Turns
 			}
 
 			TempPlacedTile = tileVisu;
-			_tempPos = tilePlaced;
+			TempPos = tilePlaced;
 
 			_zoneHolder.RemoveTileFromHand(TempPlacedTile.gameObject);
 		}

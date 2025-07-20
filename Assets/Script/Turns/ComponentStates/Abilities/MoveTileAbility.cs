@@ -66,6 +66,7 @@ namespace CardGame.Turns
 						_holder.RemoveTileFromHand(visu.gameObject);
 
 					CurrentTile = visu;
+					CurrentTile.SetWrongRotationFeedbackActive(false);
 
 					OnCardPicked?.Invoke();
 

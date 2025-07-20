@@ -1,9 +1,11 @@
 using CardGame.Card;
+using CardGame.StateMachine;
+using CardGame.Turns;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using DG.Tweening;
 
 namespace CardGame.UI
 {
@@ -48,6 +50,7 @@ namespace CardGame.UI
 		private GameObject _currentVisualMesh;
 		[SerializeField] private GameObject _baseVisualMesh; // La tile grise de base, 
 		[SerializeField] private GameObject _flagPrefab; // La tile grise de base, 
+		[SerializeField] private GameObject _wrongRotationFeedback;
 
 		public TileData TileData { get; set; }
 
@@ -81,6 +84,7 @@ namespace CardGame.UI
 		{
 			TileData = data;
 			UpdateVisu();
+
 		}
 
 		public void ChangeParent(Transform parent)
@@ -108,6 +112,15 @@ namespace CardGame.UI
 		{
 			_baseVisualMesh.GetComponentInChildren<MeshRenderer>().material = _greyBase;
 		}
+
+		public void CheckIfRotationIsStillValid(GridManagerResource grid, Vector2Int pos)
+		{
+			if (TileData == null) return;
+
+			int connections = grid.GetPlacementConnectionCount(TileData, pos);
+			SetWrongRotationFeedbackActive(connections == 0);
+		}
+
 
 		private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
 		{
@@ -155,6 +168,7 @@ namespace CardGame.UI
 				return;
 
 			_baseVisualMesh.SetActive(false); // Le mesh gris de base
+			_wrongRotationFeedback?.SetActive(false);
 
 			TileData.OnTileRotated += SetMeshRotationOnSet; // Pas besoin de securiser, on peut arriver ici qu'une fois grace au return
 
@@ -201,6 +215,13 @@ namespace CardGame.UI
 				GameObject flag = Instantiate(_flagPrefab, transform);
 			}
 		}
+
+		public void SetWrongRotationFeedbackActive(bool active)
+		{
+			if (_wrongRotationFeedback != null)
+				_wrongRotationFeedback.SetActive(active);
+		}
+
 
 		private void SetMeshRotationOnSet()
 		{
