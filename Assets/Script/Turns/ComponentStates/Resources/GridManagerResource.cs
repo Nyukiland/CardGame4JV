@@ -57,6 +57,7 @@ namespace CardGame.Turns
 					_grid[x, y] = instantiatedTile.GetComponent<TileVisu>();
 
 					instantiatedTile.transform.position = new Vector2(x, y);
+					_grid[x, y].SetTileLayerGrid(true);
 					instantiatedTile.SetActive(false);
 				}
 			}
@@ -131,6 +132,7 @@ namespace CardGame.Turns
 				BonusTilePool.Remove(tileData); // On retire le tiledata de la liste temp, pour pas le placer en double
 
 				SetTile(tileData, value.x, value.y);
+				_grid[value.x, value.y].SetTileLayerGrid(true); // inch ca marche
 			}
 		}
 
@@ -156,7 +158,6 @@ namespace CardGame.Turns
 			tileVisu.UpdateTile(tile);
 			tileVisu.GetComponent<BoxCollider>().enabled = true;
 			tileVisu.SetTilePosOnGrid(new(x, y));
-			tileVisu.SetTileLayerGrid(true);
 			tileVisu.gameObject.SetActive(true);
 			tileVisu.IsLinked = (tile.TileSettings.PoolIndex == 0) ? true : false; // Si tile normale true, si tile bonus false
 			ActivateSurroundingTiles(x, y);

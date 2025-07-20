@@ -130,8 +130,20 @@ namespace CardGame.UI
 
 		public void SetTileLayerGrid(bool isOnGrid)
 		{
-			if (isOnGrid) gameObject.layer = LayerMask.NameToLayer(_layerGrid);
-			else gameObject.layer = LayerMask.NameToLayer(_layerHand);
+			string layerName = isOnGrid ? _layerGrid : _layerHand;
+			int layer = LayerMask.NameToLayer(layerName);
+
+			SetLayerRecursively(transform, layer); // Et oui Roman faut penser aux enfants un peu ! tss
+		}
+
+		private void SetLayerRecursively(Transform target, int layer)
+		{
+			target.gameObject.layer = layer;
+
+			foreach (Transform child in target)
+			{
+				SetLayerRecursively(child, layer);
+			}
 		}
 
 		public void SetTilePosOnGrid(Vector2 pos) => PositionOnGrid = pos;

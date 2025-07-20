@@ -298,19 +298,23 @@ public class TileCreator : EditorWindow
         AssetDatabase.Refresh();
 
 #if UNITY_EDITOR
-        string assetGUID = AssetDatabase.AssetPathToGUID(path);
-        var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
+		string assetGUID = AssetDatabase.AssetPathToGUID(path);
+		var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
 
-        if (settings != null)
-        {
-            var entry = settings.CreateOrMoveEntry(assetGUID, settings.DefaultGroup);
-            entry.SetAddress(path);
-            entry.labels.Add("TileSetting");
-            settings.SetDirty(ModificationEvent.EntryModified, entry, true);
-        }
+		if (settings != null)
+		{
+			var entry = settings.CreateOrMoveEntry(assetGUID, settings.DefaultGroup);
+
+			string relativePath = path.Replace("Assets/Script/Data/", "").Replace(".asset", "");
+			entry.address = $"Tiles/{relativePath}";
+
+			entry.labels.Add("TileSetting");
+			settings.SetDirty(ModificationEvent.EntryModified, entry, true);
+		}
+
 #endif
 
-        _tilePreviews.Clear(); // Clear cache
+		_tilePreviews.Clear(); // Clear cache
         RefreshTileDataList();
     }
 
