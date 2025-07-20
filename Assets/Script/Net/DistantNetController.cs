@@ -180,7 +180,7 @@ namespace CardGame.Net
 			if (string.IsNullOrEmpty(code)) code = _networkUI.Code;
 			if (string.IsNullOrEmpty(code)) return;
 			
-			await _networkUI.OpenAfterClient();
+			_networkUI.OpenAfterClient();
 
 			try
 			{
@@ -196,7 +196,7 @@ namespace CardGame.Net
 			catch (RelayServiceException e)
 			{
 				Debug.LogError($"Failed to join relay: {e.Message}");
-				await _networkUI.OpenBeforeClient();
+				_networkUI.OpenBeforeClient();
 				_networkUI.SpawnPopUp("No game has been found", 2f).Forget();
 			}
 			

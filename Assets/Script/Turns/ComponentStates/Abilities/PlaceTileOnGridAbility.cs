@@ -57,6 +57,13 @@ namespace CardGame.Turns
 			TempPlacedTile = null;
 		}
 
+		public override void OnDisable()
+		{
+			base.OnDisable();
+
+			ReleaseTile(new(10000, 10000));
+		}
+
 		public void ReleaseTile(Vector2 position)
 		{
 			if (_moveTile.CurrentTile == null)

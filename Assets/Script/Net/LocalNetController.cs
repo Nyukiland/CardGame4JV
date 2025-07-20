@@ -175,7 +175,7 @@ namespace CardGame.Net
 
 			SafeConnectAsync().Forget();
 
-			_networkUI.OpenAfterClient().Forget();
+			_networkUI.OpenAfterClient();
 		}
 
 		protected override void StopHosting()
@@ -228,7 +228,7 @@ namespace CardGame.Net
 			}
 			else
 			{
-				await _networkUI.OpenBeforeClient();
+				_networkUI.OpenBeforeClient();
 				_networkUI.SpawnPopUp("No game has been found", 2f).Forget();
 			}
 			_networkUI.ToggleInputBlock(false);

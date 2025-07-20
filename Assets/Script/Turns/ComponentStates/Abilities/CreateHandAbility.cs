@@ -49,6 +49,7 @@ namespace CardGame.Turns
         public void CreateTile(TileSettings settings)
 		{
 			GameObject temp = GameObject.Instantiate(_prefab);
+			temp.transform.position = new(100, 100, 0);
 			TileData data = new();
 			data.InitTile(settings);
 			temp.GetComponent<TileVisu>().UpdateTile(data);

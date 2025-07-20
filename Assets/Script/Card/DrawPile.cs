@@ -140,6 +140,5 @@ namespace CardGame
 
             return result;
         }
-
     }
 }

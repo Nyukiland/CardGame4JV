@@ -125,8 +125,8 @@ namespace CardGame.UI
 			Storage.Instance.Register(this);
 
 			// Buttons
-			_mainHostButton.onClick.AddListener(() => OpenBeforeHost().Forget());
-			_mainConnectButton.onClick.AddListener(() => OpenBeforeClient().Forget());
+			_mainHostButton.onClick.AddListener(() => OpenBeforeHost());
+			_mainConnectButton.onClick.AddListener(() => OpenBeforeClient());
 			_mainSoloButton.onClick.AddListener(StartSoloGame);
 			_hostButton.onClick.AddListener(CallStartHostEvent);
 			_hostBackButton.onClick.AddListener(() => OpenMainMenu().Forget());
@@ -161,8 +161,8 @@ namespace CardGame.UI
 		private void OnDestroy()
 		{
 			// Buttons
-			_mainHostButton.onClick.RemoveListener(() => OpenBeforeHost().Forget());
-			_mainConnectButton.onClick.RemoveListener(() => OpenBeforeClient().Forget());
+			_mainHostButton.onClick.RemoveListener(() => OpenBeforeHost());
+			_mainConnectButton.onClick.RemoveListener(() => OpenBeforeClient());
 			_mainSoloButton.onClick.RemoveListener(StartSoloGame);
 			_hostButton.onClick.RemoveListener(CallStartHostEvent);
 			_hostBackButton.onClick.RemoveListener(() => OpenMainMenu().Forget());
@@ -286,7 +286,7 @@ namespace CardGame.UI
 
 		public async UniTask OpenMainMenu()
 		{
-			await OpenPanel(_mainMenuGameObject, CurrentScreen.MainMenu);
+			OpenPanel(_mainMenuGameObject, CurrentScreen.MainMenu);
 			Sequence mainMenuSequence = DOTween.Sequence();
 			mainMenuSequence.Join(await SaveTween(_mainHostRectTransform, -500f, 0f));
 			mainMenuSequence.Join(await SaveTween(_mainConnectRectTransform, -500f, 0f, 1.5f));
@@ -294,20 +294,20 @@ namespace CardGame.UI
 			mainMenuSequence.Play();
 		}
 
-		private async UniTask OpenBeforeHost()
+		private void OpenBeforeHost()
 		{
-			await OpenPanel(_beforeHostGameObject, CurrentScreen.BeforeHost);
+			OpenPanel(_beforeHostGameObject, CurrentScreen.BeforeHost);
 
 			UpdateBeforeHost();
 		}
 
-		private async UniTask OpenAfterHost()
+		private void OpenAfterHost()
 		{
 			SessionName = _sessionNameInput.text;
 			Password = _passwordInputHost.text;
 			if (string.IsNullOrEmpty(Password)) Password = NONE_BASE_VALUE;
 
-			await OpenPanel(_afterHostGameObject, CurrentScreen.AfterHost);
+			OpenPanel(_afterHostGameObject, CurrentScreen.AfterHost);
 
 			UpdateAfterHost();
 
@@ -318,25 +318,25 @@ namespace CardGame.UI
 			_inputBlocker.SetActive(true);
 		}
 
-		public async UniTask OpenBeforeClient()
+		public void OpenBeforeClient()
 		{
-			await OpenPanel(_beforeClientGameObject, CurrentScreen.BeforeClient);
+			OpenPanel(_beforeClientGameObject, CurrentScreen.BeforeClient);
 
 			UpdateBeforeClient();
 		}
 
-		public async UniTask OpenAfterClient()
+		public void OpenAfterClient()
 		{
-			await OpenPanel(_afterClientGameObject, CurrentScreen.AfterClient);
+			OpenPanel(_afterClientGameObject, CurrentScreen.AfterClient);
 		}
 
 		public void CloseMenu()
 		{
-			ClosePrivateMenu().Forget();
+			ClosePrivateMenu();
 		}
-		private async UniTask ClosePrivateMenu()
+		private void ClosePrivateMenu()
 		{
-			await OpenPanel(null, CurrentScreen.None, true);
+			OpenPanel(null, CurrentScreen.None, true);
 			_backgroundImage.gameObject.SetActive(false);
 		}
 
@@ -377,7 +377,7 @@ namespace CardGame.UI
 
 		#region Methods
 
-		private async UniTask OpenPanel(GameObject panel, CurrentScreen nextScreen, bool closeAll = false)
+		private void OpenPanel(GameObject panel, CurrentScreen nextScreen, bool closeAll = false)
 		{
 			StopTweens();
 			bool fadeIn = false;
@@ -413,6 +413,8 @@ namespace CardGame.UI
 
 				panel.SetActive(true);
 				_currentScreen = nextScreen;
+				if (_currentScreen == CurrentScreen.BeforeClient)
+					UpdateBeforeClient();
 			}
 		}
 
@@ -465,7 +467,7 @@ namespace CardGame.UI
 		{
 			QuitGameEvent?.Invoke();
 
-			OpenBeforeClient().Forget();
+			OpenBeforeClient();
 		}
 
 		public void ToggleInputBlock(bool toggle)
@@ -495,7 +497,7 @@ namespace CardGame.UI
 		private void CallStartHostEvent()
 		{
 			StartHostEvent?.Invoke();
-			OpenAfterHost().Forget();
+			OpenAfterHost();
 		}
 
 		private void CallJoinGameEvent()
@@ -505,13 +507,13 @@ namespace CardGame.UI
 				Password = _passwordInputClient.text;
 
 			JoinGameEvent?.Invoke();
-			OpenAfterClient().Forget();
+			OpenAfterClient();
 		}
 
 		private void CallUnhostEvent()
 		{
 			UnhostEvent?.Invoke();
-			OpenBeforeHost().Forget();
+			OpenBeforeHost();
 		}
 
 		private void CallCopyEvent()

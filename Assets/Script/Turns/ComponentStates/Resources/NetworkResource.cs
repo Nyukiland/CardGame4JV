@@ -29,7 +29,7 @@ namespace CardGame.Turns
 
 		public bool IsWaitNetComplete { get; private set; } = false;
 
-		public bool IsTileReceived { get; set; } = false;
+		public int TileToReceive { get; set; } = 0;
 
 		public bool IsFinished
 		{
@@ -87,6 +87,7 @@ namespace CardGame.Turns
 				NetCom.SendYourTurn += GoMyTurn;
 				NetCom.SendTauntShake += ShakeTile;
 				NetCom.SendGameStart += GameStart;
+				NetCom.NumberOfTile += TileCountReceived;
 			}
 		}
 
@@ -117,6 +118,8 @@ namespace CardGame.Turns
 				NetCom.TileForHand -= UpdateHand;
 				NetCom.SendYourTurn -= GoMyTurn;
 				NetCom.SendTauntShake -= ShakeTile;
+				NetCom.SendGameStart -= GameStart;
+				NetCom.NumberOfTile -= TileCountReceived;
 			}
 		}
 
@@ -141,7 +144,9 @@ namespace CardGame.Turns
 
 			_createHand.CreateTile(tileSettings);
 
-			IsTileReceived = true;
+			await UniTask.NextFrame();
+
+			if (TileToReceive > 0) TileToReceive--;
 		}
 
 		private void UpdateGrid(DataToSendList dataList)
@@ -164,6 +169,11 @@ namespace CardGame.Turns
 
 				_grid.SetTile(tile, data.Position.x, data.Position.y);
 			}
+		}
+
+		private void TileCountReceived(int count)
+		{
+			TileToReceive = count;
 		}
 
 		private void GoMyTurn()

@@ -74,6 +74,7 @@ namespace CardGame.UI
 		private void OnDestroy()
 		{
 			if (TileData != null) TileData.OnTileRotated -= SetMeshRotationOnSet;
+			DOTween.Kill(this.gameObject);
 		}
 
 		public void UpdateTile(TileData data)
@@ -89,7 +90,6 @@ namespace CardGame.UI
 
 		private void UpdateVisu()
 		{
-
 			List<ZoneData> zones = new();
 
 			if (TileData == null) return;
@@ -206,6 +206,7 @@ namespace CardGame.UI
 
 			seq.Play();
 		}
+
 		public string GetInfo()
 		{
 			string text = $"[{nameof(TileVisu)}] : {PositionOnGrid.x} - {PositionOnGrid.y}\n " +

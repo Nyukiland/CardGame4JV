@@ -22,6 +22,7 @@ namespace CardGame.Net
 
 		public delegate void SendTileForHandEvent(int tileId);
 		public event SendTileForHandEvent TileForHand;
+		public event SendTileForHandEvent NumberOfTile;
 
 		public delegate void SendTauntShakeEvent(Vector2 pos, bool special);
 		public event SendTauntShakeEvent SendTauntShake;
@@ -199,6 +200,8 @@ namespace CardGame.Net
 
 			AnalyticsService.Instance.RecordEvent(new ConnectionCountEvent(connectionCount));
 
+			instance.SendDrawCountClientRPC(connectionCount);
+
 			for (int i = 0; i < connectionCount; i++)
 			{
 				int tileId = Storage.Instance.GetElement<DrawPile>().GetTileIDFromDrawPile();
@@ -222,6 +225,13 @@ namespace CardGame.Net
 		{
 			TileForHand?.Invoke(ID);
 		}
+
+		[ClientRpc(RequireOwnership = false)]
+		public void SendDrawCountClientRPC(int count)
+		{
+			NumberOfTile?.Invoke(count);
+		}
+
 		#endregion
 
 		//---------------------------------------------

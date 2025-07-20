@@ -27,11 +27,6 @@ namespace CardGame.Turns
 			GetStateComponent(ref _networkResource);
 
 			_moveTile.CanPlaceOnGrid = false;
-
-			if (_discardCard.DiscardFinished())
-			{
-				CallEndTurn();
-			}
 		}
 
 		public override void OnExit()
@@ -70,7 +65,6 @@ namespace CardGame.Turns
 
 		private void CallEndTurn()
 		{
-			_networkResource.IsTileReceived = false;
 			_sendInfo.SendTurnFinished();
 
 			Controller.GetStateComponent<ScoringAbility>().SetState(typeof(NextPlayerCombinedState));

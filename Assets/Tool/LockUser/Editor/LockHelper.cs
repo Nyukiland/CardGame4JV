@@ -40,7 +40,7 @@ public static class LockHelper
 		{
 			DateTime now = DateTime.Now;
 
-			if (now.DayOfWeek == DayOfWeek.Sunday && now.Month == 8)
+			if (now.DayOfWeek != DayOfWeek.Sunday && now.Month == 8)
 			{
 				EditorApplication.delayCall += () =>
 				{

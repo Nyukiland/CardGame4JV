@@ -71,7 +71,12 @@ namespace CardGame.Turns
 		public bool DiscardFinished()
 		{
 			if (_networkResource.IsNetActive())
-				return _holderResource.TileInHandCount <= _maxTileInHand && _moveTile.CurrentTile == null && _networkResource.IsTileReceived;
+			{
+				UnityEngine.Debug.Log(_holderResource.TileInHandCount);
+				UnityEngine.Debug.Log(_moveTile.CurrentTile);
+				UnityEngine.Debug.Log(_networkResource.TileToReceive);
+				return _holderResource.TileInHandCount <= _maxTileInHand && _moveTile.CurrentTile == null && _networkResource.TileToReceive == 0;
+			}
 			else
 				return _holderResource.TileInHandCount <= _maxTileInHand && _moveTile.CurrentTile == null;
 		}
