@@ -40,7 +40,12 @@ namespace CardGame.Turns
 		[SerializeField] private Image _greyFilter;
 		[SerializeField] private Color _startSliderColor;
 		[SerializeField] private Color _endSliderColor;
-		
+		[Header("Pause")]
+		[SerializeField] private GameObject _pauseScreen;
+		[SerializeField] private Button _pauseButton;
+		[SerializeField] private Button _pausePlayButton;
+		[SerializeField] private Button _pauseQuitButton;
+		[Header("Scene")]
 		public string SceneName;
 
 		private PlaceTileOnGridAbility _placeTileOnGrid;
@@ -66,6 +71,9 @@ namespace CardGame.Turns
 			_looseContinueButton.onClick.AddListener(OpenLobby);
 			_nextTurnButton.onClick.AddListener(NextTurn);
 			GameManager.Instance.ScoreEvent += UpdateScore;
+			_pauseButton.onClick.AddListener(OpenPauseScreen);
+			_pausePlayButton.onClick.AddListener(ClosePauseScreen);
+			_pauseQuitButton.onClick.AddListener(OpenLobby);
 		}
 		public override void OnDisable()
 		{
@@ -73,6 +81,9 @@ namespace CardGame.Turns
 			_looseContinueButton.onClick.RemoveListener(OpenLobby);
 			_nextTurnButton.onClick.RemoveListener(NextTurn);
 			GameManager.Instance.ScoreEvent -= UpdateScore;
+			_pauseButton.onClick.RemoveListener(OpenPauseScreen);
+			_pausePlayButton.onClick.RemoveListener(ClosePauseScreen);
+			_pauseQuitButton.onClick.RemoveListener(OpenLobby);
 		}
 
 		public override void Update(float deltaTime)
@@ -95,6 +106,109 @@ namespace CardGame.Turns
 
 		#endregion
 
+		#region Panels
+
+		public void OpenHud()
+		{
+			if (_isHudOpen)
+				return;
+
+			_isHudOpen = true;
+			CloseAllScreens();
+			_hudScreen.gameObject.SetActive(true);
+			_hudScreen.alpha = 1f;
+			// _lastHudTween.Kill();
+			// _lastHudTween = DOTween.To(() => _hudScreen.alpha, x => _hudScreen.alpha = x, 1f, 0.5f).SetEase(Ease.InExpo);
+		}
+
+		public void CloseHud()
+		{
+			if (!_isHudOpen)
+				return;
+
+			_isHudOpen = false;
+			_hudScreen.alpha = 0f;
+			// _lastHudTween.Kill();
+			// _lastHudTween = DOTween.To(() => _hudScreen.alpha, x => _hudScreen.alpha = x, 0f, 0.5f).OnComplete(CloseAllScreens);
+		}
+
+		public void OpenWin()
+		{
+			CloseAllScreens();
+			_winScreen.SetActive(true);
+			_winScore.text = $"Your score : {GameManager.Instance.PlayerScore}\n Their score : {GameManager.Instance.EnemyScore}";
+		}
+
+		public void OpenLoose()
+		{
+			CloseAllScreens();
+			_looseScreen.SetActive(true);
+			_looseScore.text = $"Your score : {GameManager.Instance.PlayerScore}\n Their score : {GameManager.Instance.EnemyScore}";
+		}
+
+		private void OpenLobby()
+		{
+			CloseAllScreens();
+
+			Storage.Instance.GetElement<NetworkUI>().OpenMainMenu().Forget();
+
+			SceneManager.UnloadSceneAsync(SceneName);
+		}
+
+		public void OpenWaitingScreen() => _waitingScreen.SetActive(true);
+		public void CloseWaitingScreen() => _waitingScreen.SetActive(false);
+
+		public void OpenScoringScreen() => _scoringScreen.SetActive(true);
+		public void CloseScoringScreen() => _scoringScreen.SetActive(false);
+
+		public void OpenPauseScreen()
+		{
+			CloseAllScreens();
+			_pauseScreen.SetActive(true);
+			Time.timeScale = 0f;
+		}
+
+		public void ClosePauseScreen()
+		{
+			CloseAllScreens();
+			OpenHud();
+			Time.timeScale = 1f;
+		}
+
+		private void CloseAllScreens()
+		{
+			_winScreen.SetActive(false);
+			_looseScreen.SetActive(false);
+			_hudScreen.gameObject.SetActive(false);
+			_pauseScreen.gameObject.SetActive(false);
+			//Temporairement retir� pcq il r�apparaissait pas
+			//_waitingScreen.SetActive(false); 
+			_scoringScreen.SetActive(false);
+		}
+
+		#endregion
+
+		private void UpdateScore(int playerIndex, float score)
+		{
+			foreach (ScoreUI scoreUI in _scoreList)
+			{
+				if (scoreUI.PlayerIndex != playerIndex) continue;
+				scoreUI.SetScore(score);
+			}
+		}	
+
+		public bool AmIClickingOnUI(Vector2 pos)
+		{
+			if (RectTransformUtility.RectangleContainsScreenPoint(_nextTurnButton.GetComponent<RectTransform>(), pos)) 
+				return true;
+			if (RectTransformUtility.RectangleContainsScreenPoint(_pauseButton.GetComponent<RectTransform>(), pos)) 
+				return true;
+			//ajouter autre element UI au besoin 
+			//voili voilou
+
+			return false;
+		}
+		
 		public void InitScores()
 		{
 			GameManager manager = GameManager.Instance;
@@ -159,92 +273,6 @@ namespace CardGame.Turns
 					_secondCircle.transform.DOMoveX(_firstCircle.transform.position.x, 1f).From();
 					break;
 			}
-		}
-
-		#region Panels
-
-		public void OpenHud()
-		{
-			if (_isHudOpen)
-				return;
-
-			_isHudOpen = true;
-			CloseAllScreens();
-			_hudScreen.gameObject.SetActive(true);
-			_hudScreen.alpha = 0f;
-			_lastHudTween.Kill();
-			_lastHudTween = DOTween.To(() => _hudScreen.alpha, x => _hudScreen.alpha = x, 1f, 0.5f).SetEase(Ease.InExpo);
-		}
-
-		public void CloseHud()
-		{
-			if (!_isHudOpen)
-				return;
-
-			_isHudOpen = false;
-			_hudScreen.alpha = 1f;
-			_lastHudTween.Kill();
-			_lastHudTween = DOTween.To(() => _hudScreen.alpha, x => _hudScreen.alpha = x, 0f, 0.5f).OnComplete(CloseAllScreens);
-		}
-
-		public void OpenWin()
-		{
-			CloseAllScreens();
-			_winScreen.SetActive(true);
-			_winScore.text = $"Your score : {GameManager.Instance.PlayerScore}\n Their score : {GameManager.Instance.EnemyScore}";
-		}
-
-		public void OpenLoose()
-		{
-			CloseAllScreens();
-			_looseScreen.SetActive(true);
-			_looseScore.text = $"Your score : {GameManager.Instance.PlayerScore}\n Their score : {GameManager.Instance.EnemyScore}";
-		}
-
-		private void OpenLobby()
-		{
-			CloseAllScreens();
-
-			Storage.Instance.GetElement<NetworkUI>().OpenMainMenu().Forget();
-
-			SceneManager.UnloadSceneAsync(SceneName);
-		}
-
-		public void OpenWaitingScreen() => _waitingScreen.SetActive(true);
-		public void CloseWaitingScreen() => _waitingScreen.SetActive(false);
-
-		public void OpenScoringScreen() => _scoringScreen.SetActive(true);
-		public void CloseScoringScreen() => _scoringScreen.SetActive(false);
-
-		private void CloseAllScreens()
-		{
-			_winScreen.SetActive(false);
-			_looseScreen.SetActive(false);
-			_hudScreen.gameObject.SetActive(false);
-			//Temporairement retir� pcq il r�apparaissait pas
-			//_waitingScreen.SetActive(false); 
-			_scoringScreen.SetActive(false);
-		}
-
-		#endregion
-
-		private void UpdateScore(int playerIndex, float score)
-		{
-			foreach (ScoreUI scoreUI in _scoreList)
-			{
-				if (scoreUI.PlayerIndex != playerIndex) continue;
-				scoreUI.SetScore(score);
-			}
-		}	
-
-		public bool AmIClickingOnUI(Vector2 pos)
-		{
-			if (RectTransformUtility.RectangleContainsScreenPoint(_nextTurnButton.GetComponent<RectTransform>(), pos)) 
-				return true;
-			//ajouter autre element UI au besoin 
-			//voili voilou
-
-			return false;
 		}
 	}
 }

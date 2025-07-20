@@ -121,9 +121,9 @@ namespace CardGame.Turns
 
 		public void HideMyHand(bool isHidden)
 		{
-			for (int i = 0; i < TileInHand.Count; i++)
+			foreach (GameObject t in TileInHand)
 			{
-				TileInHand[i].SetActive(!isHidden);
+				if (t != null) t.SetActive(!isHidden);
 			}
 
 			if (isHidden)
