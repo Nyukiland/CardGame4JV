@@ -15,7 +15,36 @@ public class TileCreator : EditorWindow
     private TileSettings _selectedTile;
     private Dictionary<TileSettings, Texture2D> _tilePreviews = new();
 
-    private void RefreshTileDataList()
+	private bool _foldoutStarting = true;
+	private bool _foldoutRegular = true;
+	private bool _foldoutSmall = true;
+	private bool _foldoutBig = true;
+
+	private void DrawTileGroup(string label, System.Predicate<TileSettings> condition, ref bool foldout)
+	{
+		foldout = EditorGUILayout.Foldout(foldout, label, true, EditorStyles.foldoutHeader);
+		if (!foldout) return;
+
+		EditorGUI.indentLevel++;
+		foreach (var tile in _tileDataList)
+		{
+			if (!condition(tile)) continue;
+
+			Color originalBg = GUI.backgroundColor;
+			if (tile == _selectedTile)
+				GUI.backgroundColor = Color.gray * 0.6f;
+
+			if (GUILayout.Button(RenderTilePreview(tile), GUILayout.Width(180), GUILayout.Height(180)))
+			{
+				GUI.FocusControl(null);
+				_selectedTile = tile;
+			}
+			GUI.backgroundColor = originalBg;
+		}
+		EditorGUI.indentLevel--;
+	}
+
+	private void RefreshTileDataList()
     {
         _tileDataList.Clear();
         _tilePreviews.Clear(); // Reset previews
@@ -48,42 +77,35 @@ public class TileCreator : EditorWindow
     {
         EditorGUILayout.BeginHorizontal();
 
-        // COLONNE GAUCHE
-        EditorGUILayout.BeginVertical(GUILayout.Width(200));
-        GUILayout.Label("Tiles", EditorStyles.boldLabel);
+		// COLONNE GAUCHE
+		EditorGUILayout.BeginVertical(GUILayout.Width(200));
+		GUILayout.Label("Tiles", EditorStyles.boldLabel);
 
-        if (GUILayout.Button("Refresh"))
-            RefreshTileDataList();
+		if (GUILayout.Button("Refresh"))
+			RefreshTileDataList();
 
-        Color originalColor = GUI.backgroundColor;
-        GUI.backgroundColor = Color.cyan;
-        if (GUILayout.Button("Create New Tile"))
-            CreateNewTile();
-        GUI.backgroundColor = originalColor;
+		Color originalColor = GUI.backgroundColor;
+		GUI.backgroundColor = Color.cyan;
+		if (GUILayout.Button("Create New Tile"))
+			CreateNewTile();
+		GUI.backgroundColor = originalColor;
 
-        _scrollLeft = EditorGUILayout.BeginScrollView(_scrollLeft);
+		_scrollLeft = EditorGUILayout.BeginScrollView(_scrollLeft);
 
-        foreach (var tile in _tileDataList)
-        {
-            Color originalBg = GUI.backgroundColor;
+		DrawTileGroup("Starting Tile", t => t.name == "StartingTile", ref _foldoutStarting);
+		GUILayout.Space(5);
+		DrawTileGroup("Regular Tiles", t => t.PoolIndex == 0 && t.name != "StartingTile", ref _foldoutRegular);
+		GUILayout.Space(5);
+		DrawTileGroup("Bonus - Small Square", t => t.PoolIndex == 1, ref _foldoutSmall);
+		GUILayout.Space(5);
+		DrawTileGroup("Bonus - Big Square", t => t.PoolIndex == 2, ref _foldoutBig);
 
-            if (tile == _selectedTile)
-                GUI.backgroundColor = Color.gray * 0.6f;
+		EditorGUILayout.EndScrollView();
+		EditorGUILayout.EndVertical();
 
-            if (GUILayout.Button(RenderTilePreview(tile), GUILayout.Width(180), GUILayout.Height(180)))
-            {
-                GUI.FocusControl(null);
-                _selectedTile = tile;
-            }
 
-            GUI.backgroundColor = originalBg;
-        }
-
-        EditorGUILayout.EndScrollView();
-        EditorGUILayout.EndVertical();
-
-        // COLONNE DROITE 
-        EditorGUILayout.BeginVertical();
+		// COLONNE DROITE 
+		EditorGUILayout.BeginVertical();
         GUILayout.Label("Tile Informations", EditorStyles.boldLabel);
         _scrollRight = EditorGUILayout.BeginScrollView(_scrollRight);
 

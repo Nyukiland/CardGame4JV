@@ -45,10 +45,10 @@ namespace CardGame
 				}
 			}
 
-            for (int i = 0; i < 2; i++) //On le fait en double pour avoir + de tiles (4 fois +)
-            {
-                _tileInDrawPile.AddRange(_tileInDrawPile);
-            }
+            //for (int i = 0; i < 2; i++) //On le fait en double pour avoir + de tiles (4 fois +)
+            //{
+            //    _tileInDrawPile.AddRange(_tileInDrawPile);
+            //}
 
             OnTilesLoaded?.Invoke(); // start la grid
 			TilesLoadedComplete = true;
