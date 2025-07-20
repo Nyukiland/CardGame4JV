@@ -1,13 +1,10 @@
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using CardGame.StateMachine;
-using Unity.Netcode;
 using CardGame.Card;
 using CardGame.Net;
-using UnityEngine;
-using CardGame.UI;
-using System;
+using CardGame.StateMachine;
 using CardGame.Utility;
+using Cysharp.Threading.Tasks;
+using Unity.Netcode;
+using UnityEngine;
 
 namespace CardGame.Turns
 {

@@ -65,6 +65,12 @@ namespace CardGame.Turns
 
 		public void CallScoring()
 		{
+			if (TilePlacedPosition == new Vector2Int(-100, -100))
+			{
+				IsScoringFinished = true;
+				return;
+			}
+
 			_tilePlaced = _gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).TileData;
 			foreach (ZoneData zone in _tilePlaced.Zones)
 			{

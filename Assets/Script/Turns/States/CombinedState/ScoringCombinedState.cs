@@ -15,13 +15,6 @@ namespace CardGame.Turns
 			GetStateComponent(ref _scoring);
 			GetStateComponent(ref _hud);
 
-			//exception
-			if (_scoring.TilePlacedPosition == new Vector2Int(-100, -100))
-			{
-				Controller.SetState<PlaceTileCombinedState>();
-				return;
-			}
-
 			_hud.OpenScoringScreen();
 			_scoring.CallScoring();
 		}
@@ -38,7 +31,8 @@ namespace CardGame.Turns
 
 			if (_scoring.IsScoringFinished)
 			{
-				Controller.SetState(_scoring.NextState);
+				if (_scoring.NextState == null) Controller.SetState<PlaceTileCombinedState>();
+				else Controller.SetState(_scoring.NextState);
 			}
 		}
 	}

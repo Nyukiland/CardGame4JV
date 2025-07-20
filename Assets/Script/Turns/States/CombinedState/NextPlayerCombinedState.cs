@@ -12,8 +12,6 @@ namespace CardGame.Turns
 		private ZoneHolderResource _handResource;
 		private MoveTileAbility _moveTile;
 
-		private int _prevTurn = -1;
-
 		public NextPlayerCombinedState()
 		{
 			AddSubState(new MoveTileSubState(true));
@@ -94,21 +92,9 @@ namespace CardGame.Turns
 			else if (_net.IsFinished)
 			{
 				_net.IsFinished = false;
-				WaitALittle().Forget();
-			}
-		}
-
-		private async UniTask WaitALittle()
-		{
-			await UniTask.WaitUntil(() => GameManager.Instance.GlobalTurn != _prevTurn || GameManager.Instance.GlobalTurn == 0);
-
-			if (GameManager.Instance.GameIsFinished)
-				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(EndGameCombinedState));
-			else
 				Controller.GetStateComponent<ScoringAbility>().SetState(typeof(PlaceTileCombinedState));
-
-
-			Controller.SetState<ScoringCombinedState>();
+				Controller.SetState<ScoringCombinedState>();
+			}
 		}
 	}
 }

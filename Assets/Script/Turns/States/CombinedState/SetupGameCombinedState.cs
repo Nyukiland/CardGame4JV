@@ -1,7 +1,6 @@
-using Cysharp.Threading.Tasks;
 using CardGame.StateMachine;
-using UnityEngine;
 using CardGame.Utility;
+using Cysharp.Threading.Tasks;
 
 namespace CardGame.Turns
 {
@@ -30,15 +29,15 @@ namespace CardGame.Turns
 
 		private async UniTask WaitStart()
 		{
-			await UniTask.Delay(200);
+			await UniTask.DelayFrame(70); //the worst I did so far
 			await UniTask.WaitUntil(() => _net.IsWaitNetComplete);
 			await UniTask.WaitUntil(() => Storage.Instance.GetElement<DrawPile>().AllTileSettings.Count != 0);
 
 			if (_net.IsNetActive())
 			{
-				await UniTask.Delay(100);
+				await UniTask.DelayFrame(5);
 				_sender.SendGridToOthers();
-				await UniTask.Delay(100);
+				await UniTask.DelayFrame(10);
 				_sender.AskForSetUp();
 				Controller.SetState<NextPlayerCombinedState>();
 			}
@@ -52,7 +51,7 @@ namespace CardGame.Turns
 				_createHandAbility.GenerateTiles(_createHandAbility.CountCard);
 				_autoPlay.GenerateTheoreticalHand(_createHandAbility.CountCard);
 				Controller.GetStateComponent<HUDResource>().InitScores();
-				
+
 				Controller.SetState<PlaceTileCombinedState>();
 			}
 		}

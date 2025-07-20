@@ -53,7 +53,7 @@ namespace CardGame.Turns
 			TileData data = new();
 			data.InitTile(settings);
 			temp.GetComponent<TileVisu>().UpdateTile(data);
-			temp.GetComponent<TileVisu>().SetTileLayerGrid(false);
+			temp.GetComponent<TileVisu>().SetTileLayerGrid(LayerTile.InHand);
 
 			_holdHand.GiveTileToHand(temp);
 		}

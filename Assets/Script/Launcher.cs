@@ -1,5 +1,4 @@
 using CardGame.Useful;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.ResourceManagement;
@@ -11,7 +10,7 @@ namespace CardGame
 	public class Launcher : Singleton<Launcher>
 	{
 		[SerializeField] private EventSystem _eventSystem;
-		[SerializeField] private TextMeshProUGUI _scoreText;
+		[SerializeField] private GameObject _light;
 
 		private void Start()
 		{
@@ -20,7 +19,10 @@ namespace CardGame
 			// Oui il y a UN message d'erreur de l'event system juste avant qu'il soit désac
 			// On peut rien y faire déso
 			if (SceneManager.loadedSceneCount > 1)
+			{
 				_eventSystem.gameObject.SetActive(false);
+				_light.gameObject.SetActive(false);
+			}
 		}
 	}
 }

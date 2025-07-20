@@ -482,6 +482,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _layerGrid: OnGrid
   _layerHand: InHand
+  _layerInBetween: InBetween
   _visuValidity: {fileID: 2044671600432917660}
   _visuNorth: {fileID: 5530492997107037540}
   _visuSouth: {fileID: 21062780206533642}

@@ -13,6 +13,11 @@ namespace CardGame.Turns
 {
 	public class HUDResource : Resource
 	{
+		[SerializeField]
+		private Canvas _canvas;
+
+		[Space(10)]
+
 		[SerializeField] private GameObject _waitingScreen;
 		[SerializeField] private GameObject _scoringScreen;
 		[Header("Hud")]
@@ -57,12 +62,22 @@ namespace CardGame.Turns
 
 		#region Unity Methods
 
+		public override void EarlyInit()
+		{
+			base.EarlyInit();
+
+			_canvas.worldCamera = Camera.main;
+			_canvas.planeDistance = 10;
+			Canvas.ForceUpdateCanvases();
+		}
+
 		public override void Init(Controller owner)
 		{
 			OpenHud();
 			_placeTileOnGrid = owner.GetStateComponent<PlaceTileOnGridAbility>();
 			_nextTurnSlider.maxValue = _placeTileOnGrid.MaxTimeTurn;
 			_greyFilter.gameObject.SetActive(false);
+			_waitingScreen.SetActive(false);
 		}
 
 		public override void OnEnable()
@@ -149,6 +164,8 @@ namespace CardGame.Turns
 		private void OpenLobby()
 		{
 			CloseAllScreens();
+
+			Time.timeScale = 1;
 
 			Storage.Instance.GetElement<NetworkUI>().OpenMainMenu().Forget();
 

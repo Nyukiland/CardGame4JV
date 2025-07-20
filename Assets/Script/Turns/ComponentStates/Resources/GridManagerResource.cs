@@ -57,7 +57,7 @@ namespace CardGame.Turns
 					_grid[x, y] = instantiatedTile.GetComponent<TileVisu>();
 
 					instantiatedTile.transform.position = new Vector2(x, y);
-					_grid[x, y].SetTileLayerGrid(true);
+					_grid[x, y].SetTileLayerGrid(LayerTile.Grid);
 					instantiatedTile.SetActive(false);
 				}
 			}
@@ -132,7 +132,7 @@ namespace CardGame.Turns
 				BonusTilePool.Remove(tileData); // On retire le tiledata de la liste temp, pour pas le placer en double
 
 				SetTile(tileData, value.x, value.y);
-				_grid[value.x, value.y].SetTileLayerGrid(true); // inch ca marche
+				_grid[value.x, value.y].SetTileLayerGrid(LayerTile.Grid); // inch ca marche
 			}
 		}
 

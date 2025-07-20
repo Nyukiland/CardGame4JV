@@ -1,3 +1,4 @@
+using CardGame.Net;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -38,6 +39,7 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	{
 		base.OnNetworkSpawn();
 		OnlineScores.OnListChanged += OnOnlineScoresChanged;
+		NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnected;
 	}
 
 	public override void OnNetworkDespawn()
@@ -45,6 +47,20 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		base.OnNetworkDespawn();
 		OnlineScores.OnListChanged -= OnOnlineScoresChanged;
 		_instance = null;
+
+		if (NetworkManager.Singleton != null)
+			NetworkManager.Singleton.OnClientDisconnectCallback -= HandleClientDisconnected;
+	}
+
+	private void HandleClientDisconnected(ulong clientId)
+	{
+		if (OnlinePlayersID.Contains(OwnerClientId))
+			OnlineTurns.Value = 100;
+
+		if (NetCommunication.Instances.TryGetValue(clientId, out var netCom))
+		{
+			NetCommunication.Instances.Remove(clientId);
+		}
 	}
 
 	public NetworkVariable<int> OnlineTurns =

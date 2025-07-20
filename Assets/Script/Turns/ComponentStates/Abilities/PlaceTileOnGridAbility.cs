@@ -2,7 +2,6 @@ using CardGame.StateMachine;
 using CardGame.Card;
 using CardGame.UI;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace CardGame.Turns
 {

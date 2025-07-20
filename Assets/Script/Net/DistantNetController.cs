@@ -304,10 +304,20 @@ namespace CardGame.Net
 				_heartbeatCancellationToken.Dispose();
 				_heartbeatCancellationToken = null;
 			}
-			
+
+			MakeLobbyPrivate().Forget();
+
 			_netCommunication.LoadScene(_sceneName);
 		}
 		
+		private async UniTask MakeLobbyPrivate()
+		{
+			await LobbyService.Instance.UpdateLobbyAsync(_lobbyId, new UpdateLobbyOptions
+			{
+				IsPrivate = true
+			});
+		}
+
 		private void CallOnConnect(NetworkManager arg1, ConnectionEventData arg2)
 		{
 			_networkUI.UpdateAfterHost();

@@ -4,36 +4,36 @@ using CardGame.Card;
 using CardGame.Managers;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace CardGame
 {
-    public class DrawPile : MonoBehaviour
-    {
-	    // Use label "TileSetting" to load tile
-		[Disable] public List<TileSettings> AllTileSettings = new(); 
+	public class DrawPile : MonoBehaviour
+	{
+		// Use label "TileSetting" to load tile
+		[Disable] public List<TileSettings> AllTileSettings = new();
 
 		private List<TileSettings> _tileInDrawPile = new();
-		public List<TileSettings> _bonusTileList {get; private set; } = new();
+		public List<TileSettings> _bonusTileList { get; private set; } = new();
 
-		private static HashSet<TileSettings> _hashSet;
+		private static HashSet<TileSettings> _hashSet = new();
 
-        public event System.Action OnTilesLoaded; // Pour call la grid generation
+		public event System.Action OnTilesLoaded; // Pour call la grid generation
 		public bool TilesLoadedComplete { get; private set; } = false;
 
-        private void Awake()
+		private void Awake()
 		{
 			AsyncAwake().Forget();
 		}
 
-        private async UniTask AsyncAwake()
-        {
-			await UniTask.Delay(200); // proper way would be to wait for the state machine to launch completly
-            await LoadTiles();
+		private async UniTask AsyncAwake()
+		{
+			await UniTask.Delay(200);
 
-            _tileInDrawPile = new List<TileSettings>();
+			await LoadTiles();
 
-			for (int i = 0; i < AllTileSettings.Count; i++) 
+			_tileInDrawPile = new List<TileSettings>();
+
+			for (int i = 0; i < AllTileSettings.Count; i++)
 			{
 				if (AllTileSettings[i].PoolIndex == 0)
 				{
@@ -45,17 +45,17 @@ namespace CardGame
 				}
 			}
 
-            //for (int i = 0; i < 2; i++) //On le fait en double pour avoir + de tiles (4 fois +)
-            //{
-            //    _tileInDrawPile.AddRange(_tileInDrawPile);
-            //}
+			//for (int i = 0; i < 2; i++) //On le fait en double pour avoir + de tiles (4 fois +)
+			//{
+			//    _tileInDrawPile.AddRange(_tileInDrawPile);
+			//}
 
-            OnTilesLoaded?.Invoke(); // start la grid
+			OnTilesLoaded?.Invoke(); // start la grid
 			TilesLoadedComplete = true;
-        }
+		}
 
 
-        private void OnEnable()
+		private void OnEnable()
 		{
 			Storage.Instance.Register(this);
 		}
@@ -64,15 +64,24 @@ namespace CardGame
 		{
 			if (Storage.CheckInstance()) Storage.Instance.Delete(this);
 		}
-		
+
 		private async UniTask LoadTiles()
 		{
 			AllTileSettings.Clear();
-			
+
+			if (_hashSet.Count != 0)
+			{
+				foreach (TileSettings tile in _hashSet)
+				{
+					AllTileSettings.Add(tile);
+				}
+				return;
+			}
+
 			IList<TileSettings> handle = await AddressableManager.LoadLabel<TileSettings>("TileSetting");
 
 			_hashSet = new();
-			foreach (var tile in handle)
+			foreach (TileSettings tile in handle)
 			{
 				if (tile == null) continue;
 
@@ -96,12 +105,12 @@ namespace CardGame
 		public int GetTileIDFromDrawPile()
 		{
 			if (_tileInDrawPile.Count == 0) return -1;
-            int index = Random.Range(0, _tileInDrawPile.Count);
-            TileSettings settings = _tileInDrawPile[index];
+			int index = Random.Range(0, _tileInDrawPile.Count);
+			TileSettings settings = _tileInDrawPile[index];
 			_tileInDrawPile.RemoveAt(index);
 
 			return settings.IdCode;
-		}	
+		}
 
 		public TileSettings GetTileFromID(int settingsID)
 		{
@@ -116,7 +125,7 @@ namespace CardGame
 			return null;
 		}
 
-		public void DiscardTile(int settingsID) 
+		public void DiscardTile(int settingsID)
 		{
 			_tileInDrawPile.Add(GetTileFromID(settingsID));
 		}
@@ -124,21 +133,21 @@ namespace CardGame
 
 
 		// 1 ou 2, c'est call par gridmanager
-        public List<TileData> GetBonusTileFromPoolIndex(int poolIndex)
-        {
-            List<TileData> result = new();
+		public List<TileData> GetBonusTileFromPoolIndex(int poolIndex)
+		{
+			List<TileData> result = new();
 
-            foreach (var tile in _bonusTileList)
-            {
-                if (tile.PoolIndex == poolIndex)
-                {
+			foreach (var tile in _bonusTileList)
+			{
+				if (tile.PoolIndex == poolIndex)
+				{
 					TileData data = new();
 					data.InitTile(tile);
-                    result.Add(data);
-                }
-            }
+					result.Add(data);
+				}
+			}
 
-            return result;
-        }
-    }
+			return result;
+		}
+	}
 }

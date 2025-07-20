@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardGame.StateMachine;
+using CardGame.UI;
 using DG.Tweening;
 using UnityEngine;
 
@@ -10,17 +11,11 @@ namespace CardGame.Turns
 		[SerializeField]
 		private RectTransform _handZone;
 
-		[SerializeField]
-		private float _offsetTop;
-
-		[SerializeField]
-		private float _offsetSides;
-
 		[Disable]
 		public List<GameObject> TileInHand;
 
 		public int TileInHandCount => TileInHand.Count;
-		
+
 		private HUDResource _hudResource;
 
 		private float _tileSize;
@@ -31,11 +26,6 @@ namespace CardGame.Turns
 			_hudResource = owner.GetStateComponent<HUDResource>();
 			_defaultCamSize = Camera.main.orthographicSize;
 			_tileSize = 1;
-		}
-
-		public override void LateInit()
-		{
-			UpdatePlacementInHand();
 		}
 
 		public bool IsInHand(Vector2 position)
@@ -66,6 +56,7 @@ namespace CardGame.Turns
 			int insertIndex = GetInsertionIndex(tile.transform.position);
 			tile.transform.parent = Camera.main.transform;
 			TileInHand.Insert(insertIndex, tile);
+			tile.GetComponent<TileVisu>().SetTileLayerGrid(LayerTile.InHand);
 
 			UpdatePlacementInHand();
 		}
@@ -82,6 +73,7 @@ namespace CardGame.Turns
 			tile.transform.parent = null;
 			tile.transform.DORotate(new(0, 0, 0), 0.2f, RotateMode.Fast);
 			tile.transform.DOScale(Vector3.one, 0.2f);
+			tile.GetComponent<TileVisu>().SetTileLayerGrid(LayerTile.InBetween);
 
 			UpdatePlacementInHand();
 		}
@@ -91,8 +83,8 @@ namespace CardGame.Turns
 			Vector3[] worldCorners = new Vector3[4];
 			_handZone.GetWorldCorners(worldCorners);
 
-			Vector3 pos1 = Camera.main.ScreenToWorldPoint(worldCorners[1] + new Vector3(_offsetSides, _offsetTop, 0));
-			Vector3 pos2 = Camera.main.ScreenToWorldPoint(worldCorners[2] + new Vector3(-_offsetSides, _offsetTop, 0));
+			Vector3 pos1 = (worldCorners[0] + worldCorners[1]) / 2;
+			Vector3 pos2 = (worldCorners[2] + worldCorners[3]) / 2;
 
 			int count = TileInHand.Count;
 
@@ -132,14 +124,9 @@ namespace CardGame.Turns
 				_hudResource.OpenHud();
 		}
 
-		public void UpdateTileInHandSize()
-		{
-			_tileSize = Camera.main.orthographicSize / _defaultCamSize;
-		}
-
 		public void EndDestroyTile()
 		{
-			for (int i = TileInHand.Count-1; i >= 0; i--)
+			for (int i = TileInHand.Count - 1; i >= 0; i--)
 			{
 				GameObject.Destroy(TileInHand[i]);
 			}

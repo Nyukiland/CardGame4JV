@@ -1,8 +1,6 @@
 using CardGame.Card;
-using CardGame.StateMachine;
 using CardGame.Turns;
 using DG.Tweening;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,6 +13,8 @@ namespace CardGame.UI
 		private string _layerGrid;
 		[SerializeField]
 		private string _layerHand;
+		[SerializeField]
+		private string _layerInBetween;
 
 		[Space(10)]
 
@@ -63,7 +63,7 @@ namespace CardGame.UI
 		[Header("Tile Rotation speed")]
 		[SerializeField] private float _backMovement = 0.1f;
 		[SerializeField] private float _rotationMovement = 0.2f;
-		[SerializeField] private float _backMovementAgain =0.1f;
+		[SerializeField] private float _backMovementAgain = 0.1f;
 
 
 		private Sequence _rotationSequence;
@@ -141,12 +141,19 @@ namespace CardGame.UI
 			return null;
 		}
 
-		public void SetTileLayerGrid(bool isOnGrid)
+		public void SetTileLayerGrid(LayerTile layerTile)
 		{
-			string layerName = isOnGrid ? _layerGrid : _layerHand;
+			string layerName = layerTile switch
+			{
+				LayerTile.Grid => _layerGrid,
+				LayerTile.InHand => _layerHand,
+				LayerTile.InBetween => _layerInBetween,
+				_ => _layerGrid
+			};
+
 			int layer = LayerMask.NameToLayer(layerName);
 
-			SetLayerRecursively(transform, layer); // Et oui Roman faut penser aux enfants un peu ! tss
+			SetLayerRecursively(transform, layer);
 		}
 
 		private void SetLayerRecursively(Transform target, int layer)
@@ -233,7 +240,7 @@ namespace CardGame.UI
 
 			Sequence seq = DOTween.Sequence();
 
-			seq.Append(visual.DOLocalRotate(new Vector3(0, 0, ((TileData.TileRotationCount -1 + 4) % 4) * -90f + 10f), 0.1f)); // recul (position avant la rota)
+			seq.Append(visual.DOLocalRotate(new Vector3(0, 0, ((TileData.TileRotationCount - 1 + 4) % 4) * -90f + 10f), 0.1f)); // recul (position avant la rota)
 			seq.Append(visual.DOLocalRotate(new Vector3(0, 0, targetRotation - 10f), 0.2f).SetEase(Ease.InOutQuad)); // Rota vers la new rotation + 10
 			seq.Append(visual.DOLocalRotate(new Vector3(0, 0, targetRotation), 0.1f).SetEase(Ease.OutQuad)); // Rota to real location
 
@@ -265,5 +272,12 @@ namespace CardGame.UI
 
 			return text;
 		}
+	}
+
+	public enum LayerTile
+	{
+		Grid,
+		InHand,
+		InBetween
 	}
 }
