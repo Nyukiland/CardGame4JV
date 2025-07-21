@@ -9,6 +9,8 @@ namespace CardGame.Turns
 {
 	public class AutoPlayAbility : Ability
 	{
+		private readonly Vector2Int InvalidPosition = new(-100, -100);
+
 		private GridManagerResource _grid;
 		private ScoringAbility _scoring;
 		private DrawPile _drawPile;
@@ -19,11 +21,7 @@ namespace CardGame.Turns
 		[SerializeField]
 		private List<TileData> _tilesInHand = new();
 
-		public bool IsFinished
-		{
-			get;
-			private set;
-		}
+		public bool IsFinished { get; private set; }
 
 		public override void Init(Controller owner)
 		{
@@ -38,11 +36,6 @@ namespace CardGame.Turns
 			_drawPile = Storage.Instance.GetElement<DrawPile>();
 		}
 
-		public override void OnEnable()
-		{
-			base.OnEnable();
-		}
-
 		public override void OnDisable()
 		{
 			base.OnDisable();
@@ -54,7 +47,6 @@ namespace CardGame.Turns
 			for (int i = 0; i < count; i++)
 			{
 				TileSettings tileSettings = _drawPile.GetTileFromDrawPile();
-
 				if (tileSettings == null) return;
 
 				TileData tileData = new();
@@ -71,7 +63,6 @@ namespace CardGame.Turns
 			AutoPlay().Forget();
 		}
 
-		//need to split that in multiple unitask and await them
 		private async UniTask AutoPlay()
 		{
 			await UniTask.WaitForSeconds(_waitSec);
@@ -82,54 +73,46 @@ namespace CardGame.Turns
 				return;
 			}
 
-			//----------------------------------------
-			//find card placement
-			//fun triple loop
-			Vector2Int tilePlaced = new(-100, -100);
-			TileData tileData = null;
-			int connection = 0;
-			foreach (TileData tile in _tilesInHand)
-			{
-				foreach (Vector2Int pos in _grid.SurroundingTilePos)
-				{
-					for (int i = 0; i < 4; i++)
-					{
-						connection = _grid.GetPlacementConnectionCount(tile, pos);
-						if (connection != 0)
-						{
-							tileData = tile;
-							tilePlaced = pos;
-							break;
-						}
-						else
-						{
-							tile.RotateTile();
-						}
-					}
+			(TileData tile, Vector2Int pos, int connection) = FindBestPlacement();
 
-					if (tilePlaced != new Vector2Int(-100, -100)) break;
-				}
-
-				if (tilePlaced != new Vector2Int(-100, -100)) break;
-			}
-
-			//-------------------------
-			//actually play the tile
-			if (tilePlaced == new Vector2Int(-100, -100))
+			if (pos == InvalidPosition)
 			{
 				UnityEngine.Debug.LogWarning($"[{nameof(AutoPlayAbility)}] Failed to place tile due to no valid placement");
 			}
 			else
 			{
-				tileData.HasFlag = GameManager.Instance.FlagTurn;
-				_grid.SetTile(tileData, tilePlaced);
-				_tilesInHand.Remove(tileData);
-				_scoring.SetScoringPos(tilePlaced);
+				tile.HasFlag = GameManager.Instance.FlagTurn;
+				_grid.SetTile(tile, pos);
+				_tilesInHand.Remove(tile);
+				_scoring.SetScoringPos(pos);
 				GenerateTheoreticalHand(connection);
 			}
 
 			GameManager.Instance.SoloTurns++;
 			IsFinished = true;
+		}
+
+		private (TileData tile, Vector2Int pos, int connection) FindBestPlacement()
+		{
+			TileData bestTile = null;
+			Vector2Int bestPos = InvalidPosition;
+			int bestConnection = 0;
+
+			foreach (TileData tile in _tilesInHand)
+			{
+				foreach (Vector2Int pos in _grid.SurroundingTilePos)
+				{
+					int connection = _grid.GetPlacementConnectionCount(tile, pos);
+					if (connection > bestConnection)
+					{
+						bestTile = tile;
+						bestPos = pos;
+						bestConnection = connection;
+					}
+				}
+			}
+
+			return (bestTile, bestPos, bestConnection);
 		}
 
 		public override string DisplayInfo()
