@@ -37,8 +37,6 @@ namespace CardGame.Turns
 				_autoPlayAbility.CallBotTurn();
 			}
 			Controller.GetStateComponent<HUDResource>().UpdateTurnValue();
-
-			_prevTurn = GameManager.Instance.GlobalTurn;
 		}
 
 		public override void OnExit()
