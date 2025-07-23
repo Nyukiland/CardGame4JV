@@ -26,7 +26,7 @@ namespace CardGame.Turns
 		private TileVisu[,] _grid;
 
 		public List<Vector2Int> SurroundingTilePos { get; private set; } = new();
-		public List<Vector2Int> LastSurroundingUpdated { get; private set; }
+		public List<Vector2Int> LastSurroundingUpdated { get; private set; } = new();
 
 		// tile bonus
 		private List<Vector2Int> BonusTilePositions = new();
