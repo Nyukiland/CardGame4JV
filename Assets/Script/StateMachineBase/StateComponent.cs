@@ -9,6 +9,8 @@ namespace CardGame.StateMachine
 		[HideInInspector]
 		public bool Enabled = false;
 
+		protected virtual bool CanChangeActivity => false;
+
 		public Controller Owner { get; private set; }
 
 		public virtual void EarlyInit() { }
@@ -17,8 +19,7 @@ namespace CardGame.StateMachine
 		{
 			Owner = owner;
 
-			//i don't like the cast but i guess should do it
-			if (this is Resource)
+			if (!CanChangeActivity)
 			{
 				Enabled = true;
 				OnEnable();
@@ -28,7 +29,7 @@ namespace CardGame.StateMachine
 		}
 
 
-		public virtual void Init(Controller owner) {}
+		public virtual void Init(Controller owner) { }
 
 		public virtual void LateInit() { }
 
@@ -45,19 +46,17 @@ namespace CardGame.StateMachine
 			if (Enabled == true)
 				return;
 
-			//i don't like the cast but i guess should do it
-			if (this is Ability) Enabled = true;
+			if (CanChangeActivity) Enabled = true;
 
 			OnEnable();
 		}
 
 		public void OnDisableController()
 		{
-			if(Enabled == false)
+			if (Enabled == false)
 				return;
 
-			//i don't like the cast but i guess should do it
-			if (this is Ability) Enabled = false;
+			if (CanChangeActivity) Enabled = false;
 
 			OnDisable();
 		}
