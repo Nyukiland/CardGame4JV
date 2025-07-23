@@ -505,6 +505,8 @@ MonoBehaviour:
   - {fileID: 4191913911310541570, guid: bf3d29a3290d09f4cbbaafb7d8c8a282, type: 3}
   _baseVisualMesh: {fileID: 4247688979300106799}
   _flagPrefab: {fileID: 3336862574161196343, guid: 4bdad4f3d4d270d4bbaededd7f1cb709, type: 3}
+  _pawnP1: {fileID: 2211630558709230641, guid: 0cdb88624ba25e241b6b22440be5f7c6, type: 3}
+  _pawnP2: {fileID: 7359168993451492168, guid: 244aa53f1ca5a0147abb6fc141a650a8, type: 3}
   _wrongRotationFeedback: {fileID: 8162164599379639732}
   IsLinked: 1
   _backMovement: 0.1

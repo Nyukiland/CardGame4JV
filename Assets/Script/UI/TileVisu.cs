@@ -48,8 +48,11 @@ namespace CardGame.UI
 
 		[SerializeField] private List<GameObject> _meshesPresetList = new();
 		private GameObject _currentVisualMesh;
-		[SerializeField] private GameObject _baseVisualMesh; // La tile grise de base, 
-		[SerializeField] private GameObject _flagPrefab; // La tile grise de base, 
+		[SerializeField] private GameObject _baseVisualMesh; // La tile grise de base
+		[SerializeField] private GameObject _flagPrefab; // La tile grise de base
+		[SerializeField] private GameObject _pawnP1;
+		[SerializeField] private GameObject _pawnP2;
+		private bool _spawnedPawn = false;
 		[SerializeField] private GameObject _wrongRotationFeedback;
 
 		public TileData TileData { get; set; }
@@ -98,7 +101,19 @@ namespace CardGame.UI
 
 			if (TileData == null) return;
 
-			_ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : "";
+			//_ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : "";
+
+			// On spawn le pion quand on pose la tile 
+			if (TileData.OwnerPlayerIndex == 0 && _spawnedPawn == false)
+			{
+				Instantiate(_pawnP1, transform);
+				_spawnedPawn = true;
+			}
+			else if (TileData.OwnerPlayerIndex == 1 && _spawnedPawn == false)
+			{
+				Instantiate(_pawnP2, transform);
+				_spawnedPawn = true;
+			}
 
 			SetTileMesh(TileData.TileSettings.tilePreset); // Y a une sécu dedans pour eviter de tout reconfig
 		}
