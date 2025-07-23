@@ -4447,7 +4447,7 @@ MonoBehaviour:
         Enabled: 0
         _layerTile:
           serializedVersion: 2
-          m_Bits: 8
+          m_Bits: 136
 --- !u!4 &1973094708
 Transform:
   m_ObjectHideFlags: 0

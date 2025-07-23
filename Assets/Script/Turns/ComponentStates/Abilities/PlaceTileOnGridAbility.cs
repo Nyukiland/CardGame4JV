@@ -91,9 +91,8 @@ namespace CardGame.Turns
 			if (targetTile != null && targetTile.TileData == null)
 			{
 				int neighborCount = _gridManager.CheckNeighborTileLinked(pos);
-				int connectionCount = _gridManager.GetPlacementConnectionCount(tempTile.TileData, pos);
 
-				if (connectionCount == 0 || neighborCount == 0) // Si pas de connection valide, ou que si mais pas de voisin valide (cas d'une tileObject bonus isol�e)
+				if (neighborCount == 0) // Si pas de connection valide, ou que si mais pas de voisin valide (cas d'une tileObject bonus isol�e)
 				{
 					_zoneHolder.GiveTileToHand(tempTile.gameObject);
 					return;
