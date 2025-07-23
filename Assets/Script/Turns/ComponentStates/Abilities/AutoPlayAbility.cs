@@ -118,6 +118,11 @@ namespace CardGame.Turns
 
 			GameManager.Instance.SoloTurns++;
 			IsFinished = true;
+
+			await UniTask.NextFrame();
+			await UniTask.WaitForEndOfFrame();
+
+			UpdateSurroundingTileInfo();
 		}
 
 		private void UpdateSurroundingTileInfo()
@@ -293,7 +298,32 @@ namespace CardGame.Turns
 
 		public override string DisplayInfo()
 		{
-			return $"Tile in hand: {_tilesInHand.Count} \n";
+			string text = "";
+
+			text += "---Surrounding---\n";
+
+			for (int i = 0; i < _surroundingTileDecomposed.Count; i++)
+			{
+				text += "Surrounding " + i;
+				text += $"\t count: {_surroundingTileDecomposed[i].SurroundingCount} \n" +
+					$"\t score: {_surroundingTileDecomposed[i].PotentialScore} \n";
+
+				foreach (ENVIRONEMENT_TYPE type in _surroundingTileDecomposed[i].Environments)
+				{
+					text += $"\t zone: {type}\n";
+				}
+			}
+
+			text += "---Tile---\n";
+
+			for (int i = 0; i < _tilesInHand.Count; i++)
+			{
+				text += "Tile " + i;
+				text += $"\t count: {_tilesInHand[i].BestConnection} \n" +
+					$"\t score: {_tilesInHand[i].BestScore} \n";
+			}
+
+			return text;
 		}
 
 		public class TileWithBestPlacement
