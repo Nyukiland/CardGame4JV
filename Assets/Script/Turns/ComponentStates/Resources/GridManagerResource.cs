@@ -4,6 +4,7 @@ using CardGame.StateMachine;
 using CardGame.UI;
 using CardGame.Utility;
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,6 +26,7 @@ namespace CardGame.Turns
 		private TileVisu[,] _grid;
 
 		public List<Vector2Int> SurroundingTilePos { get; private set; } = new();
+		public List<Vector2Int> LastSurroundingUpdated { get; private set; }
 
 		// tile bonus
 		private List<Vector2Int> BonusTilePositions = new();
@@ -175,6 +177,8 @@ namespace CardGame.Turns
 
 		private void ActivateSurroundingTiles(int x, int y)
 		{
+			LastSurroundingUpdated.Clear();
+
 			if (SurroundingTilePos.Contains(new(x, y)))
 				SurroundingTilePos.Remove(new(x, y));
 
@@ -189,11 +193,16 @@ namespace CardGame.Turns
 			{
 				_grid[x, y].gameObject.SetActive(true);
 
-				if (!SurroundingTilePos.Contains(new(x, y)) && GetTile(x, y).TileData == null)
-				{
-					SurroundingTilePos.Add(new(x, y));
-					PlaySurroundingTileEffect(_grid[x, y]);
-				}
+				if (GetTile(x, y).TileData != null)
+					return;
+
+				LastSurroundingUpdated.Add(new(x, y));
+
+				if (SurroundingTilePos.Contains(new(x, y)))
+					return;
+
+				SurroundingTilePos.Add(new(x, y));
+				PlaySurroundingTileEffect(_grid[x, y]);
 			}
 		}
 
@@ -206,7 +215,7 @@ namespace CardGame.Turns
 			seq.Append(visu.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack));
 			seq.Join(visu.transform.DOShakeRotation(0.5f, 50, 10, 80, true));
 
-			seq.Play().OnComplete(() => 
+			seq.Play().OnComplete(() =>
 			{
 				visu.transform.rotation = Quaternion.identity;
 				visu.transform.localScale = Vector3.one;
@@ -269,7 +278,7 @@ namespace CardGame.Turns
 							UnityEngine.Debug.LogWarning($"[{nameof(GridManagerResource)}] tile placed environement is none");
 
 						if (myZones[myZone].environment != ENVIRONEMENT_TYPE.None &&
-							data.Zones[otherZone].environment != ENVIRONEMENT_TYPE.None && 
+							data.Zones[otherZone].environment != ENVIRONEMENT_TYPE.None &&
 							myZones[myZone].environment != data.Zones[otherZone].environment)
 							return 0;
 
@@ -306,7 +315,7 @@ namespace CardGame.Turns
 			return total;
 		}
 
-		public void SetNeighborBonusTileLinked(Vector2Int pos) 
+		public void SetNeighborBonusTileLinked(Vector2Int pos)
 		{
 			TileVisu tile = null;
 			TileVisu currentTile = GetTile(pos.x, pos.y);
@@ -368,7 +377,7 @@ namespace CardGame.Turns
 				if (tile.TileData == null) continue;
 
 				Vector2Int pos = new((int)tile.transform.position.x, (int)tile.transform.position.y);
-				DataToSend data = new (tile.TileData, pos);
+				DataToSend data = new(tile.TileData, pos);
 				list.DataList.Add(data);
 			}
 

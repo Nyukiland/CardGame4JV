@@ -4,6 +4,8 @@ using CardGame.StateMachine;
 using CardGame.Utility;
 using CardGame.Card;
 using UnityEngine;
+using System;
+using System.Linq;
 
 namespace CardGame.Turns
 {
@@ -19,7 +21,9 @@ namespace CardGame.Turns
 		private float _waitSec = 2f;
 
 		[SerializeField]
-		private List<TileData> _tilesInHand = new();
+		private List<TileWithBestPlacement> _tilesInHand = new();
+
+		private List<SurroundingAndCount> _surroundingTileDecomposed = new();
 
 		public bool IsFinished { get; private set; }
 
@@ -53,7 +57,20 @@ namespace CardGame.Turns
 				tileData.InitTile(tileSettings);
 				tileData.OwnerPlayerIndex = 1;
 
-				_tilesInHand.Add(tileData);
+				TileWithBestPlacement tileBP = new TileWithBestPlacement()
+				{
+					Tile = tileData
+				};
+
+				if (_surroundingTileDecomposed.Count != 0)
+				{
+					foreach (SurroundingAndCount surrounding in _surroundingTileDecomposed)
+					{
+						UpdateTileInfo(surrounding, ref tileBP);
+					}
+				}
+
+				_tilesInHand.Add(tileBP);
 			}
 		}
 
@@ -66,6 +83,7 @@ namespace CardGame.Turns
 		private async UniTask AutoPlay()
 		{
 			await UniTask.WaitForSeconds(_waitSec);
+			await UniTask.WaitForEndOfFrame();
 
 			if (_tilesInHand.Count == 0)
 			{
@@ -73,7 +91,13 @@ namespace CardGame.Turns
 				return;
 			}
 
-			(TileData tile, Vector2Int pos, int connection) = FindBestPlacement();
+			UpdateSurroundingTileInfo();
+
+			await UniTask.NextFrame();
+			await UniTask.WaitForEndOfFrame();
+
+			FindBestPlacement(out TileWithBestPlacement tileToPlay, out Vector2Int pos, out int rotation, out int connection);
+
 
 			if (pos == InvalidPosition)
 			{
@@ -81,9 +105,13 @@ namespace CardGame.Turns
 			}
 			else
 			{
-				tile.HasFlag = GameManager.Instance.FlagTurn;
-				_grid.SetTile(tile, pos);
-				_tilesInHand.Remove(tile);
+				tileToPlay.Tile.HasFlag = GameManager.Instance.FlagTurn;
+
+				for (int i = 0; i < rotation; i++)
+					tileToPlay.Tile.RotateTile();
+
+				_grid.SetTile(tileToPlay.Tile, pos);
+				_tilesInHand.Remove(tileToPlay);
 				_scoring.SetScoringPos(pos);
 				GenerateTheoreticalHand(connection);
 			}
@@ -92,32 +120,200 @@ namespace CardGame.Turns
 			IsFinished = true;
 		}
 
-		private (TileData tile, Vector2Int pos, int connection) FindBestPlacement()
+		private void UpdateSurroundingTileInfo()
 		{
-			TileData bestTile = null;
-			Vector2Int bestPos = InvalidPosition;
-			int bestConnection = 0;
-
-			foreach (TileData tile in _tilesInHand)
+			for (int i = _surroundingTileDecomposed.Count - 1; i >= 0; i--)
 			{
-				foreach (Vector2Int pos in _grid.SurroundingTilePos)
+				SurroundingAndCount surrounding = _surroundingTileDecomposed[i];
+
+				if (!_grid.SurroundingTilePos.Contains(surrounding.Pos)
+					|| _grid.LastSurroundingUpdated.Contains(surrounding.Pos))
 				{
-					int connection = _grid.GetPlacementConnectionCount(tile, pos);
-					if (connection > bestConnection)
-					{
-						bestTile = tile;
-						bestPos = pos;
-						bestConnection = connection;
-					}
+					_surroundingTileDecomposed.Remove(surrounding);
 				}
 			}
 
-			return (bestTile, bestPos, bestConnection);
+			foreach (Vector2Int pos in _grid.LastSurroundingUpdated)
+			{
+				SurroundingAndCount surrounding = new();
+				surrounding.Pos = pos;
+
+				GetInfoFromSurroundingTile(ref surrounding);
+
+				for (int i = 0; i < _tilesInHand.Count; i++)
+				{
+					TileWithBestPlacement tileBP = _tilesInHand[i];
+					UpdateTileInfo(surrounding, ref tileBP);
+					_tilesInHand[i] = tileBP;
+				}
+
+				_surroundingTileDecomposed.Add(surrounding);
+			}
+		}
+
+		private void UpdateTileInfo(SurroundingAndCount surrounding, ref TileWithBestPlacement tileBP)
+		{
+			if (TileMatches(surrounding.Environments, tileBP.Tile.Zones, out int rotation))
+			{
+				if (tileBP.BestScore < surrounding.PotentialScore)
+				{
+					tileBP.BestScore = surrounding.PotentialScore;
+					tileBP.BestPositionForScore = surrounding.Pos;
+					tileBP.BestRotationForScore = rotation;
+				}
+
+				if (tileBP.BestConnection < surrounding.SurroundingCount)
+				{
+					tileBP.BestConnection = surrounding.SurroundingCount;
+					tileBP.BestPositionForConnection = surrounding.Pos;
+					tileBP.BestRotationForConnection = rotation;
+				}
+			}
+
+			bool TileMatches(ENVIRONEMENT_TYPE[] boardHint, ZoneData[] tileEdges, out int r)
+			{
+				for (r = 0; r < 4; r++)
+				{
+					bool valid = true;
+					for (int i = 0; i < 4; i++)
+					{
+						ENVIRONEMENT_TYPE boardColor = boardHint[i];
+						ENVIRONEMENT_TYPE tileColor = tileEdges[(i + r) % 4].environment;
+
+						if (boardColor != ENVIRONEMENT_TYPE.None && boardColor != tileColor)
+						{
+							valid = false;
+							break;
+						}
+					}
+
+					if (valid)
+						return true; // Match found with rotation r
+				}
+				return false;
+			}
+
+		}
+
+		private void GetInfoFromSurroundingTile(ref SurroundingAndCount surrounding)
+		{
+			int x = surrounding.Pos.x;
+			int y = surrounding.Pos.y;
+
+			if (x + 1 <= _grid.Width - 1) ModifySurroundingData(x + 1, y, 1, ref surrounding);
+			if (x - 1 >= 0) ModifySurroundingData(x - 1, y, 3, ref surrounding);
+			if (y + 1 <= _grid.Height - 1) ModifySurroundingData(x, y + 1, 0, ref surrounding);
+			if (y - 1 >= 0) ModifySurroundingData(x, y - 1, 2, ref surrounding);
+
+			void ModifySurroundingData(int x, int y, int index, ref SurroundingAndCount surrounding)
+			{
+				TileData tile = _grid.GetTile(x, y).TileData;
+
+				if (tile == null)
+				{
+					surrounding.Environments[index] = ENVIRONEMENT_TYPE.None;
+					return;
+				}
+
+				int oppositeIndex = index + 2;
+				if (oppositeIndex > 3) oppositeIndex -= 4;
+
+				surrounding.Environments[index] = tile.Zones[oppositeIndex].environment;
+				surrounding.PotentialScore += tile.Zones[oppositeIndex].Region.Tiles.Count;
+				surrounding.SurroundingCount++;
+			}
+		}
+
+		private void FindBestPlacement(out TileWithBestPlacement tileBP, out Vector2Int pos, out int rotation, out int connection)
+		{
+			tileBP = _tilesInHand[0];
+			pos = InvalidPosition;
+			rotation = 0;
+			connection = 0;
+
+			if (GameManager.Instance.FlagTurn)
+			{
+				_tilesInHand = _tilesInHand
+					.OrderByDescending(x => x.BestScore)
+					.ToList();
+
+				for (int i = 0; i < _tilesInHand.Count; i++)
+				{
+					if (_grid.SurroundingTilePos.Contains(_tilesInHand[i].BestPositionForScore))
+					{
+						tileBP = _tilesInHand[i];
+						pos = _tilesInHand[i].BestPositionForScore;
+						rotation = _tilesInHand[i].BestRotationForScore;
+						connection = _surroundingTileDecomposed
+							.FirstOrDefault(x => x.Pos == _tilesInHand[i].BestPositionForScore)
+							.SurroundingCount;
+						break;
+					}
+					else
+					{
+						foreach (SurroundingAndCount surrounding in _surroundingTileDecomposed)
+						{
+							TileWithBestPlacement tile = _tilesInHand[i];
+							UpdateTileInfo(surrounding, ref tile);
+							_tilesInHand[i] = tile;
+						}
+					}
+				}
+			}
+			else
+			{
+				_tilesInHand = _tilesInHand
+					.OrderByDescending(x => x.BestConnection)
+					.ToList();
+
+				for (int i = 0; i < _tilesInHand.Count; i++)
+				{
+					if (_grid.SurroundingTilePos.Contains(_tilesInHand[i].BestPositionForConnection))
+					{
+						tileBP = _tilesInHand[i];
+						pos = _tilesInHand[i].BestPositionForConnection;
+						rotation = _tilesInHand[i].BestRotationForConnection;
+						connection = _surroundingTileDecomposed
+							.FirstOrDefault(x => x.Pos == _tilesInHand[i].BestPositionForConnection)
+							.SurroundingCount;
+						break;
+					}
+					else
+					{
+						foreach (SurroundingAndCount surrounding in _surroundingTileDecomposed)
+						{
+							TileWithBestPlacement tile = _tilesInHand[i];
+							UpdateTileInfo(surrounding, ref tile);
+							_tilesInHand[i] = tile;
+						}
+					}
+				}
+			}
 		}
 
 		public override string DisplayInfo()
 		{
 			return $"Tile in hand: {_tilesInHand.Count} \n";
+		}
+
+		public class TileWithBestPlacement
+		{
+			public TileData Tile;
+			public int BestRotationForScore;
+			public Vector2Int BestPositionForScore;
+			public int BestScore;
+
+			public int BestRotationForConnection;
+			public Vector2Int BestPositionForConnection;
+			public int BestConnection;
+		}
+
+		public class SurroundingAndCount
+		{
+			public Vector2Int Pos;
+			public int SurroundingCount;
+			public int PotentialScore;
+			public ENVIRONEMENT_TYPE[] Environments = new ENVIRONEMENT_TYPE[4];
 		}
 	}
 }
