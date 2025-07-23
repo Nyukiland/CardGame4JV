@@ -107,6 +107,17 @@ namespace CardGame.Turns
 			{
 				tileToPlay.Tile.HasFlag = GameManager.Instance.FlagTurn;
 
+				string text = "Tile \n";
+				text += $"\t rot: {rotation} \n";
+
+				foreach (ZoneData data in tileToPlay.Tile.Zones)
+				{
+					text += $"Zone: {data.environment} \n";
+				}
+				text += "\n";
+
+				UnityEngine.Debug.Log(text);
+
 				for (int i = 0; i < rotation; i++)
 					tileToPlay.Tile.RotateTile();
 
@@ -312,15 +323,22 @@ namespace CardGame.Turns
 				{
 					text += $"\t zone: {type}\n";
 				}
+				text += "\n";
 			}
 
-			text += "---Tile---\n";
+			text += "\n---Tile---\n";
 
 			for (int i = 0; i < _tilesInHand.Count; i++)
 			{
-				text += "Tile " + i;
+				text += "Tile " + i + "\n";
 				text += $"\t count: {_tilesInHand[i].BestConnection} \n" +
 					$"\t score: {_tilesInHand[i].BestScore} \n";
+
+				foreach (ZoneData data in _tilesInHand[i].Tile.Zones)
+				{
+					text += $"Zone: {data.environment} \n";
+				}
+				text += "\n";
 			}
 
 			return text;
