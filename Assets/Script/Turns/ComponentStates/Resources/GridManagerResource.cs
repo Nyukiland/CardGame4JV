@@ -30,6 +30,11 @@ namespace CardGame.Turns
 		private List<Vector2Int> BonusTilePositions = new();
 		private List<TileData> BonusTilePool = new();
 
+		private Vector3 _topRightMostTile = new(0, 0, 0);
+		private Vector3 _bottomLeftMostTile = new(100, 100, 0);
+		public Vector3 TopRightMostTile { get => _topRightMostTile; private set => _topRightMostTile = value; }
+		public Vector3 BottomLeftMostTile { get => _bottomLeftMostTile; private set => _bottomLeftMostTile = value; }
+
 		public override void LateInit()
 		{
 			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
@@ -164,6 +169,14 @@ namespace CardGame.Turns
 			SetNeighborBonusTileLinked(new(x, y));
 			PlayTileEffect(tileVisu);
 			DetermineTileRegions(x, y);
+
+			Vector3 tilePos = tileVisu.transform.position;
+
+			_bottomLeftMostTile.x = Mathf.Min(_bottomLeftMostTile.x, tilePos.x);
+			_bottomLeftMostTile.y = Mathf.Min(_bottomLeftMostTile.y, tilePos.y);
+			_topRightMostTile.x = Mathf.Max(_topRightMostTile.x, tilePos.x);
+			_topRightMostTile.y = Mathf.Max(_topRightMostTile.y, tilePos.y);
+
 			return true;
 		}
 

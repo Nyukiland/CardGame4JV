@@ -1,12 +1,10 @@
 using CardGame.StateMachine;
-using CardGame.UI;
 using UnityEngine;
 
 namespace CardGame.Turns
 {
 	public class ZoomAbility : Ability
 	{
-
 		[SerializeField] private float _minZoom = 2f;
 		private float _maxZoom = 10f;
 
@@ -37,28 +35,8 @@ namespace CardGame.Turns
 			_startdist = Vector2.Distance(posTouch1, posTouch2);
 			_startZoom = _cam.orthographicSize;
 
-			Vector3 bottomLeft = new(100, 100, 0);
-			Vector3 topRight = new(0, 0, 0);
-
-			for (int i = 0; i < _gridManager.Width; i++)
-			{
-				for (int j = 0; j < _gridManager.Height; j++)
-				{
-					TileVisu tile = _gridManager.GetTile(i, j);
-
-					if (tile.TileData == null) continue;
-
-					Vector3 tilePos = tile.transform.position;
-
-					bottomLeft.x = Mathf.Min(bottomLeft.x, tilePos.x);
-					bottomLeft.y = Mathf.Min(bottomLeft.y, tilePos.y);
-					topRight.x = Mathf.Max(topRight.x, tilePos.x);
-					topRight.y = Mathf.Max(topRight.y, tilePos.y);
-				}
-			}
-
-			float width = topRight.x - bottomLeft.x;
-			float height = topRight.y - bottomLeft.y;
+			float width = _gridManager.TopRightMostTile.x - _gridManager.BottomLeftMostTile.x;
+			float height = _gridManager.TopRightMostTile.y - _gridManager.BottomLeftMostTile.y;
 			_maxZoom = Mathf.Max(width, height) * 0.5f + 1f; // +1f c'est la marge
 			_zoneHolder.HideMyHand(true);
 		}

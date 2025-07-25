@@ -1,5 +1,4 @@
 using CardGame.StateMachine;
-using CardGame.UI;
 using DG.Tweening;
 using UnityEngine;
 
@@ -16,9 +15,6 @@ namespace CardGame.Turns
 		private Vector2 _startPos;
 		private Vector3 _camPos;
 		private Camera _cam;
-
-		private Vector3 _topRightCorner = new(0, 0, 0);
-		private Vector3 _bottomLeftCorner = new(100, 100, 0);
 
 		private bool _inUse;
 
@@ -47,26 +43,6 @@ namespace CardGame.Turns
 			_startPos = pos;
 			_camPos = _cam.transform.position;
 
-			for (int i = 0; i < _gridManager.Width; i++)
-			{
-				for (int j = 0; j < _gridManager.Height; j++)
-				{
-					TileVisu tile = _gridManager.GetTile(i, j);
-
-					if (tile.TileData == null) continue;
-
-					Vector3 tilePos = tile.transform.position;
-
-					_bottomLeftCorner.x = Mathf.Min(_bottomLeftCorner.x, tilePos.x);
-					_bottomLeftCorner.y = Mathf.Min(_bottomLeftCorner.y, tilePos.y);
-					_topRightCorner.x = Mathf.Max(_topRightCorner.x, tilePos.x);
-					_topRightCorner.y = Mathf.Max(_topRightCorner.y, tilePos.y);
-				}
-			}
-
-			_bottomLeftCorner -= new Vector3(_limitCamMove, _limitCamMove, 0);
-			_topRightCorner += new Vector3(_limitCamMove, _limitCamMove, 0);
-
 			_zoneHolder.HideMyHand(true);
 		}
 
@@ -80,8 +56,8 @@ namespace CardGame.Turns
 			Vector3 camShift = _cam.transform.position - targetPos;
 
 			// Shifted world positions of corners
-			Vector3 shiftedBL = _bottomLeftCorner + camShift;
-			Vector3 shiftedTR = _topRightCorner + camShift;
+			Vector3 shiftedBL = _gridManager.BottomLeftMostTile + camShift;
+			Vector3 shiftedTR = _gridManager.TopRightMostTile + camShift;
 
 			// Viewport space
 			Vector3 viewBL = _cam.WorldToViewportPoint(shiftedBL);
@@ -107,9 +83,6 @@ namespace CardGame.Turns
 			_inUse = false;
 			_startPos = Vector2.zero;
 			_camPos = Vector3.zero;
-
-			_topRightCorner = new(0, 0, 0);
-			_bottomLeftCorner = new(100, 100, 0);
 		}
 	}
 }
