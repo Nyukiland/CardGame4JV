@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5328120440621822142}
   - component: {fileID: 4828324035657273155}
   m_Layer: 0
-  m_Name: Environment
+  m_Name: Plateau
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
