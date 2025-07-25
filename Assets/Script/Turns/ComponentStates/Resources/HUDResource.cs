@@ -15,7 +15,7 @@ namespace CardGame.Turns
 	{
 		[SerializeField]
 		private Canvas _canvas;
-
+		[SerializeField] private float _distanceToCamera = 10;
 		[Space(10)]
 
 		[SerializeField] private GameObject _waitingScreen;
@@ -67,7 +67,7 @@ namespace CardGame.Turns
 			base.EarlyInit();
 
 			_canvas.worldCamera = Camera.main;
-			_canvas.planeDistance = 10;
+			_canvas.planeDistance = _distanceToCamera;
 			Canvas.ForceUpdateCanvases();
 		}
 

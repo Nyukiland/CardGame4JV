@@ -489,7 +489,7 @@ MonoBehaviour:
   _visuEast: {fileID: 199289482891222132}
   _visuWest: {fileID: 3441136048826296857}
   _visuCenter: {fileID: 3323001826489668244}
-  _neutral: {fileID: 2100000, guid: 105dcf2eec0a01741b3ae8ee4e6c9c18, type: 2}
+  _neutral: {fileID: 2100000, guid: 3b8ea919ae254a94e859c0d89732383f, type: 2}
   _grass: {fileID: 2100000, guid: 7c80afd54ddc87941ad53ca24d9549e2, type: 2}
   _water: {fileID: 2100000, guid: 003ca149f94018748b41fde1489c2b9a, type: 2}
   _fields: {fileID: 2100000, guid: 799cf63a8ab3c3c498a9cd34fd902fd6, type: 2}
@@ -505,8 +505,8 @@ MonoBehaviour:
   - {fileID: 4191913911310541570, guid: bf3d29a3290d09f4cbbaafb7d8c8a282, type: 3}
   _baseVisualMesh: {fileID: 4247688979300106799}
   _flagPrefab: {fileID: 3336862574161196343, guid: 4bdad4f3d4d270d4bbaededd7f1cb709, type: 3}
-  _pawnP1: {fileID: 2211630558709230641, guid: 0cdb88624ba25e241b6b22440be5f7c6, type: 3}
-  _pawnP2: {fileID: 7359168993451492168, guid: 244aa53f1ca5a0147abb6fc141a650a8, type: 3}
+  _pawnP1: {fileID: 7888436516675913956, guid: 02a730b0a68447d4b8f7e044bef07e40, type: 3}
+  _pawnP2: {fileID: 8029505975399055769, guid: cb3f77fb3b45c6d438aefdf2104dcbd0, type: 3}
   _wrongRotationFeedback: {fileID: 8162164599379639732}
   IsLinked: 1
   _backMovement: 0.1
@@ -968,7 +968,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4134226092817674381, guid: 3469604b33f16af4a8402d7ff9251f55, type: 3}
       propertyPath: m_LocalScale.y
-      value: 15
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4134226092817674381, guid: 3469604b33f16af4a8402d7ff9251f55, type: 3}
       propertyPath: m_LocalScale.z

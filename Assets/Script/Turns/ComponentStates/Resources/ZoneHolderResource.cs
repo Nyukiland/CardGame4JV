@@ -57,6 +57,7 @@ namespace CardGame.Turns
 			tile.transform.parent = Camera.main.transform;
 			TileInHand.Insert(insertIndex, tile);
 			tile.GetComponent<TileVisu>().SetTileLayerGrid(LayerTile.InHand);
+			tile.GetComponent<TileVisu>().SetWrongRotationFeedbackActive(false);
 
 			UpdatePlacementInHand();
 		}
