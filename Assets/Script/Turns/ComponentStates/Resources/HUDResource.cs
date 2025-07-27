@@ -48,6 +48,8 @@ namespace CardGame.Turns
 		[Header("Taunt")]
 		[SerializeField] private Transform _tauntButtonParent;
 		[SerializeField] private Button _tauntButtonPrefab;
+		[SerializeField] private ShowText _playerTaunt;
+		[SerializeField] private ShowText _enemyTaunt;
 		private List<Button> _tauntButtonsList = new();
 		private List<TextMeshProUGUI> _tauntTMPList = new();
 		[Header("Pause")]
@@ -151,6 +153,8 @@ namespace CardGame.Turns
 				tauntButton.onClick.AddListener(() => _tauntAbility.CallEvent(_tauntAbility.Taunts[index].Taunt));
 			}
 			
+			_playerTaunt.HidePopUp();
+			_enemyTaunt.HidePopUp();
 		}
 
 		#endregion
@@ -262,7 +266,7 @@ namespace CardGame.Turns
 
 		private void SendTaunt(string tauntLine)
 		{
-			Debug.Log($"taunt {tauntLine}");
+			_playerTaunt.ShowPopUp(tauntLine).Forget();
 		}
 		
 		public void InitScores()
