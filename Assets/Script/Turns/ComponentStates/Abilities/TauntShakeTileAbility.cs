@@ -77,11 +77,14 @@ namespace CardGame.Turns
 				tile.transform.localScale = Vector3.one;
 
 				seq.Append(tile.transform.DOPunchScale(_scaleDown, _duration));
-				seq.Join(tile.transform.DOShakeRotation(_specialRotDuration, _shakeIntensitySpecial))
-					.OnComplete(() => tile.transform.rotation = Quaternion.identity);
+				seq.Join(tile.transform.DOShakeRotation(_specialRotDuration, _shakeIntensitySpecial));
 			}
 
-			seq.Play();
+			seq.Play().OnComplete(() =>
+			{
+				tile.transform.SetPositionAndRotation(tile.PositionOnGrid, Quaternion.identity);
+				tile.transform.localScale = Vector3.one;
+			});
 		}
 	}
 }

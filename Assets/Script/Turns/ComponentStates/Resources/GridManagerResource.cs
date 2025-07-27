@@ -217,7 +217,7 @@ namespace CardGame.Turns
 			Sequence seq = DOTween.Sequence();
 
 			seq.Append(visu.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack));
-			seq.Join(visu.transform.DOShakeRotation(0.5f, 50, 10, 80, true));
+			seq.Join(visu.transform.DOShakeRotation(0.5f, 30, 10, 80, true));
 
 			seq.Play().OnComplete(() => 
 			{

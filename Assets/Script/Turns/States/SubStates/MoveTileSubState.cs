@@ -1,10 +1,9 @@
-using CardGame.StateMachine;
 using Cysharp.Threading.Tasks;
-using System;
+using UnityEngine.InputSystem;
+using CardGame.StateMachine;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
+using System;
 
 namespace CardGame.Turns
 {
@@ -65,9 +64,13 @@ namespace CardGame.Turns
 
 					_cancelToken = new CancellationTokenSource();
 					if (_moveCardAbility.QuickCheckRay(_startPos))
+					{
 						DetectHold(_startPos, _cancelToken.Token).Forget();
+					}
 					else if (!_tauntShakeTileAbility.QuickCheckRay(_startPos))
+					{
 						_moveCameraAbility.StartMoving(_startPos);
+					}
 				}
 				else if (context.phase == InputActionPhase.Canceled)
 				{
@@ -80,17 +83,6 @@ namespace CardGame.Turns
 					{
 						//Debug.Log("Tap detected -> Rotate");
 						_rotateCardAbility.RotateCard(_startPos);
-						
-						// Check si la tile temporairement posée est encore valide après rotation
-						var placeTileAbility = Controller.GetStateComponent<PlaceTileOnGridAbility>();
-						var gridManager = Controller.GetStateComponent<GridManagerResource>();
-
-						var tile = placeTileAbility.TempPlacedTile;
-						if (tile != null)
-						{
-							int connections = gridManager.GetPlacementConnectionCount(tile.TileData, placeTileAbility.TempPos);
-							tile.SetWrongRotationFeedbackActive(connections == 0);
-						}
 					}
 
 					_moveCameraAbility.StopMoving();

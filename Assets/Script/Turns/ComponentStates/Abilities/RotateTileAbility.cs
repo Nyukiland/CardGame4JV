@@ -1,4 +1,3 @@
-using CardGame.Card;
 using CardGame.StateMachine;
 using CardGame.UI;
 using UnityEngine;
@@ -10,6 +9,17 @@ namespace CardGame.Turns
 		[SerializeField]
 		private LayerMask _layerTile;
 
+		private PlaceTileOnGridAbility _tileOnGrid;
+		private GridManagerResource _gridManager;
+
+		public override void Init(Controller owner)
+		{
+			base.Init(owner);
+			
+			_tileOnGrid = owner.GetStateComponent<PlaceTileOnGridAbility>();
+			_gridManager = owner.GetStateComponent<GridManagerResource>();
+		}
+
 		public void RotateCard(Vector2 position)
 		{
 			if (Physics.Raycast(Camera.main.ScreenPointToRay(position), out RaycastHit hit, 100f, _layerTile))
@@ -18,6 +28,12 @@ namespace CardGame.Turns
 				{
 					visu.TileData.RotateTile();
 					visu.UpdateTile(visu.TileData);
+
+					if (_tileOnGrid.TempPlacedTile == visu)
+					{
+						int connections = _gridManager.GetPlacementConnectionCount(visu.TileData, _tileOnGrid.TempPos);
+						visu.SetWrongRotationFeedbackActive(connections == 0);
+					}
 				}
 			}
 		}

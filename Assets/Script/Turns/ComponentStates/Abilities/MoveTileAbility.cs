@@ -1,9 +1,7 @@
 using CardGame.StateMachine;
-using CardGame.Utility;
 using CardGame.UI;
-using UnityEngine;
-using CardGame.Card;
 using DG.Tweening;
+using UnityEngine;
 
 namespace CardGame.Turns
 {

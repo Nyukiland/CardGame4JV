@@ -7,11 +7,15 @@ namespace CardGame.Turns
 	public class TauntSubState : State
 	{
 		private TauntShakeTileAbility _tauntShakeTile;
+		private HUDResource _hudResource;
+		private MoveTileAbility _moveTile;
 
 		public override void OnEnter()
 		{
 			base.OnEnter();
 			GetStateComponent(ref _tauntShakeTile);
+			GetStateComponent(ref _hudResource);
+			GetStateComponent(ref _moveTile);
 		}
 
 		public override void OnActionTriggered(InputAction.CallbackContext context)
@@ -23,6 +27,12 @@ namespace CardGame.Turns
 
 			if (context.phase == InputActionPhase.Performed)
 			{
+				Vector2 touchPos = Controller.GetActionValue<Vector2>("TouchPos");
+
+				if (_hudResource.AmIClickingOnUI(touchPos) 
+					|| _moveTile.QuickCheckRay(touchPos))
+					return;
+
 				_tauntShakeTile.ShakeTile(Controller.GetActionValue<Vector2>("TouchPos"));
 			}
 		}
