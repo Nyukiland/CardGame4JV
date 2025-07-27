@@ -45,6 +45,11 @@ namespace CardGame.Turns
 		[SerializeField] private Image _greyFilter;
 		[SerializeField] private Color _startSliderColor;
 		[SerializeField] private Color _endSliderColor;
+		[Header("Taunt")]
+		[SerializeField] private Transform _tauntButtonParent;
+		[SerializeField] private Button _tauntButtonPrefab;
+		private List<Button> _tauntButtonsList = new();
+		private List<TextMeshProUGUI> _tauntTMPList = new();
 		[Header("Pause")]
 		[SerializeField] private GameObject _pauseScreen;
 		[SerializeField] private Button _pauseButton;
@@ -59,6 +64,8 @@ namespace CardGame.Turns
 
 		private bool _isHudOpen;
 		private Tween _lastHudTween;
+		
+		private TauntButtonAbility _tauntAbility;
 
 		#region Unity Methods
 
@@ -89,6 +96,8 @@ namespace CardGame.Turns
 			_pauseButton.onClick.AddListener(OpenPauseScreen);
 			_pausePlayButton.onClick.AddListener(ClosePauseScreen);
 			_pauseQuitButton.onClick.AddListener(OpenLobby);
+
+			InitTaunt();
 		}
 		public override void OnDisable()
 		{
@@ -99,6 +108,12 @@ namespace CardGame.Turns
 			_pauseButton.onClick.RemoveListener(OpenPauseScreen);
 			_pausePlayButton.onClick.RemoveListener(ClosePauseScreen);
 			_pauseQuitButton.onClick.RemoveListener(OpenLobby);
+			
+			if (_tauntButtonsList.Count != _tauntTMPList.Count) return;
+			for (int i = 0; i < _tauntButtonsList.Count; i++)
+			{
+				_tauntButtonsList[i].onClick.RemoveListener(() => SendTaunt(_tauntTMPList[i].text));
+			}
 		}
 
 		public override void Update(float deltaTime)
@@ -117,6 +132,25 @@ namespace CardGame.Turns
 				if (_nextTurnFillImage.color != _startSliderColor)
 					_nextTurnFillImage.color = _startSliderColor;
 			}
+		}
+
+		private void InitTaunt()
+		{
+			_tauntAbility = Owner.GetStateComponent<TauntButtonAbility>();
+			List<TauntButtonAbility.ButtonTaunt> buttonsList = _tauntAbility.Taunts;
+			for (int i = 0; i < buttonsList.Count; i++)
+			{
+				int index = i;
+				Button tauntButton = Object.Instantiate(_tauntButtonPrefab, _tauntButtonParent);
+				_tauntButtonsList.Add(tauntButton);
+				buttonsList[index].Button = tauntButton;
+				TextMeshProUGUI tauntText = tauntButton.GetComponentInChildren<TextMeshProUGUI>();
+				_tauntTMPList.Add(tauntText);
+				tauntText.text = buttonsList[i].Taunt.Text;
+				tauntButton.onClick.AddListener(() => SendTaunt(tauntText.text));
+				tauntButton.onClick.AddListener(() => _tauntAbility.CallEvent(_tauntAbility.Taunts[index].Taunt));
+			}
+			
 		}
 
 		#endregion
@@ -224,6 +258,11 @@ namespace CardGame.Turns
 			//voili voilou
 
 			return false;
+		}
+
+		private void SendTaunt(string tauntLine)
+		{
+			Debug.Log($"taunt {tauntLine}");
 		}
 		
 		public void InitScores()

@@ -11,23 +11,14 @@ namespace CardGame.Turns
 	{
 		[SerializeField]
 		private List<ButtonTaunt> _taunts = new();
-
-		public override void LateInit()
-		{
-			base.OnEnable();
-
-			for (int i = 0; i < _taunts.Count; i++)
-			{
-				_taunts[i].Button.onClick.AddListener(() => CallEvent(_taunts[i].Taunt));
-			}
-		}
+		public List<ButtonTaunt> Taunts => _taunts;
 
 		public void CallEvent(TauntScriptableObject tauntAction)
 		{
-			if (!string.IsNullOrEmpty(tauntAction.FmodEvent))
-			{
-				FMODUnity.RuntimeManager.PlayOneShot(tauntAction.FmodEvent);
-			}
+			// if (tauntAction.FmodEvent == null)
+			// {
+			// 	FMODUnity.RuntimeManager.PlayOneShot(tauntAction.FmodEvent);
+			// }
 
 			if (tauntAction.Anim.Count != 0)
 			{
@@ -46,9 +37,9 @@ namespace CardGame.Turns
 		}
 
 		[Serializable]
-		private class ButtonTaunt
+		public class ButtonTaunt
 		{
-			public Button Button;
+			public Button Button { get; set; }
 			public TauntScriptableObject Taunt;
 		}
 	}
