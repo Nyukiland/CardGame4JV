@@ -15,10 +15,10 @@ namespace CardGame.Turns
 
 		public void CallEvent(TauntScriptableObject tauntAction)
 		{
-			// if (tauntAction.FmodEvent == null)
-			// {
-			// 	FMODUnity.RuntimeManager.PlayOneShot(tauntAction.FmodEvent);
-			// }
+			 if (!tauntAction.FmodEvent.IsNull)
+			 {
+			 	FMODUnity.RuntimeManager.PlayOneShot(tauntAction.FmodEvent);
+			 }
 
 			if (tauntAction.Anim.Count != 0)
 			{

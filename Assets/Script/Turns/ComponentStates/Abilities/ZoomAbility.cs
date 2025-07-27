@@ -17,13 +17,13 @@ namespace CardGame.Turns
 		private ZoneHolderResource _zoneHolder;
 		private GridManagerResource _gridManager;
 
-
 		public bool InZoom => _inZoom;
 
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
 			_cam = Camera.main;
+			_maxZoom = _cam.orthographicSize;
 
 			_zoneHolder = owner.GetStateComponent<ZoneHolderResource>();
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
@@ -37,7 +37,7 @@ namespace CardGame.Turns
 
 			float width = _gridManager.TopRightMostTile.x - _gridManager.BottomLeftMostTile.x;
 			float height = _gridManager.TopRightMostTile.y - _gridManager.BottomLeftMostTile.y;
-			_maxZoom = Mathf.Max(width, height) * 0.5f + 1f; // +1f c'est la marge
+			_maxZoom = Mathf.Max(Mathf.Max(width, height) * 0.5f + 1f, _maxZoom); // +1f c'est la marge
 			_zoneHolder.HideMyHand(true);
 		}
 
@@ -59,6 +59,7 @@ namespace CardGame.Turns
 			_startdist = 0;
 			_startZoom = 0;
 
+			_zoneHolder.UpdateTileInHandSize();
 			_zoneHolder.UpdatePlacementInHand(true);
 			_zoneHolder.HideMyHand(false);
 		}

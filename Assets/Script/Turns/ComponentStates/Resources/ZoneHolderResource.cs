@@ -112,6 +112,11 @@ namespace CardGame.Turns
 			}
 		}
 
+		public void UpdateTileInHandSize()
+		{
+			_tileSize = Camera.main.orthographicSize / _defaultCamSize;
+		}
+
 		public void HideMyHand(bool isHidden)
 		{
 			foreach (GameObject t in TileInHand)
