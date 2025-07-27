@@ -46,13 +46,14 @@ namespace CardGame.Turns
 
 		public void ReleaseCard(Vector2 pos)
 		{
+			UnityEngine.Debug.Log(_moveTile.CurrentTile);
 			if (_moveTile.CurrentTile == null)
 				return;
 
 			TileVisu tile = _moveTile.CurrentTile;
 			_moveTile.CurrentTile = null;
 
-			if (!RectTransformUtility.RectangleContainsScreenPoint(_discardArea, pos))
+			if (!RectTransformUtility.RectangleContainsScreenPoint(_discardArea, pos, Camera.main))
 			{
 				_holderResource.GiveTileToHand(tile.gameObject);
 				return;

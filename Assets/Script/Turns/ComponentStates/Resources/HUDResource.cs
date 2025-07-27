@@ -254,9 +254,9 @@ namespace CardGame.Turns
 
 		public bool AmIClickingOnUI(Vector2 pos)
 		{
-			if (RectTransformUtility.RectangleContainsScreenPoint(_nextTurnButton.GetComponent<RectTransform>(), pos)) 
+			if (RectTransformUtility.RectangleContainsScreenPoint(_nextTurnButton.GetComponent<RectTransform>(), pos, Camera.main)) 
 				return true;
-			if (RectTransformUtility.RectangleContainsScreenPoint(_pauseButton.GetComponent<RectTransform>(), pos)) 
+			if (RectTransformUtility.RectangleContainsScreenPoint(_pauseButton.GetComponent<RectTransform>(), pos, Camera.main)) 
 				return true;
 			//ajouter autre element UI au besoin 
 			//voili voilou

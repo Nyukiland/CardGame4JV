@@ -4972,7 +4972,6 @@ MonoBehaviour:
   - rid: 542522248351187035
   - rid: 542522248351187036
   - rid: 542522248351187037
-  - rid: 542522248351187038
   - rid: 542522248351187039
   - rid: 4835484058177241183
   - rid: 542522273821360218
@@ -5014,13 +5013,6 @@ MonoBehaviour:
       data:
         Enabled: 0
         _drawPile: {fileID: 1031992356}
-    - rid: 542522248351187038
-      type: {class: CreateHandAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
-      data:
-        Enabled: 0
-        _countCard: 4
-        _prefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
-        _pile: {fileID: 1031992356}
     - rid: 542522248351187039
       type: {class: SendInfoAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:

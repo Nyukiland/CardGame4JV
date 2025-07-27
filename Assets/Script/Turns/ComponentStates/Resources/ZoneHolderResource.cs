@@ -30,7 +30,7 @@ namespace CardGame.Turns
 
 		public bool IsInHand(Vector2 position)
 		{
-			return RectTransformUtility.RectangleContainsScreenPoint(_handZone, position);
+			return RectTransformUtility.RectangleContainsScreenPoint(_handZone, position, Camera.main);
 		}
 
 		private int GetInsertionIndex(Vector3 droppedPosition)
