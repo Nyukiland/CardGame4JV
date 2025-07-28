@@ -74,6 +74,9 @@ namespace CardGame.Turns
 				}
 				else if (context.phase == InputActionPhase.Canceled)
 				{
+					if (_hudResource.AmIClickingOnUI(_startPos))
+						return;
+
 					//Debug.Log("End touching");
 
 					_cancelToken?.Cancel();

@@ -61,6 +61,7 @@ namespace CardGame.Turns
 		public string SceneName;
 
 		private PlaceTileOnGridAbility _placeTileOnGrid;
+		private ZoneHolderResource _zoneHolder;
 
 		private readonly List<ScoreUI> _scoreList = new();
 
@@ -84,6 +85,8 @@ namespace CardGame.Turns
 		{
 			OpenHud();
 			_placeTileOnGrid = owner.GetStateComponent<PlaceTileOnGridAbility>();
+			_zoneHolder = owner.GetStateComponent<ZoneHolderResource>();
+
 			_nextTurnSlider.maxValue = _placeTileOnGrid.MaxTimeTurn;
 			_greyFilter.gameObject.SetActive(false);
 			_waitingScreen.SetActive(false);
@@ -220,6 +223,7 @@ namespace CardGame.Turns
 		{
 			CloseAllScreens();
 			_pauseScreen.SetActive(true);
+			_zoneHolder.HideMyHand(true);
 			Time.timeScale = 0f;
 		}
 
@@ -227,6 +231,7 @@ namespace CardGame.Turns
 		{
 			CloseAllScreens();
 			OpenHud();
+			_zoneHolder.HideMyHand(false);
 			Time.timeScale = 1f;
 		}
 
@@ -254,9 +259,13 @@ namespace CardGame.Turns
 
 		public bool AmIClickingOnUI(Vector2 pos)
 		{
+			//add exception for pause menu
+			if (_pauseScreen.activeSelf == true)
+				return true;
+
 			if (RectTransformUtility.RectangleContainsScreenPoint(_nextTurnButton.GetComponent<RectTransform>(), pos, Camera.main)) 
 				return true;
-			if (RectTransformUtility.RectangleContainsScreenPoint(_pauseButton.GetComponent<RectTransform>(), pos, Camera.main)) 
+			else if (RectTransformUtility.RectangleContainsScreenPoint(_pauseButton.GetComponent<RectTransform>(), pos, Camera.main)) 
 				return true;
 			//ajouter autre element UI au besoin 
 			//voili voilou

@@ -169,7 +169,16 @@ namespace CardGame.Turns
 			{
 				Timer = -1f;
 
-				if (TempPlacedTile == null) AutoPlace();
+				if (TempPlacedTile == null)
+				{
+					AutoPlace();
+				}
+				else if (_gridManager.GetPlacementConnectionCount(TempPlacedTile.TileData, TempPos) == 0)
+				{
+					_zoneHolder.GiveTileToHand(TempPlacedTile.gameObject);
+					AutoPlace();
+				}
+
 				CallEndTurn();
 
 				return;

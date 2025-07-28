@@ -143,5 +143,18 @@ namespace CardGame.Turns
 
 			_holder.HideMyHand(false);
 		}
+
+		public override void OnDisable()
+		{
+			if (_prevPos != new Vector2Int(-100, -100))
+			{
+				TileVisu visu = _gridManager.GetTile(_prevPos);
+
+				visu.gameObject.SetActive(_prevActivity);
+
+				_prevPos = new Vector2Int(-100, -100);
+				_prevActivity = false;
+			}
+		}
 	}
 }
