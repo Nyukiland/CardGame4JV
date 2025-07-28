@@ -10,8 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35d08b699998c7a49a8cac0d3ffc3f6f, type: 3}
-  m_Name: hihi
+  m_Name: c'est super
   m_EditorClassIdentifier: 
-  Text: hihi
+  Text: C'est super
+  FmodEvent:
+    Guid:
+      Data1: 1003550696
+      Data2: 1164249581
+      Data3: 1785250181
+      Data4: -847503242
+    Path: event:/Taunt/C'est super !
   WaitTime: 1
   Anim: []

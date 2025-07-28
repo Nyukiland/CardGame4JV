@@ -18,6 +18,7 @@ namespace CardGame.Turns
 		private ScoringAbility _scoring;
 		private HUDResource _hud;
 		private SoundResource _sound;
+		private TauntButtonAbility _taunt;
 
 		[SerializeField]
 		private DrawPile _drawPile;
@@ -44,6 +45,7 @@ namespace CardGame.Turns
 			_scoring = owner.GetStateComponent<ScoringAbility>();
 			_hud = owner.GetStateComponent<HUDResource>();
 			_sound = owner.GetStateComponent<SoundResource>();
+			_taunt = owner.GetStateComponent<TauntButtonAbility>();
 
 			if (GameManager.Instance.IsNetCurrentlyActive())
 			{
@@ -83,10 +85,12 @@ namespace CardGame.Turns
 				NetCom.TileForHand += UpdateHand;
 				NetCom.SendYourTurn += GoMyTurn;
 				NetCom.SendTauntShake += ShakeTile;
+				NetCom.SendTaunt += Taunt;
 				NetCom.SendGameStart += GameStart;
 				NetCom.NumberOfTile += TileCountReceived;
 			}
 		}
+
 
 		private void GameStart()
 		{
@@ -115,6 +119,7 @@ namespace CardGame.Turns
 				NetCom.TileForHand -= UpdateHand;
 				NetCom.SendYourTurn -= GoMyTurn;
 				NetCom.SendTauntShake -= ShakeTile;
+				NetCom.SendTaunt -= Taunt;
 				NetCom.SendGameStart -= GameStart;
 				NetCom.NumberOfTile -= TileCountReceived;
 			}
@@ -181,6 +186,10 @@ namespace CardGame.Turns
 		private void ShakeTile(Vector2 pos, bool special)
 		{
 			_tauntShakeTile.ShakeTileVisu(_grid.GetTile(Vector2Int.CeilToInt(pos)), special);
+		}
+		private void Taunt(string taunt)
+		{
+			_taunt.CallEvent(taunt);
 		}
 	}
 }

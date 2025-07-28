@@ -10,37 +10,57 @@ namespace CardGame.Turns
 	public class TauntButtonAbility : Ability
 	{
 		[SerializeField]
-		private List<ButtonTaunt> _taunts = new();
-		public List<ButtonTaunt> Taunts => _taunts;
+		private List<TauntScriptableObject> _taunts = new();
+		public List<TauntScriptableObject> Taunts => _taunts;
 
-		public void CallEvent(TauntScriptableObject tauntAction)
+		private SendInfoAbility _sendInfo;
+		private HUDResource _hud;
+
+		public override void Init(Controller owner)
 		{
-			 if (!tauntAction.FmodEvent.IsNull)
-			 {
-			 	FMODUnity.RuntimeManager.PlayOneShot(tauntAction.FmodEvent);
-			 }
+			base.Init(owner);
+			_sendInfo = owner.GetStateComponent<SendInfoAbility>();
+			_hud = owner.GetStateComponent<HUDResource>();
+		}
+
+		public void CallEvent(string name)
+		{
+			foreach (TauntScriptableObject tauntB in _taunts)
+			{
+				if (name == tauntB.Text)
+				{
+					CallEvent(tauntB, false);
+					return;
+				}
+			}
+		}
+
+		public void CallEvent(TauntScriptableObject tauntAction, bool self = true)
+		{
+			if (!tauntAction.FmodEvent.IsNull)
+			{
+				FMODUnity.RuntimeManager.PlayOneShot(tauntAction.FmodEvent);
+			}
 
 			if (tauntAction.Anim.Count != 0)
 			{
 				PlayTauntAnim(tauntAction.Anim.ToArray(), tauntAction.WaitTime).Forget();
 			}
+
+			if (self)
+				_sendInfo.SendTaunt(tauntAction.name);
+
+			_hud.SendTaunt(tauntAction.Text, self);
 		}
 
 		private async UniTask PlayTauntAnim(Image[] anim, float waitTime)
 		{
-			foreach(Image frame in anim)
+			foreach (Image frame in anim)
 			{
 				//frame;
 
 				await UniTask.WaitForSeconds(waitTime);
 			}
-		}
-
-		[Serializable]
-		public class ButtonTaunt
-		{
-			public Button Button { get; set; }
-			public TauntScriptableObject Taunt;
 		}
 	}
 }

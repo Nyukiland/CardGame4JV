@@ -10,8 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35d08b699998c7a49a8cac0d3ffc3f6f, type: 3}
-  m_Name: haha
+  m_Name: "lire les r\xE8gles"
   m_EditorClassIdentifier: 
-  Text: haha
+  Text: "Lire les r\xE8gles"
+  FmodEvent:
+    Guid:
+      Data1: -1121679793
+      Data2: 1229943890
+      Data3: -698117987
+      Data4: 67846594
+    Path: "event:/Taunt/Faut lire les r\xE8gles"
   WaitTime: 1
   Anim: []

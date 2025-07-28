@@ -117,7 +117,8 @@ namespace CardGame.Turns
 			if (_tauntButtonsList.Count != _tauntTMPList.Count) return;
 			for (int i = 0; i < _tauntButtonsList.Count; i++)
 			{
-				_tauntButtonsList[i].onClick.RemoveListener(() => SendTaunt(_tauntTMPList[i].text));
+				int index = i;
+				_tauntButtonsList[i].onClick.AddListener(() => _tauntAbility.CallEvent(_tauntAbility.Taunts[index]));
 			}
 		}
 
@@ -142,18 +143,17 @@ namespace CardGame.Turns
 		private void InitTaunt()
 		{
 			_tauntAbility = Owner.GetStateComponent<TauntButtonAbility>();
-			List<TauntButtonAbility.ButtonTaunt> buttonsList = _tauntAbility.Taunts;
-			for (int i = 0; i < buttonsList.Count; i++)
+			List<TauntScriptableObject> tauntList = _tauntAbility.Taunts;
+
+			for (int i = 0; i < tauntList.Count; i++)
 			{
 				int index = i;
 				Button tauntButton = Object.Instantiate(_tauntButtonPrefab, _tauntButtonParent);
 				_tauntButtonsList.Add(tauntButton);
-				buttonsList[index].Button = tauntButton;
 				TextMeshProUGUI tauntText = tauntButton.GetComponentInChildren<TextMeshProUGUI>();
 				_tauntTMPList.Add(tauntText);
-				tauntText.text = buttonsList[i].Taunt.Text;
-				tauntButton.onClick.AddListener(() => SendTaunt(tauntText.text));
-				tauntButton.onClick.AddListener(() => _tauntAbility.CallEvent(_tauntAbility.Taunts[index].Taunt));
+				tauntText.text = tauntList[i].Text;
+				tauntButton.onClick.AddListener(() => _tauntAbility.CallEvent(_tauntAbility.Taunts[index]));
 			}
 			
 			_playerTaunt.HidePopUp();
@@ -267,15 +267,23 @@ namespace CardGame.Turns
 				return true;
 			else if (RectTransformUtility.RectangleContainsScreenPoint(_pauseButton.GetComponent<RectTransform>(), pos, Camera.main)) 
 				return true;
+
+			foreach (Button button in _tauntButtonsList)
+			{
+				if (RectTransformUtility.RectangleContainsScreenPoint(button.GetComponent<RectTransform>(), pos, Camera.main))
+					return true;
+			}
 			//ajouter autre element UI au besoin 
 			//voili voilou
 
 			return false;
 		}
 
-		private void SendTaunt(string tauntLine)
+		//will be changed soon
+		public void SendTaunt(string tauntLine, bool self = true)
 		{
-			_playerTaunt.ShowPopUp(tauntLine).Forget();
+			if (self) _playerTaunt.ShowPopUp(tauntLine).Forget();
+			else _enemyTaunt.ShowPopUp(tauntLine).Forget();
 		}
 		
 		public void InitScores()
