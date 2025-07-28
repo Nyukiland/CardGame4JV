@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{98033776-0893-4438-9d1b-dea1e6aaa9bc}">
+		<property name="assetPath">
+			<value>Bien_jouer-011.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>1.7321541950113379</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{f35d3607-81b3-4be3-8395-662b6d373d35}</destination>
+		</relationship>
+	</object>
+</objects>

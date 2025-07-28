@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{e0cf2d9c-0055-4d22-87f5-fb30da7c29eb}">
+		<property name="assetPath">
+			<value>chacal-008.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>1.6961451247165533</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{f35d3607-81b3-4be3-8395-662b6d373d35}</destination>
+		</relationship>
+	</object>
+</objects>

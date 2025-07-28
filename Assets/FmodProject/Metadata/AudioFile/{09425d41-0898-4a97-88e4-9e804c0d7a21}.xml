@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{09425d41-0898-4a97-88e4-9e804c0d7a21}">
+		<property name="assetPath">
+			<value>le plateau te juge-001.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>2.9304988662131519</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{f35d3607-81b3-4be3-8395-662b6d373d35}</destination>
+		</relationship>
+	</object>
+</objects>

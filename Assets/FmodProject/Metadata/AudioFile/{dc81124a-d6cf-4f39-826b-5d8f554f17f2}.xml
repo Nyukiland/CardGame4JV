@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{dc81124a-d6cf-4f39-826b-5d8f554f17f2}">
+		<property name="assetPath">
+			<value>super-003.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>1.3222448979591837</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{f35d3607-81b3-4be3-8395-662b6d373d35}</destination>
+		</relationship>
+	</object>
+</objects>
