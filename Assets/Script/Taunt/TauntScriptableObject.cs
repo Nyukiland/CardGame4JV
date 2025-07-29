@@ -1,7 +1,5 @@
 using FMODUnity;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CardGame
 {
@@ -12,6 +10,6 @@ namespace CardGame
 		public EventReference FmodEvent;
 
 		public float WaitTime = 1f;
-		public List<Image> Anim = new();
+		public Sprite[] Anim;
 	}
 }

@@ -42,25 +42,14 @@ namespace CardGame.Turns
 				FMODUnity.RuntimeManager.PlayOneShot(tauntAction.FmodEvent);
 			}
 
-			if (tauntAction.Anim.Count != 0)
-			{
-				PlayTauntAnim(tauntAction.Anim.ToArray(), tauntAction.WaitTime).Forget();
-			}
+			if (tauntAction.Anim.Length != 0)
+				_hud.SendTaunt(tauntAction.Anim, tauntAction.WaitTime, self);
+			else
+				_hud.SendTaunt(tauntAction.Text, self);
+
 
 			if (self)
-				_sendInfo.SendTaunt(tauntAction.name);
-
-			_hud.SendTaunt(tauntAction.Text, self);
-		}
-
-		private async UniTask PlayTauntAnim(Image[] anim, float waitTime)
-		{
-			foreach (Image frame in anim)
-			{
-				//frame;
-
-				await UniTask.WaitForSeconds(waitTime);
-			}
+				_sendInfo.SendTaunt(tauntAction.Text);
 		}
 	}
 }

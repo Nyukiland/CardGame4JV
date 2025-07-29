@@ -48,8 +48,8 @@ namespace CardGame.Turns
 		[Header("Taunt")]
 		[SerializeField] private Transform _tauntButtonParent;
 		[SerializeField] private Button _tauntButtonPrefab;
-		[SerializeField] private ShowText _playerTaunt;
-		[SerializeField] private ShowText _enemyTaunt;
+		[SerializeField] private ShowPopUpInfo _playerTaunt;
+		[SerializeField] private ShowPopUpInfo _enemyTaunt;
 		private List<Button> _tauntButtonsList = new();
 		private List<TextMeshProUGUI> _tauntTMPList = new();
 		[Header("Pause")]
@@ -279,13 +279,18 @@ namespace CardGame.Turns
 			return false;
 		}
 
-		//will be changed soon
 		public void SendTaunt(string tauntLine, bool self = true)
 		{
 			if (self) _playerTaunt.ShowPopUp(tauntLine).Forget();
 			else _enemyTaunt.ShowPopUp(tauntLine).Forget();
 		}
-		
+
+		public void SendTaunt(Sprite[] anim, float timer, bool self = true)
+		{
+			if (self) _playerTaunt.ShowPopUp(anim, timer).Forget();
+			else _enemyTaunt.ShowPopUp(anim, timer).Forget();
+		}
+
 		public void InitScores()
 		{
 			GameManager manager = GameManager.Instance;
