@@ -48,11 +48,15 @@ namespace CardGame.Turns
 				GameManager.Instance.ResetManager();
 				GameManager.Instance.SetPlayerInfo(1111, "Player");
 				GameManager.Instance.SetPlayerInfo(2222, "Bot");
+
+				await UniTask.Yield();
+
 				_createHandAbility.GenerateTiles(_createHandAbility.CountCard);
 				_autoPlay.GenerateTheoreticalHand(_createHandAbility.CountCard);
 				Controller.GetStateComponent<HUDResource>().InitScores();
 
 				Controller.SetState<PlaceTileCombinedState>();
+				_hudResource.CloseLoadingScreen();
 			}
 		}
 	}

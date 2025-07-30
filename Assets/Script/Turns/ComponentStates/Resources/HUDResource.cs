@@ -20,6 +20,7 @@ namespace CardGame.Turns
 
 		[SerializeField] private GameObject _waitingScreen;
 		[SerializeField] private GameObject _scoringScreen;
+		[SerializeField] private GameObject _loadingScreen;
 		[Header("Hud")]
 		[SerializeField] private CanvasGroup _hudScreen;
 		[Header("WinScreen")]
@@ -79,6 +80,7 @@ namespace CardGame.Turns
 			_canvas.worldCamera = Camera.main;
 			_canvas.planeDistance = _distanceToCamera;
 			Canvas.ForceUpdateCanvases();
+			_loadingScreen.SetActive(true);
 		}
 
 		public override void Init(Controller owner)
@@ -163,6 +165,8 @@ namespace CardGame.Turns
 		#endregion
 
 		#region Panels
+
+		public void CloseLoadingScreen() => _loadingScreen.SetActive(false);
 
 		public void OpenHud()
 		{

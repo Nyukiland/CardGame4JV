@@ -106,6 +106,7 @@ namespace CardGame.Turns
 			await UniTask.WaitUntil(() => GameManager.Instance.OnlinePlayersID.Count != 0);
 
 			_hud.InitScores();
+			_hud.CloseLoadingScreen();
 		}
 
 		public override void OnDisable()
