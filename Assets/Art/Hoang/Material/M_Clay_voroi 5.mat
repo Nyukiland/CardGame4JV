@@ -57,8 +57,8 @@ Material:
     - _Water: 0
     m_Colors:
     - _Albedo_Tiling: {r: 1, g: 1, b: 0, a: 0}
-    - _Color_A: {r: 0.061512113, g: 1, b: 0, a: 0}
-    - _Color_B: {r: 0.18735576, g: 1, b: 0, a: 0}
+    - _Color_A: {r: 1, g: 0.057385, b: 0, a: 0}
+    - _Color_B: {r: 1, g: 0.047897536, b: 0, a: 0}
     - _Displace_Tiling: {r: 1, g: 1, b: 0, a: 0}
     - _Foam_center: {r: 16.36, g: 0.5, b: 0, a: 0}
     - _Foam_color: {r: 1, g: 1, b: 1, a: 0}
