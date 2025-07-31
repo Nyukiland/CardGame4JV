@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Clay_voroi 3
+  m_Name: M_Clay_voroi 5
   m_Shader: {fileID: -6465566751694194690, guid: 45e7609a29160254ab152e4b3a91f2fd, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -41,29 +41,26 @@ Material:
     - _Albedo_Scale_noise: 0.8
     - _Albedo_Time_speed: 1.2
     - _Displace: 0
-    - _DisplaceX_General_Multiplier_1: 0.0262
-    - _DisplaceY_General_Multiplier_2: 0.0235
-    - _DisplaceZ_General_Multiplier: 0.0342
-    - _Displace_Scale_noise: 1.38
-    - _Displace_Time_speed: 2
-    - _Float: 2
-    - _Foam_Rotation: 0
-    - _Foam_tile: 2.42
+    - _DisplaceX_General_Multiplier_1: 0.0397
+    - _DisplaceY_General_Multiplier_2: 0.0241
+    - _DisplaceZ_General_Multiplier: 0.0228
+    - _Displace_Scale_noise: 1.19
+    - _Displace_Time_speed: 2.22
+    - _Foam_Rotation: 2.9
+    - _Foam_tile: 1.58
     - _Foam_x_scale: 1.04
     - _Foam_y_scale: 1.28
     - _Glow: 1
     - _Hard_edges_Albeldo_1: 0
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Tile_water_foam: 3.56
     - _Water: 0
     m_Colors:
     - _Albedo_Tiling: {r: 1, g: 1, b: 0, a: 0}
-    - _Color_A: {r: 0.33962262, g: 0.27785164, b: 0.22908507, a: 0}
-    - _Color_B: {r: 0.46226418, g: 0.36524767, b: 0.28564438, a: 0}
-    - _Color_water_foam: {r: 1, g: 1, b: 1, a: 0}
+    - _Color_A: {r: 0.061512113, g: 1, b: 0, a: 0}
+    - _Color_B: {r: 0.18735576, g: 1, b: 0, a: 0}
     - _Displace_Tiling: {r: 1, g: 1, b: 0, a: 0}
-    - _Foam_center: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _Foam_center: {r: 16.36, g: 0.5, b: 0, a: 0}
     - _Foam_color: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
