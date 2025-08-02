@@ -22,7 +22,7 @@ namespace CardGame.UI
         
         public void SetScore(float score)
         {
-            _scoreText.text = $"{PlayerName} : {score}";
+            _scoreText.text = score.ToString();
         }
     }
 }

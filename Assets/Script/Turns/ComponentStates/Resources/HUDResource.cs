@@ -322,7 +322,7 @@ namespace CardGame.Turns
 
 		public void UpdateTurnValue()
 		{
-			_turnCounter.text = $"Turn : {GameManager.Instance.GlobalTurn.ToString()}";
+			_turnCounter.text = $"{GameManager.Instance.GlobalTurn.ToString()}/12";
 		}
 
 		public void ToggleNextTurnButton(bool toggle)
