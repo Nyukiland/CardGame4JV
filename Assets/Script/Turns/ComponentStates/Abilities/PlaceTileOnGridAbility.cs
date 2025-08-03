@@ -175,6 +175,21 @@ namespace CardGame.Turns
 				}
 				else if (_gridManager.GetPlacementConnectionCount(TempPlacedTile.TileData, TempPos) == 0)
 				{
+					// verify there is no correct rotation for the placed tile :
+					for(int i = 0; i <= 3; i++)
+					{
+						TempPlacedTile.TileData.RotateTile();
+						// if a correct rotation is found, end turn 
+						if(_gridManager.GetPlacementConnectionCount(TempPlacedTile.TileData, TempPos) != 0)
+						{
+                            CallEndTurn();
+
+                            return;
+                        }
+						// else, rotate tile again
+						continue;
+                    }
+					// if no correct rotation is found : 
 					_zoneHolder.GiveTileToHand(TempPlacedTile.gameObject);
 					AutoPlace();
 				}
