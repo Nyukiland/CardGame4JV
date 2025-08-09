@@ -7,6 +7,7 @@ using CardGame.Card;
 using UnityEngine;
 using System;
 using Unity.Services.Analytics;
+using Cysharp.Threading.Tasks;
 
 namespace CardGame.Net
 {
@@ -131,8 +132,13 @@ namespace CardGame.Net
 		[ClientRpc(RequireOwnership = false)]
 		public void LoadSceneClientRPC(string sceneName)
 		{
+			LoadSceneAndCloseMenu(sceneName).Forget();
+		}
+
+		private async UniTask LoadSceneAndCloseMenu(string sceneName)
+		{
+			await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 			OnLaunchGameEvent?.Invoke();
-			SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
 		}
 
 		[ClientRpc(RequireOwnership = false)]

@@ -52,6 +52,7 @@ namespace CardGame.Turns
 
 			Vector3 move = _cam.ScreenToWorldPoint(_startPos) - _cam.ScreenToWorldPoint(pos);
 			Vector3 targetPos = _camPos + move * _moveFactor;
+			targetPos.z = _cam.transform.position.z;
 
 			Vector3 camShift = _cam.transform.position - targetPos;
 

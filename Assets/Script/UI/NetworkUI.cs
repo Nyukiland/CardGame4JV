@@ -457,12 +457,16 @@ namespace CardGame.UI
 
 		private void StartSoloGame()
 		{
-			CloseMenu();
-
 			if (NetworkManager.Singleton.ConnectedClients.Count <= 1)
 			{
-				SceneManager.LoadScene(_sceneName, LoadSceneMode.Additive);
+				LoadSceneAndCloseMenu(_sceneName).Forget();
 			}
+		}
+
+		private async UniTask LoadSceneAndCloseMenu(string sceneName)
+		{
+			await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+			CloseMenu();
 		}
 
 		public void QuitClientGame()
