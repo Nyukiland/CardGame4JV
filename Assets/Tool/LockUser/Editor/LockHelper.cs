@@ -2,15 +2,15 @@ using UnityEditor;
 using UnityEngine;
 using System;
 
-[InitializeOnLoad]
+//[InitializeOnLoad]
 public static class LockHelper
 {
 	private const string LastShownKey = "LockHelper_LastShownDate";
 
 	static LockHelper()
 	{
-		EditorApplication.delayCall += ShowWelcomeMessage;
-		EditorApplication.playModeStateChanged += OnPlayModeChanged;
+		//EditorApplication.delayCall += ShowWelcomeMessage;
+		//EditorApplication.playModeStateChanged += OnPlayModeChanged;
 	}
 
 	private static void ShowWelcomeMessage()
@@ -26,7 +26,7 @@ public static class LockHelper
 		{
 			EditorUtility.DisplayDialog(
 				"On a dit VACANCE!!!!!!",
-				"Je t'encourage fortement à ne pas travailler ajd \n Le playmode est innaccessible en semaine \n En cas de besoin reviens dimanche et la tu pourras bosser \n\n REPOSE TOI!!!!",
+				"Je t'encourage fortement Ã  ne pas travailler ajd \n Le playmode est innaccessible en semaine \n En cas de besoin reviens dimanche et la tu pourras bosser \n\n REPOSE TOI!!!!",
 				"OK"
 			);
 
