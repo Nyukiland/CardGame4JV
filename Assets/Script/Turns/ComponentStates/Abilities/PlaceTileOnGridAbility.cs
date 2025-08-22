@@ -11,8 +11,11 @@ namespace CardGame.Turns
 		private DrawPile _drawPile;
 
 		[SerializeField, Min(0)]
-		private float _maxTimeTurn = 30;
-		public float MaxTimeTurn => _maxTimeTurn;
+		private float _maxTimeTurnFirst = 30;
+
+		[SerializeField, Min(0)]
+		private float _maxTimeTurnEnd = 180;
+
 
 		private Plane _planeForCast = new(Vector3.forward, new Vector3(0, 0, -0.15f));
 
@@ -25,6 +28,8 @@ namespace CardGame.Turns
 		private NetworkResource _network;
 		private SoundResource _sound;
 
+		private GameManager _gameManager;
+
 		public float Timer { get; private set; } = 0;
 
 		public event System.Action OnCardReleased; //Pour la preview d'ou on peut poser la tileObject de maniere valide
@@ -32,6 +37,7 @@ namespace CardGame.Turns
 		public TileVisu TempPlacedTile { get; set; } = null;
 		public Vector2Int TempPos;
 
+		public float MaxTimeTurn { private set; get; }
 		public bool TilePlaced { get; private set; }
 
 		public override void Init(Controller owner)
@@ -45,6 +51,8 @@ namespace CardGame.Turns
 			_scoring = owner.GetStateComponent<ScoringAbility>();
 			_network = owner.GetStateComponent<NetworkResource>();
 			_sound = owner.GetStateComponent<SoundResource>();
+
+			_gameManager = GameManager.Instance;
 		}
 
 		public override void OnEnable()
@@ -52,6 +60,7 @@ namespace CardGame.Turns
 			base.OnEnable();
 			TilePlaced = false;
 			Timer = 0;
+			MaxTimeTurn = Mathf.Lerp(_maxTimeTurnFirst, _maxTimeTurnEnd, (float)_gameManager.LocalPlayerTurn / (float)_gameManager.MaxTurn);
 
 			TempPlacedTile = null;
 		}
@@ -165,7 +174,8 @@ namespace CardGame.Turns
 			if (Timer == -1f)
 				return;
 
-			if (Timer > _maxTimeTurn)
+			if (Timer > MaxTimeTurn 
+				|| UnityEngine.InputSystem.Keyboard.current.pKey.wasPressedThisFrame) //Debug feature
 			{
 				Timer = -1f;
 

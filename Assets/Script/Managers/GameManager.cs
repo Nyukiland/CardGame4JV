@@ -11,6 +11,8 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 	public delegate void ScoreEventDelegate(int playerId, float floatEvent);
 	public ScoreEventDelegate ScoreEvent;
 
+	public int MaxTurn { get; } = 12;
+
 	private static GameManager _instance;
 	public static GameManager Instance
 	{
@@ -222,12 +224,12 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 			if (IsNetCurrentlyActive())
 			{
 				if (OnlinePlayersID.Count <= 0) return false;
-				return GlobalTurn >= 12 * OnlinePlayersID.Count;
+				return GlobalTurn >= MaxTurn * OnlinePlayersID.Count;
 			}
 			else
 			{
 				if (SoloNames.Count <= 0) return false;
-				return GlobalTurn >= 12 * SoloNames.Count;
+				return GlobalTurn >= MaxTurn * SoloNames.Count;
 			}
 		}
 	}
