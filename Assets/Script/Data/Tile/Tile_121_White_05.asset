@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tile_121_White_05
   m_EditorClassIdentifier: 
   PoolIndex: 0
-  NumberOfCopies: 2
+  NumberOfCopies: 1
   _northZone:
     environment: 2
     isOpen: 1
