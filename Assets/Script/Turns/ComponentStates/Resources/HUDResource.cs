@@ -35,6 +35,7 @@ namespace CardGame.Turns
 		[SerializeField] private Transform _scoreContainer;
 		[SerializeField] private ScoreUI _scorePrefab;
 		[Header("FlagCounter")]
+		[SerializeField] private Image _actualArrow;
 		[SerializeField] private Image _firstCircle;
 		[SerializeField] private Image _secondCircle;
 		[SerializeField] private Image _flag;
@@ -322,7 +323,8 @@ namespace CardGame.Turns
 
 		public void UpdateTurnValue()
 		{
-			_turnCounter.text = $"{GameManager.Instance.GlobalTurn.ToString()}/12";
+			int round = (GameManager.Instance.LocalPlayerTurn - 1) / 3 + 1;
+			_turnCounter.text = $"{round}/4";
 		}
 
 		public void ToggleNextTurnButton(bool toggle)
@@ -340,25 +342,25 @@ namespace CardGame.Turns
 			_firstCircle.enabled = false;
 			_secondCircle.enabled = false;
 			_flag.enabled = false;
+			_actualArrow.enabled = true;
 
 			int turn = GameManager.Instance.LocalPlayerTurn % 3;
+			Vector3 posToGo = Vector3.zero;
 
 			switch (turn)
 			{
 				case 0:
-					_flag.enabled = true;
-					_flag.transform.DOMoveX(_secondCircle.transform.position.x, 1f).From();
+					posToGo = _flag.transform.position;
 					break;
-				case -1:
 				case 1:
-					_firstCircle.enabled = true;
-					_firstCircle.transform.DOMoveX(_flag.transform.position.x, 1f).From();
+					posToGo = _firstCircle.transform.position;
 					break;
-				default:
-					_secondCircle.enabled = true;
-					_secondCircle.transform.DOMoveX(_firstCircle.transform.position.x, 1f).From();
+				case 2:
+					posToGo = _secondCircle.transform.position;
 					break;
 			}
+
+			_actualArrow.transform.DOMove(posToGo, 0.5f).SetEase(Ease.InOutSine);
 		}
 	}
 }
