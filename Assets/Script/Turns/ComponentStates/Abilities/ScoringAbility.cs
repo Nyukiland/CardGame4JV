@@ -11,6 +11,10 @@ namespace CardGame.Turns
 {
 	public class ScoringAbility : Ability
 	{
+		[SerializeField]
+		[LockUser]
+		private MeshOverlapAlphaFeature _alphaFeature;
+
 		private GridManagerResource _gridManager;
 		private SoundResource _sound;
 
@@ -61,6 +65,7 @@ namespace CardGame.Turns
 			_tilePlaced = null;
 			_closedRegionsInTurn = new();
 
+			_alphaFeature.settings.TargetMeshes.Clear();
 		}
 
 		public void CallScoring()
@@ -72,6 +77,20 @@ namespace CardGame.Turns
 			}
 
 			_tilePlaced = _gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).TileData;
+
+			//EXEMPLE -------------------------
+
+			//Add the mesh that need to be selected
+			_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuNorth);
+			_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuSouth);
+			_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuEast);
+			_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuWest);
+
+			//Set the color of the visual
+			Shader.SetGlobalColor("_MainScoringColor", Color.red);
+
+			//-------------------------
+
 			foreach (ZoneData zone in _tilePlaced.Zones)
 			{
 				if (

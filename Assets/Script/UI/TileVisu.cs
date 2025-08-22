@@ -68,8 +68,12 @@ namespace CardGame.UI
 		[SerializeField] private float _rotationMovement = 0.2f;
 		[SerializeField] private float _backMovementAgain = 0.1f;
 
-
 		private Sequence _rotationSequence;
+
+		public MeshRenderer VisuNorth => _visuNorth;
+		public MeshRenderer VisuSouth => _visuSouth;
+		public MeshRenderer VisuEast => _visuEast;
+		public MeshRenderer VisuWest => _visuWest;
 
 		private void Start()
 		{
