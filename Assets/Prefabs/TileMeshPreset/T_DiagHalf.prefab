@@ -215,6 +215,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7715340651102576646}
+  - component: {fileID: 8249353132042832118}
   m_Layer: 0
   m_Name: T_DiagHalf
   m_TagString: Untagged
@@ -238,6 +239,22 @@ Transform:
   - {fileID: 4824978364690738115}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8249353132042832118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5871376803430326747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 349b962b8e09ab041845afa79ce11015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visuNorth: {fileID: 7191645694118947665}
+  _visuSouth: {fileID: 5108607137923401206}
+  _visuEast: {fileID: 7191645694118947665}
+  _visuWest: {fileID: 8242717688646476447}
 --- !u!1 &9153984797697605799
 GameObject:
   m_ObjectHideFlags: 0

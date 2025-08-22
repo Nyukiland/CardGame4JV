@@ -200,6 +200,11 @@ namespace CardGame.UI
 
 			GameObject visualPrefab = _meshesPresetList[(int)preset]; // Recup le bon prefab
 			_currentVisualMesh = Instantiate(visualPrefab, transform); // Spawn en enfant
+			TileVisualSorter sorter = _currentVisualMesh.GetComponent<TileVisualSorter>();
+			_visuEast = sorter.VisuEast;
+			_visuNorth = sorter.VisuNorth;
+			_visuSouth = sorter.VisuSouth;
+			_visuWest = sorter.VisuWest;
 
 			var renderers = _currentVisualMesh.GetComponentsInChildren<MeshRenderer>(); // On recup les renderer, pour set materials
 			ZoneData[] zones = TileData.GetUnrotatedZones();

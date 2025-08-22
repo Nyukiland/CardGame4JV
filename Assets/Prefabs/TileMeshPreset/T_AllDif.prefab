@@ -302,6 +302,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6084378307310467773}
+  - component: {fileID: 6451683530762269502}
   m_Layer: 0
   m_Name: T_AllDif
   m_TagString: Untagged
@@ -325,6 +326,22 @@ Transform:
   - {fileID: 8529450356954248}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6451683530762269502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7654788531814112361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 349b962b8e09ab041845afa79ce11015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visuNorth: {fileID: 1712354731646697820}
+  _visuSouth: {fileID: 8352307735221560018}
+  _visuEast: {fileID: 4705101018742621483}
+  _visuWest: {fileID: 4278562998510132062}
 --- !u!1 &8856506421021457729
 GameObject:
   m_ObjectHideFlags: 0
