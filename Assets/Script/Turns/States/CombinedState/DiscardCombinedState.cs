@@ -38,6 +38,8 @@ namespace CardGame.Turns
 				_zoneHolder.GiveTileToHand(_moveTile.CurrentTile.gameObject);
 				_moveTile.CurrentTile = null;
 			}
+
+			_networkResource.TileToReceive = 100;
 		}
 
 		public override void OnActionTriggered(InputAction.CallbackContext context)
@@ -60,6 +62,10 @@ namespace CardGame.Turns
 			if (_discardCard.DiscardFinished())
 			{
 				CallEndTurn();
+			}
+			else
+			{
+				_discardCard.ShowDiscardArea(!_networkResource.IsNetActive() || _networkResource.TileToReceive != 100);
 			}
 		}
 

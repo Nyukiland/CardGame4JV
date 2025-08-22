@@ -28,20 +28,25 @@ namespace CardGame.Turns
 			_holderResource = owner.GetStateComponent<ZoneHolderResource>();
 			_networkResource = owner.GetStateComponent<NetworkResource>();
 
-			_discardArea.gameObject.SetActive(false);
+			ShowDiscardArea(false);
 		}
 
 		public override void OnEnable()
 		{
 			base.OnEnable();
-			_discardArea.gameObject.SetActive(true);
+			ShowDiscardArea(true);
 		}
 
 		public override void OnDisable()
 		{
 			base.OnDisable();
 
-			if (_discardArea != null) _discardArea.gameObject.SetActive(false);
+			ShowDiscardArea(false);
+		}
+
+		public void ShowDiscardArea(bool display)
+		{
+			if (_discardArea != null) _discardArea.gameObject.SetActive(display);
 		}
 
 		public void ReleaseCard(Vector2 pos)

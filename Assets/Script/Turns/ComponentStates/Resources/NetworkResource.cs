@@ -27,7 +27,7 @@ namespace CardGame.Turns
 
 		public bool IsWaitNetComplete { get; private set; } = false;
 
-		public int TileToReceive { get; set; } = 0;
+		public int TileToReceive { get; set; } = 100;
 
 		public bool IsFinished
 		{
