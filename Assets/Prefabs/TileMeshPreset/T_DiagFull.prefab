@@ -220,7 +220,7 @@ MonoBehaviour:
   _visuNorth: {fileID: 8244491780605762592}
   _visuSouth: {fileID: 5758754954584891042}
   _visuEast: {fileID: 8244491780605762592}
-  _visuWest: {fileID: 8244491780605762592}
+  _visuWest: {fileID: 5758754954584891042}
 --- !u!1 &6198842565124653478
 GameObject:
   m_ObjectHideFlags: 0

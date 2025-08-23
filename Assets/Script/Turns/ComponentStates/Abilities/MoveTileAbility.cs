@@ -29,7 +29,6 @@ namespace CardGame.Turns
 			get => _currentTile;
 			set
 			{
-				UnityEngine.Debug.Log(value);
 				_tileUI.SetVisual(value);
 				_currentTile = value;
 			}

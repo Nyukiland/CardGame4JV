@@ -42,12 +42,17 @@ public class PlacingTileUI : MonoBehaviour
 
 	public void SetVisual(TileVisu tile)
 	{
-		if (_properTile != null) 
+
+		if (_properTile != null)
 			_properTile.gameObject.SetActive(false);
+
 		_canvasController.alpha = 0;
 
 		if (tile == null)
+		{
+			_properTile = null;
 			return;
+		}
 
 		_canvasController.alpha = 1;
 		TileSettings tileSettings = tile.TileData.TileSettings;
