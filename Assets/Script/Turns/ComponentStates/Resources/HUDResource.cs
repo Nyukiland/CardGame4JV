@@ -21,24 +21,30 @@ namespace CardGame.Turns
 		[SerializeField] private GameObject _waitingScreen;
 		[SerializeField] private GameObject _scoringScreen;
 		[SerializeField] private GameObject _loadingScreen;
+		[Space(10)]
 		[Header("Hud")]
 		[SerializeField] private CanvasGroup _hudScreen;
+		[Space(10)]
 		[Header("WinScreen")]
 		[SerializeField] private GameObject _winScreen;
 		[SerializeField] private Button _winContinueButton;
 		[SerializeField] private TextMeshProUGUI _winScore;
+		[Space(10)]
 		[Header("LooseScreen")]
 		[SerializeField] private GameObject _looseScreen;
 		[SerializeField] private Button _looseContinueButton;
 		[SerializeField] private TextMeshProUGUI _looseScore;
+		[Space(10)]
 		[Header("Score")]
 		[SerializeField] private Transform _scoreContainer;
 		[SerializeField] private ScoreUI _scorePrefab;
+		[Space(10)]
 		[Header("FlagCounter")]
 		[SerializeField] private Image _actualArrow;
 		[SerializeField] private Image _firstCircle;
 		[SerializeField] private Image _secondCircle;
 		[SerializeField] private Image _flag;
+		[Space(10)]
 		[Header("Next Turn Button")]
 		[SerializeField] private TextMeshProUGUI _turnCounter;
 		[SerializeField] private Slider _nextTurnSlider;
@@ -46,18 +52,25 @@ namespace CardGame.Turns
 		[SerializeField] private Image _nextTurnFillImage;
 		[SerializeField] private Color _startSliderColor;
 		[SerializeField] private Color _endSliderColor;
+		[Space(10)]
 		[Header("Taunt")]
+		[SerializeField] private Transform _tauntVisualContainer;
 		[SerializeField] private Transform _tauntButtonParent;
 		[SerializeField] private Button _tauntButtonPrefab;
+		[SerializeField] private Button _tauntOpenMenu;
 		[SerializeField] private ShowPopUpInfo _playerTaunt;
 		[SerializeField] private ShowPopUpInfo _enemyTaunt;
 		private List<Button> _tauntButtonsList = new();
 		private List<TextMeshProUGUI> _tauntTMPList = new();
+		[SerializeField] private Transform _tauntInTransform;
+		[SerializeField] private Transform _tauntOutTransform;
+		[Space(10)]
 		[Header("Pause")]
 		[SerializeField] private GameObject _pauseScreen;
 		[SerializeField] private Button _pauseButton;
 		[SerializeField] private Button _pausePlayButton;
 		[SerializeField] private Button _pauseQuitButton;
+		[Space(10)]
 		[Header("Scene")]
 		public string SceneName;
 
@@ -71,6 +84,7 @@ namespace CardGame.Turns
 		private Tween _lastHudTween;
 
 		private TauntButtonAbility _tauntAbility;
+		private bool _tauntOpen;
 
 		#region Unity Methods
 
@@ -93,6 +107,8 @@ namespace CardGame.Turns
 
 			_nextTurnSlider.maxValue = _placeTileOnGrid.MaxTimeTurn;
 			_waitingScreen.SetActive(false);
+
+			_tauntVisualContainer.position = _tauntOutTransform.position;
 		}
 
 		public override void OnEnable()
@@ -104,6 +120,7 @@ namespace CardGame.Turns
 			_pauseButton.onClick.AddListener(OpenPauseScreen);
 			_pausePlayButton.onClick.AddListener(ClosePauseScreen);
 			_pauseQuitButton.onClick.AddListener(OpenLobby);
+			_tauntOpenMenu.onClick.AddListener(() => OpenTauntMenu(true));
 
 			InitTaunt();
 		}
@@ -116,12 +133,17 @@ namespace CardGame.Turns
 			_pauseButton.onClick.RemoveListener(OpenPauseScreen);
 			_pausePlayButton.onClick.RemoveListener(ClosePauseScreen);
 			_pauseQuitButton.onClick.RemoveListener(OpenLobby);
+			_tauntOpenMenu.onClick.RemoveListener(() => OpenTauntMenu(true));
 
 			if (_tauntButtonsList.Count != _tauntTMPList.Count) return;
 			for (int i = 0; i < _tauntButtonsList.Count; i++)
 			{
 				int index = i;
-				_tauntButtonsList[i].onClick.AddListener(() => _tauntAbility.CallEvent(_tauntAbility.Taunts[index]));
+				_tauntButtonsList[i].onClick.RemoveListener(() =>
+				{
+					_tauntAbility.CallEvent(_tauntAbility.Taunts[index]);
+					OpenTauntMenu(false);
+				});
 			}
 		}
 
@@ -159,7 +181,11 @@ namespace CardGame.Turns
 				TextMeshProUGUI tauntText = tauntButton.GetComponentInChildren<TextMeshProUGUI>();
 				_tauntTMPList.Add(tauntText);
 				tauntText.text = tauntList[i].Text;
-				tauntButton.onClick.AddListener(() => _tauntAbility.CallEvent(_tauntAbility.Taunts[index]));
+				tauntButton.onClick.AddListener(() =>
+				{
+					_tauntAbility.CallEvent(_tauntAbility.Taunts[index]);
+					OpenTauntMenu(false);
+				});
 			}
 
 			_playerTaunt.HidePopUp();
@@ -271,6 +297,15 @@ namespace CardGame.Turns
 
 		public bool AmIClickingOnUI(Vector2 pos)
 		{
+			//taunt stuff
+			if (_tauntOpen)
+			{
+				if (!RectTransformUtility.RectangleContainsScreenPoint(_tauntVisualContainer.GetComponent<RectTransform>(), pos, Camera.main))
+				{
+					OpenTauntMenu(false);
+				}
+			}
+
 			//add exception for pause menu
 			if (_pauseScreen.activeSelf == true)
 				return true;
@@ -278,6 +313,8 @@ namespace CardGame.Turns
 			if (RectTransformUtility.RectangleContainsScreenPoint(_nextTurnButton.GetComponent<RectTransform>(), pos, Camera.main))
 				return true;
 			else if (RectTransformUtility.RectangleContainsScreenPoint(_pauseButton.GetComponent<RectTransform>(), pos, Camera.main))
+				return true;
+			else if (RectTransformUtility.RectangleContainsScreenPoint(_tauntOpenMenu.GetComponent<RectTransform>(), pos, Camera.main))
 				return true;
 
 			foreach (Button button in _tauntButtonsList)
@@ -301,6 +338,19 @@ namespace CardGame.Turns
 		{
 			if (self) _playerTaunt.ShowPopUp(anim, timer).Forget();
 			else _enemyTaunt.ShowPopUp(anim, timer).Forget();
+		}
+
+		private void OpenTauntMenu(bool open)
+		{
+			if (_tauntOpen == open)
+				return;
+
+			_tauntOpen = open;
+			_tauntVisualContainer.DOKill();
+
+			Vector3 posToGo = open ? _tauntInTransform.position : _tauntOutTransform.position;
+
+			_tauntVisualContainer.DOMove(posToGo, 0.5f).SetEase(Ease.InOutSine);
 		}
 
 		public void InitScores()

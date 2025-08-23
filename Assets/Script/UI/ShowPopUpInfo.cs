@@ -25,6 +25,13 @@ namespace CardGame.UI
 
 		public async UniTask ShowPopUp(Sprite[] anim, float timer)
 		{
+			float currentHeight = _image.rectTransform.sizeDelta.y;
+
+			float aspect = (float)anim[0].rect.width / anim[0].rect.height;
+			float newWidth = currentHeight * aspect;
+
+			_image.rectTransform.sizeDelta = new Vector2(newWidth, currentHeight);
+
 			_text.enabled = false;
 			_image.enabled = true;
             _canvasGroup.alpha = 1;
