@@ -8,13 +8,21 @@ namespace CardGame.UI
     {
         [SerializeField] private TextMeshProUGUI _scoreText;
         [SerializeField] private Image _profilePictureImage;
-        public string PlayerName { get; private set; }
+
+		[SerializeField] private Color _colorPlayer1;
+		[SerializeField] private Color _colorPlayer2;
+
+		private bool _isYou;
+
         public int PlayerIndex { get; private set; }
 
-        public void Setup(int playerIndex, string playerName)
+        public void Setup(int playerIndex, bool isPlayer)
         {
-            PlayerName = playerName;
+            _isYou = isPlayer;
             PlayerIndex = playerIndex;
+
+			_profilePictureImage.color = playerIndex == 0? _colorPlayer1 : _colorPlayer2;
+
             // _profilePictureImage.sprite = ????
 
             SetScore(0f);
@@ -22,7 +30,9 @@ namespace CardGame.UI
         
         public void SetScore(float score)
         {
-            _scoreText.text = score.ToString();
+			string text = score.ToString();
+			if (_isYou) text += " (You)";
+            _scoreText.text = text;
         }
     }
 }

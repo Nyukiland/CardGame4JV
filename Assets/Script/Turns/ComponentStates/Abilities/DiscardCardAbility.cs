@@ -1,5 +1,6 @@
 using CardGame.StateMachine;
 using CardGame.UI;
+using DG.Tweening;
 using UnityEngine;
 
 namespace CardGame.Turns
@@ -15,10 +16,18 @@ namespace CardGame.Turns
 		[SerializeField]
 		private RectTransform _discardArea;
 
+		[SerializeField]
+		private Transform _discardIn;
+
+		[SerializeField]
+		private Transform _discardOut;
+
 		private MoveTileAbility _moveTile;
 		private SendInfoAbility _sendInfo;
 		private ZoneHolderResource _holderResource;
 		private NetworkResource _networkResource;
+
+		private bool _isIn;
 
 		public override void Init(Controller owner)
 		{
@@ -34,7 +43,7 @@ namespace CardGame.Turns
 		public override void OnEnable()
 		{
 			base.OnEnable();
-			ShowDiscardArea(true);
+			_discardArea.transform.position = _discardOut.position;
 		}
 
 		public override void OnDisable()
@@ -44,9 +53,24 @@ namespace CardGame.Turns
 			ShowDiscardArea(false);
 		}
 
+		public override void Update(float deltaTime)
+		{
+			base.Update(deltaTime);
+
+			_discardArea.gameObject.SetActive(!_holderResource.IsHidden || _moveTile.CurrentTile != null);
+		}
+
 		public void ShowDiscardArea(bool display)
 		{
-			if (_discardArea != null) _discardArea.gameObject.SetActive(display);
+			if (_isIn == display) 
+				return;
+
+			_isIn = display;
+
+			Vector3 posToGo = display ? _discardIn.position : _discardOut.position;
+			_discardArea.transform.DOKill();
+
+			_discardArea.transform.DOMove(posToGo, 1f).SetEase(Ease.InOutSine);
 		}
 
 		public void ReleaseCard(Vector2 pos)

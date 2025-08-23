@@ -21,6 +21,8 @@ namespace CardGame.Turns
 		private float _tileSize;
 		private float _defaultCamSize;
 
+		public bool IsHidden { private set; get; } = false;
+
 		public override void Init(Controller owner)
 		{
 			_hudResource = owner.GetStateComponent<HUDResource>();
@@ -119,6 +121,8 @@ namespace CardGame.Turns
 
 		public void HideMyHand(bool isHidden)
 		{
+			IsHidden = isHidden;
+
 			foreach (GameObject t in TileInHand)
 			{
 				if (t != null) t.SetActive(!isHidden);

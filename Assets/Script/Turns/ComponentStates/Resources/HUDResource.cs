@@ -44,7 +44,6 @@ namespace CardGame.Turns
 		[SerializeField] private Slider _nextTurnSlider;
 		[SerializeField] private Button _nextTurnButton;
 		[SerializeField] private Image _nextTurnFillImage;
-		[SerializeField] private Image _greyFilter;
 		[SerializeField] private Color _startSliderColor;
 		[SerializeField] private Color _endSliderColor;
 		[Header("Taunt")]
@@ -64,12 +63,13 @@ namespace CardGame.Turns
 
 		private PlaceTileOnGridAbility _placeTileOnGrid;
 		private ZoneHolderResource _zoneHolder;
+		private NetworkResource _networkResource;
 
 		private readonly List<ScoreUI> _scoreList = new();
 
 		private bool _isHudOpen;
 		private Tween _lastHudTween;
-		
+
 		private TauntButtonAbility _tauntAbility;
 
 		#region Unity Methods
@@ -89,9 +89,9 @@ namespace CardGame.Turns
 			OpenHud();
 			_placeTileOnGrid = owner.GetStateComponent<PlaceTileOnGridAbility>();
 			_zoneHolder = owner.GetStateComponent<ZoneHolderResource>();
+			_networkResource = owner.GetStateComponent<NetworkResource>();
 
 			_nextTurnSlider.maxValue = _placeTileOnGrid.MaxTimeTurn;
-			_greyFilter.gameObject.SetActive(false);
 			_waitingScreen.SetActive(false);
 		}
 
@@ -116,7 +116,7 @@ namespace CardGame.Turns
 			_pauseButton.onClick.RemoveListener(OpenPauseScreen);
 			_pausePlayButton.onClick.RemoveListener(ClosePauseScreen);
 			_pauseQuitButton.onClick.RemoveListener(OpenLobby);
-			
+
 			if (_tauntButtonsList.Count != _tauntTMPList.Count) return;
 			for (int i = 0; i < _tauntButtonsList.Count; i++)
 			{
@@ -161,7 +161,7 @@ namespace CardGame.Turns
 				tauntText.text = tauntList[i].Text;
 				tauntButton.onClick.AddListener(() => _tauntAbility.CallEvent(_tauntAbility.Taunts[index]));
 			}
-			
+
 			_playerTaunt.HidePopUp();
 			_enemyTaunt.HidePopUp();
 		}
@@ -234,7 +234,9 @@ namespace CardGame.Turns
 			CloseAllScreens();
 			_pauseScreen.SetActive(true);
 			_zoneHolder.HideMyHand(true);
-			Time.timeScale = 0f;
+
+			if (!_networkResource.IsNetActive())
+				Time.timeScale = 0f;
 		}
 
 		public void ClosePauseScreen()
@@ -265,7 +267,7 @@ namespace CardGame.Turns
 				if (scoreUI.PlayerIndex != playerIndex) continue;
 				scoreUI.SetScore(score);
 			}
-		}	
+		}
 
 		public bool AmIClickingOnUI(Vector2 pos)
 		{
@@ -273,9 +275,9 @@ namespace CardGame.Turns
 			if (_pauseScreen.activeSelf == true)
 				return true;
 
-			if (RectTransformUtility.RectangleContainsScreenPoint(_nextTurnButton.GetComponent<RectTransform>(), pos, Camera.main)) 
+			if (RectTransformUtility.RectangleContainsScreenPoint(_nextTurnButton.GetComponent<RectTransform>(), pos, Camera.main))
 				return true;
-			else if (RectTransformUtility.RectangleContainsScreenPoint(_pauseButton.GetComponent<RectTransform>(), pos, Camera.main)) 
+			else if (RectTransformUtility.RectangleContainsScreenPoint(_pauseButton.GetComponent<RectTransform>(), pos, Camera.main))
 				return true;
 
 			foreach (Button button in _tauntButtonsList)
@@ -311,7 +313,11 @@ namespace CardGame.Turns
 				for (int i = 0; i < manager.OnlinePlayersID.Count; i++)
 				{
 					ScoreUI playerScore = Object.Instantiate(_scorePrefab, _scoreContainer);
-					playerScore.Setup(i, manager.OnlinePlayersID[i].ToString());
+					if (manager.OnlinePlayersID[i] == GameManager.Instance.OwnerClientId)
+						playerScore.Setup(i, true);
+					else
+						playerScore.Setup(i, false);
+
 					_scoreList.Add(playerScore);
 				}
 			}
@@ -320,7 +326,7 @@ namespace CardGame.Turns
 				for (int i = 0; i < manager.SoloNames.Count; i++)
 				{
 					ScoreUI playerScore = Object.Instantiate(_scorePrefab, _scoreContainer);
-					playerScore.Setup(i, manager.SoloNames[i]);
+					playerScore.Setup(i, i == 0);
 					_scoreList.Add(playerScore);
 				}
 			}
