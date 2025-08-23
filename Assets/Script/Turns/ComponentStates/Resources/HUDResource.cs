@@ -127,7 +127,10 @@ namespace CardGame.Turns
 
 		public override void Update(float deltaTime)
 		{
+			//using a slider for this is cursed
+			//image fill with a 0 to 1 value would have been better
 			_nextTurnSlider.value = _placeTileOnGrid.Timer;
+			_nextTurnSlider.maxValue = _placeTileOnGrid.MaxTimeTurn;
 
 			float percent = _nextTurnSlider.value / _nextTurnSlider.maxValue;
 
@@ -210,6 +213,8 @@ namespace CardGame.Turns
 		private void OpenLobby()
 		{
 			CloseAllScreens();
+
+			GameManager.Instance.ResetManager();
 
 			Time.timeScale = 1;
 

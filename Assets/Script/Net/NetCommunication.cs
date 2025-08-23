@@ -8,6 +8,7 @@ using UnityEngine;
 using System;
 using Unity.Services.Analytics;
 using Cysharp.Threading.Tasks;
+using System.Linq;
 
 namespace CardGame.Net
 {
@@ -54,6 +55,11 @@ namespace CardGame.Net
 		public override void OnNetworkDespawn()
 		{
 			OnDestroyEvent?.Invoke();
+
+			if (Instances.ContainsKey(OwnerClientId))
+				Instances.Remove(OwnerClientId);
+
+			Destroy(gameObject);
 		}
 
 		private void ForEachOtherClient(ulong senderClientId, Action<NetCommunication> action)

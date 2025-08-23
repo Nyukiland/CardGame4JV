@@ -59,8 +59,8 @@ namespace CardGame.Turns
 		{
 			base.OnEnable();
 			TilePlaced = false;
-			Timer = 0;
 			MaxTimeTurn = Mathf.Lerp(_maxTimeTurnFirst, _maxTimeTurnEnd, (float)_gameManager.LocalPlayerTurn / (float)_gameManager.MaxTurn);
+			Timer = 0;
 
 			TempPlacedTile = null;
 		}

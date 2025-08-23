@@ -283,6 +283,8 @@ namespace CardGame.Net
 			if (!_isDistant) return;
 			
 			base.DisconnectFromGame();
+
+			StopHosting();
 		}
 		
 		protected override void LaunchGame()

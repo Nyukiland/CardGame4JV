@@ -1,10 +1,12 @@
 using System;
 using CardGame.UI;
+using CardGame.Utility;
 using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CardGame.Net
 {
@@ -163,6 +165,12 @@ namespace CardGame.Net
 				_networkUI.QuitClientGame();
 				_networkUI.SpawnPopUp("You have been disconnected because the host closed the game", 2f).Forget();
 				_netCommunication.OnDestroyEvent -= _networkUI.QuitClientGame;
+
+				var controller = Storage.Instance.GetElement<CardGame.StateMachine.Controller>();
+				if (controller != null)
+				{
+					SceneManager.UnloadSceneAsync(controller.gameObject.scene);
+				}
 			};
 		}
 

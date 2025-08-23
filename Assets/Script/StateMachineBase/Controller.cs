@@ -225,6 +225,8 @@ namespace CardGame.StateMachine
 		{
 			GetStateComponent<ZoneHolderResource>().EndDestroyTile();
 
+			OnDisable();
+
 			if (Storage.CheckInstance()) 
 				Storage.Instance.Delete(this);
 		}
