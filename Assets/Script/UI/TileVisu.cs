@@ -141,7 +141,7 @@ namespace CardGame.UI
 		}
 
 
-		private Material GetMaterialForType(ENVIRONEMENT_TYPE type)
+		public Material GetMaterialForType(ENVIRONEMENT_TYPE type)
 		{
 			switch (type)
 			{

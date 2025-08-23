@@ -16,7 +16,6 @@ namespace CardGame.Turns
 		[SerializeField, Min(0)]
 		private float _maxTimeTurnEnd = 180;
 
-
 		private Plane _planeForCast = new(Vector3.forward, new Vector3(0, 0, -0.15f));
 
 		private MoveTileAbility _moveTile;

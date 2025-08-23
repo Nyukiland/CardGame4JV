@@ -10,6 +10,9 @@ namespace CardGame.Turns
 		[SerializeField]
 		private LayerMask _layerTile;
 
+		[SerializeField]
+		private PlacingTileUI _tileUI;
+
 		private Plane _planeForCast = new(Vector3.forward, new Vector3(0, 0, 0));
 
 		private GridManagerResource _gridManager;
@@ -19,10 +22,17 @@ namespace CardGame.Turns
 		private Vector2Int _prevPos = new(-100, -100);
 		private bool _prevActivity = false;
 
+		private TileVisu _currentTile;
+
 		public TileVisu CurrentTile
 		{
-			get;
-			set;
+			get => _currentTile;
+			set
+			{
+				UnityEngine.Debug.Log(value);
+				_tileUI.SetVisual(value);
+				_currentTile = value;
+			}
 		}
 
 		public event System.Action OnCardPicked; //Pour la preview d'ou on peut poser la tile de maniere valide
