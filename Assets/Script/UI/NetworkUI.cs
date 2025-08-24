@@ -289,6 +289,8 @@ namespace CardGame.UI
 
 		public async UniTask OpenMainMenu()
 		{
+			await UniTask.Yield(); //idk just warning shut up
+
 			QuitGameEvent?.Invoke();
 			OpenPanel(_mainMenuGameObject, CurrentScreen.MainMenu);
 			// Sequence mainMenuSequence = DOTween.Sequence();
@@ -384,7 +386,7 @@ namespace CardGame.UI
 		private void OpenPanel(GameObject panel, CurrentScreen nextScreen, bool closeAll = false)
 		{
 			// StopTweens();
-			bool fadeIn = false;
+			//bool fadeIn = false;
 			_backgroundImage.gameObject.SetActive(true);
 			_transitionScreenCanvasGroup.alpha = 0f;
 

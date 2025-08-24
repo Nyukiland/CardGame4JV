@@ -61,15 +61,6 @@ namespace CardGame.UI
 
 		public bool IsLinked = true; // Sert pour la preview des placements possibles
 
-		[Space(10)]
-
-		[Header("Tile Rotation speed")]
-		[SerializeField] private float _backMovement = 0.1f;
-		[SerializeField] private float _rotationMovement = 0.2f;
-		[SerializeField] private float _backMovementAgain = 0.1f;
-
-		private Sequence _rotationSequence;
-
 		public MeshRenderer VisuNorth => _visuNorth;
 		public MeshRenderer VisuSouth => _visuSouth;
 		public MeshRenderer VisuEast => _visuEast;
