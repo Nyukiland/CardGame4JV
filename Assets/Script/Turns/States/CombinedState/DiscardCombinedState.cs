@@ -27,6 +27,8 @@ namespace CardGame.Turns
 			GetStateComponent(ref _networkResource);
 
 			_moveTile.CanPlaceOnGrid = false;
+
+			Controller.GetStateComponent<HUDResource>().ChangeTurnFeedback(HUDResource.TurnState.Discard);
 		}
 
 		public override void OnExit()

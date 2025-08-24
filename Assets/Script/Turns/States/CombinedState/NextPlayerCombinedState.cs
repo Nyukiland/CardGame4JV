@@ -27,8 +27,6 @@ namespace CardGame.Turns
 			GetStateComponent(ref _moveTile);
 	        GetStateComponent(ref _autoPlayAbility);
 
-			_hud.OpenWaitingScreen();
-
 			_moveTile.CanPlaceOnGrid = false;
 
 			if (!_net.IsNetActive())
@@ -36,14 +34,14 @@ namespace CardGame.Turns
 				GetStateComponent(ref _autoPlayAbility);
 				_autoPlayAbility.CallBotTurn();
 			}
-			Controller.GetStateComponent<HUDResource>().UpdateTurnValue();
+			_hud.UpdateTurnValue();
+
+			_hud.ChangeTurnFeedback(HUDResource.TurnState.OtherPlayer);
 		}
 
 		public override void OnExit()
 		{
 			base.OnExit();
-
-			_hud.CloseWaitingScreen();
 
 			if (_moveTile.CurrentTile != null)
 			{

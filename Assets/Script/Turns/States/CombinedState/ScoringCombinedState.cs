@@ -15,14 +15,13 @@ namespace CardGame.Turns
 			GetStateComponent(ref _scoring);
 			GetStateComponent(ref _hud);
 
-			_hud.OpenScoringScreen();
 			_scoring.CallScoring();
+			_hud.ChangeTurnFeedback(HUDResource.TurnState.Scoring);
 		}
 
 		public override void OnExit()
 		{
 			base.OnExit();
-			_hud.CloseScoringScreen();
 		}
 
 		public override void Update(float deltaTime)

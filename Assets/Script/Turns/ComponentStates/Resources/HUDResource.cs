@@ -18,8 +18,6 @@ namespace CardGame.Turns
 		[SerializeField] private float _distanceToCamera = 10;
 		[Space(10)]
 
-		[SerializeField] private GameObject _waitingScreen;
-		[SerializeField] private GameObject _scoringScreen;
 		[SerializeField] private GameObject _loadingScreen;
 		[Space(10)]
 		[Header("Hud")]
@@ -71,6 +69,15 @@ namespace CardGame.Turns
 		[SerializeField] private Button _pausePlayButton;
 		[SerializeField] private Button _pauseQuitButton;
 		[Space(10)]
+		[Header("Turn info")]
+		[SerializeField] private Image _blurImage;
+		[SerializeField] private Color _playerTurnColor;
+		[SerializeField] private Color _otherTurnColor;
+		[SerializeField] private Color _discardTurnColor;
+		[SerializeField] private Color _scoringTurnColor;
+		[SerializeField] private CanvasGroup _waitingScreen;
+		[SerializeField] private CanvasGroup _scoringScreen;
+		[Space(10)]
 		[Header("Scene")]
 		public string SceneName;
 
@@ -106,7 +113,8 @@ namespace CardGame.Turns
 			_networkResource = owner.GetStateComponent<NetworkResource>();
 
 			_nextTurnSlider.maxValue = _placeTileOnGrid.MaxTimeTurn;
-			_waitingScreen.SetActive(false);
+			_waitingScreen.alpha = 0;
+			_scoringScreen.alpha = 0;
 
 			_tauntVisualContainer.position = _tauntOutTransform.position;
 		}
@@ -249,12 +257,6 @@ namespace CardGame.Turns
 			SceneManager.UnloadSceneAsync(SceneName);
 		}
 
-		public void OpenWaitingScreen() => _waitingScreen.SetActive(true);
-		public void CloseWaitingScreen() => _waitingScreen.SetActive(false);
-
-		public void OpenScoringScreen() => _scoringScreen.SetActive(true);
-		public void CloseScoringScreen() => _scoringScreen.SetActive(false);
-
 		public void OpenPauseScreen()
 		{
 			CloseAllScreens();
@@ -281,7 +283,7 @@ namespace CardGame.Turns
 			_pauseScreen.gameObject.SetActive(false);
 			//Temporairement retir� pcq il r�apparaissait pas
 			//_waitingScreen.SetActive(false); 
-			_scoringScreen.SetActive(false);
+			_scoringScreen.alpha = 0;
 		}
 
 		#endregion
@@ -425,6 +427,52 @@ namespace CardGame.Turns
 			posToGo = _actualArrow.transform.parent.InverseTransformPoint(posToGo);
 
 			_actualArrow.transform.DOLocalMove(posToGo, 0.5f).SetEase(Ease.InOutSine);
+		}
+
+		public void ChangeTurnFeedback(TurnState turnState)
+		{
+			_blurImage.DOKill();
+			_scoringScreen.DOKill();
+			_waitingScreen.DOKill();
+
+			Color colorToGo = Color.white;
+			CanvasGroup toLerp = null;
+
+			switch (turnState)
+			{
+				case TurnState.Playing:
+					colorToGo = _playerTurnColor;
+					break;
+				case TurnState.Discard:
+					colorToGo = _discardTurnColor;
+					break;
+				case TurnState.Scoring:
+					colorToGo = _scoringTurnColor;
+					toLerp = _scoringScreen;
+					break;
+				case TurnState.OtherPlayer:
+					colorToGo = _otherTurnColor;
+					toLerp = _waitingScreen;
+					break;
+			}
+
+			if (toLerp != _scoringScreen)
+				_scoringScreen.DOFade(0, 0.1f);
+			if (toLerp != _waitingScreen)
+				_waitingScreen.DOFade(0, 0.1f);
+
+			toLerp.DOFade(1, 0.5f);
+
+
+			_blurImage.DOColor(colorToGo, 0.5f);
+		}
+
+		public enum TurnState
+		{
+			Playing,
+			Discard,
+			Scoring,
+			OtherPlayer,
 		}
 	}
 }
