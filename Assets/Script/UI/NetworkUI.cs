@@ -17,7 +17,10 @@ namespace CardGame.UI
 		[SerializeField] private GameObject _inputBlocker;
 		[SerializeField] private CanvasGroup _transitionScreenCanvasGroup;
 		[SerializeField] private Image _backgroundImage;
-		
+
+		[SerializeField] private Color _greyColor;
+		[SerializeField] private Color _greenColor;
+
 		[Header("SceneManagement")]
 		[SerializeField] private string _sceneName;
 		
@@ -224,7 +227,7 @@ namespace CardGame.UI
 		public UniTask UpdateAfterHost()
 		{
 			int playerNumber = NetworkManager.Singleton.ConnectedClients.Count;
-			_playersNumberText.text = $"{playerNumber}/4 players";
+			_playersNumberText.text = $"{playerNumber}/2 players";
 			if (playerNumber < 2)
 			{
 				_playButtonGrey.gameObject.SetActive(true);
@@ -276,8 +279,8 @@ namespace CardGame.UI
 
 		private void ToggleButtons(Image onButtonImage, Image offButtonImage)
 		{
-			onButtonImage.color = Color.green;
-			offButtonImage.color = Color.white;
+			onButtonImage.color = _greenColor;
+			offButtonImage.color = _greyColor;
 		}
 
 		#endregion
