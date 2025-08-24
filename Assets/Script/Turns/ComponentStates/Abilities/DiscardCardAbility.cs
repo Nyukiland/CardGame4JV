@@ -66,11 +66,12 @@ namespace CardGame.Turns
 				return;
 
 			_isIn = display;
-
-			Vector3 posToGo = display ? _discardIn.position : _discardOut.position;
 			_discardArea.transform.DOKill();
 
-			_discardArea.transform.DOMove(posToGo, 1f).SetEase(Ease.InOutSine);
+			Vector3 posToGo = display ? _discardIn.position : _discardOut.position;
+			posToGo = _discardArea.parent.InverseTransformPoint(posToGo);
+
+			_discardArea.transform.DOLocalMove(posToGo, 1f).SetEase(Ease.InOutSine);
 		}
 
 		public void ReleaseCard(Vector2 pos)

@@ -349,8 +349,9 @@ namespace CardGame.Turns
 			_tauntVisualContainer.DOKill();
 
 			Vector3 posToGo = open ? _tauntInTransform.position : _tauntOutTransform.position;
+			posToGo = _tauntVisualContainer.parent.InverseTransformPoint(posToGo);
 
-			_tauntVisualContainer.DOMove(posToGo, 0.5f).SetEase(Ease.InOutSine);
+			_tauntVisualContainer.DOLocalMove(posToGo, 0.5f).SetEase(Ease.InOutSine);
 		}
 
 		public void InitScores()
@@ -421,7 +422,9 @@ namespace CardGame.Turns
 					break;
 			}
 
-			_actualArrow.transform.DOMove(posToGo, 0.5f).SetEase(Ease.InOutSine);
+			posToGo = _actualArrow.transform.parent.InverseTransformPoint(posToGo);
+
+			_actualArrow.transform.DOLocalMove(posToGo, 0.5f).SetEase(Ease.InOutSine);
 		}
 	}
 }
