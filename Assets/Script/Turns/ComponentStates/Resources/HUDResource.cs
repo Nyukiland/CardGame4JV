@@ -442,6 +442,7 @@ namespace CardGame.Turns
 			{
 				case TurnState.Playing:
 					colorToGo = _playerTurnColor;
+					_scoreList.ForEach(x => x.IsMyTurn(true));
 					break;
 				case TurnState.Discard:
 					colorToGo = _discardTurnColor;
@@ -453,6 +454,7 @@ namespace CardGame.Turns
 				case TurnState.OtherPlayer:
 					colorToGo = _otherTurnColor;
 					toLerp = _waitingScreen;
+					_scoreList.ForEach(x => x.IsMyTurn(false));
 					break;
 			}
 
