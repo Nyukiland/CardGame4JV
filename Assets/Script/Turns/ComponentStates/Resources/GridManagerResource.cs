@@ -18,6 +18,10 @@ namespace CardGame.Turns
 		[Header("Tiles")]
 		[SerializeField] private GameObject _tilePrefab;
 		[SerializeField] private TileSettings _startingTileSettings;
+		[Header("LastPlacedTile")]
+		[SerializeField] private float _interval = 2f;
+		[SerializeField] private float _moveAmount = 1f;
+		[SerializeField] private float _moveDuration = 0.2f;
 
 		public int Width => _width;
 		public int Height => _height;
@@ -34,6 +38,9 @@ namespace CardGame.Turns
 		private Vector3 _bottomLeftMostTile = new(100, 100, 0);
 		public Vector3 TopRightMostTile { get => _topRightMostTile; private set => _topRightMostTile = value; }
 		public Vector3 BottomLeftMostTile { get => _bottomLeftMostTile; private set => _bottomLeftMostTile = value; }
+
+		public TileVisu LastPlacedTile { get; private set; }
+		private float _timer;
 
 		public override void LateInit()
 		{
@@ -139,6 +146,28 @@ namespace CardGame.Turns
 				SetTile(tileData, value.x, value.y);
 				_grid[value.x, value.y].SetTileLayerGrid(LayerTile.Grid); // inch ca marche
 			}
+
+			LastPlacedTile = null;
+		}
+
+		public override void Update(float deltaTime)
+		{
+			base.Update(deltaTime);
+
+			if (LastPlacedTile == null)
+			{
+				_timer = 0;
+				return;
+			}
+
+			_timer += deltaTime;
+			if (_timer >= _interval)
+			{
+				_timer = 0f;
+
+				LastPlacedTile.transform.DOLocalMoveZ(LastPlacedTile.transform.localPosition.z - _moveAmount, _moveDuration)
+					.SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutSine);
+			}
 		}
 
 		public TileVisu GetTile(int x, int y)
@@ -169,6 +198,8 @@ namespace CardGame.Turns
 			SetNeighborBonusTileLinked(new(x, y));
 			PlayTileEffect(tileVisu);
 			DetermineTileRegions(x, y);
+
+			LastPlacedTile = tileVisu;
 
 			Vector3 tilePos = tileVisu.transform.position;
 
@@ -219,7 +250,7 @@ namespace CardGame.Turns
 			seq.Append(visu.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack));
 			seq.Join(visu.transform.DOShakeRotation(0.5f, 30, 10, 80, true));
 
-			seq.Play().OnComplete(() => 
+			seq.Play().OnComplete(() =>
 			{
 				visu.transform.rotation = Quaternion.identity;
 				visu.transform.localScale = Vector3.one;
@@ -282,7 +313,7 @@ namespace CardGame.Turns
 							UnityEngine.Debug.LogWarning($"[{nameof(GridManagerResource)}] tile placed environement is none");
 
 						if (myZones[myZone].environment != ENVIRONEMENT_TYPE.None &&
-							data.Zones[otherZone].environment != ENVIRONEMENT_TYPE.None && 
+							data.Zones[otherZone].environment != ENVIRONEMENT_TYPE.None &&
 							myZones[myZone].environment != data.Zones[otherZone].environment)
 							return 0;
 
@@ -319,7 +350,7 @@ namespace CardGame.Turns
 			return total;
 		}
 
-		public void SetNeighborBonusTileLinked(Vector2Int pos) 
+		public void SetNeighborBonusTileLinked(Vector2Int pos)
 		{
 			TileVisu tile = null;
 			TileVisu currentTile = GetTile(pos.x, pos.y);
@@ -381,7 +412,7 @@ namespace CardGame.Turns
 				if (tile.TileData == null) continue;
 
 				Vector2Int pos = new((int)tile.transform.position.x, (int)tile.transform.position.y);
-				DataToSend data = new (tile.TileData, pos);
+				DataToSend data = new(tile.TileData, pos);
 				list.DataList.Add(data);
 			}
 
