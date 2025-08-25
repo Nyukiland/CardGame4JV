@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using CardGame.StateMachine;
 using CardGame.UI;
+using CardGame.Utility;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace CardGame.Turns
 {
@@ -28,6 +30,28 @@ namespace CardGame.Turns
 			_hudResource = owner.GetStateComponent<HUDResource>();
 			_defaultCamSize = Camera.main.orthographicSize;
 			_tileSize = 1;
+		}
+
+		public override void Update(float deltaTime)
+		{
+			base.Update(deltaTime);
+
+			if (Keyboard.current.rKey.wasPressedThisFrame)
+			{
+				int numberOfTile = TileInHandCount;
+
+				DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
+
+				for (int i = numberOfTile - 1; i >= 0; i--)
+				{
+					TileVisu tile = TileInHand[i].GetComponent<TileVisu>();
+					drawPile.DiscardTile(tile.TileData.TileSettings.IdCode);
+					RemoveTileFromHand(tile.gameObject);
+					GameObject.Destroy(tile.gameObject);
+				}
+
+				Owner.GetStateComponent<CreateHandAbility>().GenerateTiles(numberOfTile);
+			}
 		}
 
 		public bool IsInHand(Vector2 position)
