@@ -1645,7 +1645,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 300, y: 300}
+  m_SizeDelta: {x: 230, y: 230}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &487883615
 MonoBehaviour:
@@ -1759,9 +1759,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -50, y: 50}
+  m_AnchoredPosition: {x: -149.99951, y: 99.99988}
   m_SizeDelta: {x: 200, y: 100}
-  m_Pivot: {x: 1, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &520585803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6121,7 +6121,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: -30, y: 0}
-  m_SizeDelta: {x: 400, y: -100}
+  m_SizeDelta: {x: 400, y: -40}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1786460448
 MonoBehaviour:
@@ -6853,6 +6853,8 @@ MonoBehaviour:
         _nextTurnFillImage: {fileID: 1398389799}
         _startSliderColor: {r: 1, g: 1, b: 1, a: 1}
         _endSliderColor: {r: 1, g: 0.3820755, b: 0.3820755, a: 1}
+        _pulseSpeed: 2
+        _pulseSize: 0.04
         _tauntVisualContainer: {fileID: 1786460447}
         _tauntButtonParent: {fileID: 1819443043}
         _tauntButtonPrefab: {fileID: 7658766867752466395, guid: 3d40413ce3f757343a66a6c02fcad4ed, type: 3}
@@ -6866,10 +6868,10 @@ MonoBehaviour:
         _pausePlayButton: {fileID: 386059369}
         _pauseQuitButton: {fileID: 1704542751}
         _blurImage: {fileID: 487883615}
-        _playerTurnColor: {r: 1, g: 1, b: 1, a: 0}
+        _playerTurnColor: {r: 0, g: 0, b: 0, a: 0}
         _otherTurnColor: {r: 0, g: 0, b: 0, a: 1}
-        _discardTurnColor: {r: 0.6415094, g: 0, b: 0, a: 0.69803923}
-        _scoringTurnColor: {r: 0.7830189, g: 0.64670783, b: 0.12927197, a: 0.69803923}
+        _discardTurnColor: {r: 0.6415094, g: 0, b: 0, a: 0.14901961}
+        _scoringTurnColor: {r: 0.7830189, g: 0.64670783, b: 0.12927197, a: 0.14901961}
         _waitingScreen: {fileID: 433070835}
         _scoringScreen: {fileID: 2073530452}
         SceneName: RomanTest

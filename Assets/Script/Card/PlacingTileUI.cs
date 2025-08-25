@@ -83,7 +83,7 @@ public class PlacingTileUI : MonoBehaviour
 		_properTile.VisuEast.material = tile.GetMaterialForType(tileSettings.EastZone.environment);
 		_properTile.VisuWest.material = tile.GetMaterialForType(tileSettings.WestZone.environment);
 
-		_properTile.transform.eulerAngles = new Vector3(0, 0, 90 * tile.TileData.TileRotationCount);
+		_properTile.transform.eulerAngles = new Vector3(0, 0, -90 * tile.TileData.TileRotationCount);
 	}
 
 	private void Update()

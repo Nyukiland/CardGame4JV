@@ -50,6 +50,8 @@ namespace CardGame.Turns
 		[SerializeField] private Image _nextTurnFillImage;
 		[SerializeField] private Color _startSliderColor;
 		[SerializeField] private Color _endSliderColor;
+		[SerializeField] private float _pulseSpeed = 2f;
+		[SerializeField] private float _pulseSize = 0.025f;
 		[Space(10)]
 		[Header("Taunt")]
 		[SerializeField] private Transform _tauntVisualContainer;
@@ -173,6 +175,18 @@ namespace CardGame.Turns
 			{
 				if (_nextTurnFillImage.color != _startSliderColor)
 					_nextTurnFillImage.color = _startSliderColor;
+			}
+
+			if (_placeTileOnGrid.TempPlacedTile != null && _placeTileOnGrid.TempPlacedTile.IsTileValid)
+			{
+				float scale = 1f + Mathf.Sin(Time.time * _pulseSpeed) * _pulseSize;
+				_nextTurnButton.transform.localScale = Vector3.one * scale;
+			}
+			else
+			{
+				_nextTurnButton.transform.localScale = Vector3.Lerp(_nextTurnButton.transform.localScale,
+					Vector3.one, deltaTime * 5f
+				);
 			}
 		}
 

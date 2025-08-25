@@ -66,6 +66,8 @@ namespace CardGame.UI
 		public MeshRenderer VisuEast => _visuEast;
 		public MeshRenderer VisuWest => _visuWest;
 
+		public bool IsTileValid { get; private set; }
+
 		private void Start()
 		{
 			UpdateTile(TileData);
@@ -242,6 +244,8 @@ namespace CardGame.UI
 		{
 			if (_wrongRotationFeedback != null)
 				_wrongRotationFeedback.SetActive(active);
+
+			IsTileValid = !active;
 		}
 
 

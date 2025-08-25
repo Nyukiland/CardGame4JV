@@ -56,8 +56,8 @@ MonoBehaviour:
   _colorPlayer1: {r: 0.59608555, g: 0, b: 1, a: 1}
   _colorPlayer2: {r: 1, g: 0, b: 0, a: 1}
   _background: {fileID: 547747419949536425}
-  _baseColor: {r: 0.6039216, g: 0.6039216, b: 0.6039216, a: 0.8}
-  _notMyTurnColor: {r: 0.34901962, g: 0.34901962, b: 0.34901962, a: 0.5019608}
+  _baseColor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 0.8}
+  _notMyTurnColor: {r: 0.5471698, g: 0.5471698, b: 0.5471698, a: 0.5019608}
 --- !u!1 &1995109530966671564
 GameObject:
   m_ObjectHideFlags: 0
