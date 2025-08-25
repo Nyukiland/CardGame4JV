@@ -54,6 +54,7 @@ namespace CardGame.UI
 		[SerializeField] private GameObject _pawnP2;
 		private bool _spawnedPawn = false;
 		[SerializeField] private GameObject _wrongRotationFeedback;
+		[SerializeField] private GameObject _flagPreviewMesh;
 
 		public TileData TileData { get; set; }
 
@@ -264,6 +265,11 @@ namespace CardGame.UI
 			seq.Append(visual.DOLocalRotate(new Vector3(0, 0, targetRotation), 0.1f).SetEase(Ease.OutQuad)); // Rota to real location
 
 			seq.Play();
+		}
+
+		public void ShowFlagPreviewVisual(bool mustShow)
+		{
+			_flagPreviewMesh?.SetActive(mustShow);
 		}
 
 		public string GetInfo()

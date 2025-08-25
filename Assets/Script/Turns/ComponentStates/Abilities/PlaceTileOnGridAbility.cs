@@ -67,9 +67,24 @@ namespace CardGame.Turns
 		public override void OnDisable()
 		{
 			base.OnDisable();
-
 			ReleaseTile(new(10000, 10000));
+
+			int nextTurn = GameManager.Instance.LocalPlayerTurn + 1;
+			bool willBeFlagTurn = (nextTurn % 3 == 0);
+
+			foreach (GameObject tileObj in _zoneHolder.TileInHand)
+			{
+				if (tileObj == null) continue;
+
+				TileVisu tileVisu = tileObj.GetComponent<TileVisu>();
+				if (tileVisu != null)
+				{
+					tileVisu.ShowFlagPreviewVisual(willBeFlagTurn);
+				}
+			}
 		}
+
+
 
 		public void ReleaseTile(Vector2 position)
 		{
