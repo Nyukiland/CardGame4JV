@@ -28,6 +28,11 @@ namespace CardGame.Turns
 
 		private HashSet<Region> _closedRegionsInTurn = new();
 
+		[Header("ClosedRegionFeedback")]
+		[SerializeField] private float _interval = 2f;
+		[SerializeField] private float _moveAmount = 1f;
+		[SerializeField] private float _moveDuration = 1f;
+
 		public Type NextState
 		{
 			get;
@@ -81,13 +86,13 @@ namespace CardGame.Turns
 			//EXEMPLE -------------------------
 
 			//Add the mesh that need to be selected
-			_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuNorth);
-			_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuSouth);
-			_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuEast);
-			_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuWest);
+			//_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuNorth);
+			//_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuSouth);
+			//_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuEast);
+			//_alphaFeature.settings.TargetMeshes.Add(_gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).VisuWest);
 
-			//Set the color of the visual
-			Shader.SetGlobalColor("_MainScoringColor", Color.red);
+			////Set the color of the visual
+			//Shader.SetGlobalColor("_MainScoringColor", Color.red);
 
 			//-------------------------
 
@@ -107,6 +112,41 @@ namespace CardGame.Turns
 
 				}
 			}
+
+			// give colour to the closed region zones : 
+			foreach (Region closedRegion in _closedRegionsInTurn)
+			{
+				foreach (TileVisu tileVisu in closedRegion.Tiles)
+				{
+					for (int i = 0; i <= 3; i++)
+					{
+						if (tileVisu.TileData.Zones[i].Region == closedRegion)
+						{
+							switch (i)
+							{
+								case 0:
+									Debug.Log("Zone : Nord ");
+									_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuNorth);
+									break;
+								case 1:
+									Debug.Log("Zone : Est ");
+									_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuEast);
+									break;
+								case 2:
+									Debug.Log("Zone : Sud ");
+									_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuSouth);
+									break;
+								case 3:
+									Debug.Log("Zone : Ouest ");
+									_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuWest);
+									break;
+
+							}
+						}
+					}
+				}
+			}
+			Shader.SetGlobalColor("_MainScoringColor", Color.blue);
 			VisualFeedbackAtScoringAsync().Forget();
 		}
 
@@ -123,11 +163,15 @@ namespace CardGame.Turns
 
 					_sound.PlayScoring(tileVisu.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex);
 
-					tileVisu.transform.DOShakePosition(0.1f, 0.2f, 5);
-					await UniTask.WaitForSeconds(0.25f);
+					// Move up the closed regions tiles : 
+					// if the tile is already moving (because it is the last placed tile for instance),
+					// reset the movement before begining the new one - MARCHE PAS :'(
+					if (tileVisu.transform.localPosition.z > 0) tileVisu.transform.DORestart();
+					tileVisu.transform.DOLocalMoveZ(tileVisu.transform.localPosition.z - _moveAmount, _moveDuration)
+						.SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutCubic);
 				}
 			}
-
+			//Set the color of the visual
 			IsScoringFinished = true; //fin
 		}
 
