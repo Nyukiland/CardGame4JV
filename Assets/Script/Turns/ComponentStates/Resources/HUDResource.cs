@@ -381,7 +381,14 @@ namespace CardGame.Turns
 
 		public void InitScores()
 		{
+			InitScoresAsync().Forget();
+		}
+
+		private async UniTask InitScoresAsync()
+		{
 			GameManager manager = GameManager.Instance;
+
+			await UniTask.WaitUntil(() => manager.PlayerIndex != -1);
 
 			if (manager.IsNetCurrentlyActive())
 			{
@@ -389,9 +396,9 @@ namespace CardGame.Turns
 				for (int i = 0; i < manager.OnlinePlayersID.Count; i++)
 				{
 					ScoreUI playerScore = Object.Instantiate(_scorePrefab, _scoreContainer);
-					playerScore.Setup(i, i == GameManager.Instance.PlayerIndex);
+					playerScore.Setup(i, i == manager.PlayerIndex);
 
-					if (i == GameManager.Instance.PlayerIndex)
+					if (i == manager.PlayerIndex)
 						playerScore.ScoreButton.onClick.AddListener(() => MoveLastPlacedTile(_gridManager.LastPlacedTileYou));
 					else
 						playerScore.ScoreButton.onClick.AddListener(() => MoveLastPlacedTile(_gridManager.LastPlacedTileOther));
@@ -414,6 +421,8 @@ namespace CardGame.Turns
 					_scoreList.Add(playerScore);
 				}
 			}
+
+			_scoreList[0].IsMyTurn(true);
 		}
 
 		private void MoveLastPlacedTile(TileVisu tileVisu)

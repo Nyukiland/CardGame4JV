@@ -57,6 +57,7 @@ namespace CardGame.Turns
 
 			_moveTile.OnCardPicked -= HandleCardPicked;
 			_placeTileOnGrid.OnCardReleased -= HandleCardReleased;
+			HandleCardReleased();
 			_hudResource.ToggleNextTurnButton(false);
 		}
 
