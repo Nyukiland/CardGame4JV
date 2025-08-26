@@ -18,10 +18,6 @@ namespace CardGame.Turns
 		[Header("Tiles")]
 		[SerializeField] private GameObject _tilePrefab;
 		[SerializeField] private TileSettings _startingTileSettings;
-		[Header("LastPlacedTile")]
-		[SerializeField] private float _interval = 2f;
-		[SerializeField] private float _moveAmount = 1f;
-		[SerializeField] private float _moveDuration = 0.2f;
 
 		public int Width => _width;
 		public int Height => _height;
@@ -39,8 +35,8 @@ namespace CardGame.Turns
 		public Vector3 TopRightMostTile { get => _topRightMostTile; private set => _topRightMostTile = value; }
 		public Vector3 BottomLeftMostTile { get => _bottomLeftMostTile; private set => _bottomLeftMostTile = value; }
 
-		public TileVisu LastPlacedTile { get; private set; }
-		private float _timer;
+		public TileVisu LastPlacedTileYou { get; private set; }
+		public TileVisu LastPlacedTileOther { get; private set; }
 
 		public override void LateInit()
 		{
@@ -147,27 +143,7 @@ namespace CardGame.Turns
 				_grid[value.x, value.y].SetTileLayerGrid(LayerTile.Grid); // inch ca marche
 			}
 
-			LastPlacedTile = null;
-		}
-
-		public override void Update(float deltaTime)
-		{
-			base.Update(deltaTime);
-
-			if (LastPlacedTile == null)
-			{
-				_timer = 0;
-				return;
-			}
-
-			_timer += deltaTime;
-			if (_timer >= _interval)
-			{
-				_timer = 0f;
-
-				LastPlacedTile.transform.DOLocalMoveZ(LastPlacedTile.transform.localPosition.z - _moveAmount, _moveDuration)
-					.SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutSine);
-			}
+			LastPlacedTileYou = null;
 		}
 
 		public TileVisu GetTile(int x, int y)
@@ -199,7 +175,10 @@ namespace CardGame.Turns
 			PlayTileEffect(tileVisu);
 			DetermineTileRegions(x, y);
 
-			LastPlacedTile = tileVisu;
+			if (tileVisu.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex)
+				LastPlacedTileYou = tileVisu;
+			else
+				LastPlacedTileOther = tileVisu;
 
 			Vector3 tilePos = tileVisu.transform.position;
 

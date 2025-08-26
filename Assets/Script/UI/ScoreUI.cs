@@ -8,6 +8,7 @@ namespace CardGame.UI
 	{
 		[SerializeField] private TextMeshProUGUI _scoreText;
 		[SerializeField] private Image _profilePictureImage;
+		[SerializeField] private Button _scoreButton;
 
 		[SerializeField] private Color _colorPlayer1;
 		[SerializeField] private Color _colorPlayer2;
@@ -16,10 +17,10 @@ namespace CardGame.UI
 		[SerializeField] private Color _baseColor;
 		[SerializeField] private Color _notMyTurnColor;
 
-
 		private bool _isYou;
 
 		public int PlayerIndex { get; private set; }
+		public Button ScoreButton => _scoreButton;
 
 		public void Setup(int playerIndex, bool isPlayer)
 		{
