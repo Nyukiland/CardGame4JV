@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Hatch
-  m_Shader: {fileID: -6465566751694194690, guid: 5037e75b2dc7ccb479992c38365e06d6, type: 3}
+  m_Name: M_DrapeauP1
+  m_Shader: {fileID: -6465566751694194690, guid: 45e7609a29160254ab152e4b3a91f2fd, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -38,18 +38,33 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Frequency: 2.12
-    - _Offset: 0
+    - _Albedo_Scale_noise: 0.8
+    - _Albedo_Time_speed: 1.2
+    - _Displace: 0
+    - _DisplaceX_General_Multiplier_1: 0
+    - _DisplaceY_General_Multiplier_2: 0
+    - _DisplaceZ_General_Multiplier: 0
+    - _Displace_Scale_noise: 1.38
+    - _Displace_Time_speed: 2
+    - _Foam_Rotation: 2.9
+    - _Foam_tile: 1.58
+    - _Foam_x_scale: 1.04
+    - _Foam_y_scale: 1.28
+    - _Glow: 1.71
+    - _Hard_edges_Albeldo_1: 0
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Rotation: 45
-    - _Thickness: 0.26
-    - _Time_speed: 0.7
+    - _Water: 0
     m_Colors:
-    - _Color: {r: 1.6992173, g: 0.035266735, b: 0.035266735, a: 0}
+    - _Albedo_Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _Color_A: {r: 0.38141268, g: 0.08155921, b: 0.5471698, a: 1}
+    - _Color_B: {r: 0.7101428, g: 0.4444215, b: 0.90943396, a: 0}
+    - _Displace_Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _Foam_center: {r: 16.36, g: 0.5, b: 0, a: 0}
+    - _Foam_color: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &1303662412773280278
+--- !u!114 &8119799446477659813
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

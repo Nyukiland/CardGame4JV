@@ -55,14 +55,14 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: ea8791ab305df93429f4a29fda07218d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 77aef684534006347b8e321fdc6badab, type: 2}
+      objectReference: {fileID: 2100000, guid: f539fad350c94fa4e98af4a8948e1a95, type: 2}
     - target: {fileID: -7511558181221131132, guid: ea8791ab305df93429f4a29fda07218d, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: b23f57fbe13a0604981a3676ccd87d4d, type: 2}
     - target: {fileID: 919132149155446097, guid: ea8791ab305df93429f4a29fda07218d, type: 3}
       propertyPath: m_Name
-      value: Bonus
+      value: FlagP2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
