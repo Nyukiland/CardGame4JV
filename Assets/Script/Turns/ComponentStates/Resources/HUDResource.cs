@@ -80,10 +80,15 @@ namespace CardGame.Turns
 		[SerializeField] private CanvasGroup _waitingScreen;
 		[SerializeField] private CanvasGroup _scoringScreen;
 		[Space(10)]
+		[Header("LastPlacedTile")]
+		[SerializeField] private float _moveAmount = 1f;
+		[SerializeField] private float _moveDuration = 0.2f;
+		[Space(10)]
 		[Header("Scene")]
 		public string SceneName;
 
 		private PlaceTileOnGridAbility _placeTileOnGrid;
+		private GridManagerResource _gridManager;
 		private ZoneHolderResource _zoneHolder;
 		private NetworkResource _networkResource;
 
@@ -113,6 +118,7 @@ namespace CardGame.Turns
 			_placeTileOnGrid = owner.GetStateComponent<PlaceTileOnGridAbility>();
 			_zoneHolder = owner.GetStateComponent<ZoneHolderResource>();
 			_networkResource = owner.GetStateComponent<NetworkResource>();
+			_gridManager = owner.GetStateComponent<GridManagerResource>();
 
 			_nextTurnSlider.maxValue = _placeTileOnGrid.MaxTimeTurn;
 			_waitingScreen.alpha = 0;
@@ -332,12 +338,15 @@ namespace CardGame.Turns
 				return true;
 			else if (RectTransformUtility.RectangleContainsScreenPoint(_tauntOpenMenu.GetComponent<RectTransform>(), pos, Camera.main))
 				return true;
+			else if (RectTransformUtility.RectangleContainsScreenPoint(_tauntVisualContainer.GetComponent<RectTransform>(), pos, Camera.main))
+				return true;
 
-			foreach (Button button in _tauntButtonsList)
+			foreach (ScoreUI score in _scoreList)
 			{
-				if (RectTransformUtility.RectangleContainsScreenPoint(button.GetComponent<RectTransform>(), pos, Camera.main))
+				if (RectTransformUtility.RectangleContainsScreenPoint(score.ScoreButton.GetComponent<RectTransform>(), pos, Camera.main))
 					return true;
 			}
+
 			//ajouter autre element UI au besoin 
 			//voili voilou
 
@@ -380,10 +389,12 @@ namespace CardGame.Turns
 				for (int i = 0; i < manager.OnlinePlayersID.Count; i++)
 				{
 					ScoreUI playerScore = Object.Instantiate(_scorePrefab, _scoreContainer);
-					if (manager.OnlinePlayersID[i] == GameManager.Instance.OwnerClientId)
-						playerScore.Setup(i, true);
+					playerScore.Setup(i, i == GameManager.Instance.PlayerIndex);
+
+					if (i == GameManager.Instance.PlayerIndex)
+						playerScore.ScoreButton.onClick.AddListener(() => MoveLastPlacedTile(_gridManager.LastPlacedTileYou));
 					else
-						playerScore.Setup(i, false);
+						playerScore.ScoreButton.onClick.AddListener(() => MoveLastPlacedTile(_gridManager.LastPlacedTileOther));
 
 					_scoreList.Add(playerScore);
 				}
@@ -394,9 +405,27 @@ namespace CardGame.Turns
 				{
 					ScoreUI playerScore = Object.Instantiate(_scorePrefab, _scoreContainer);
 					playerScore.Setup(i, i == 0);
+
+					if (i == 0)
+						playerScore.ScoreButton.onClick.AddListener(() => MoveLastPlacedTile(_gridManager.LastPlacedTileYou));
+					else
+						playerScore.ScoreButton.onClick.AddListener(() => MoveLastPlacedTile(_gridManager.LastPlacedTileOther));
+
 					_scoreList.Add(playerScore);
 				}
 			}
+		}
+
+		private void MoveLastPlacedTile(TileVisu tileVisu)
+		{
+			if (tileVisu == null)
+				return;
+
+			if (DOTween.IsTweening(tileVisu.transform)) 
+					return;
+
+			tileVisu.transform.DOLocalMoveZ(tileVisu.transform.localPosition.z - _moveAmount, _moveDuration)
+					.SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutSine);
 		}
 
 		public void UpdateTurnValue()
