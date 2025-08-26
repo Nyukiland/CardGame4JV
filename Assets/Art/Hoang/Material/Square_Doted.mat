@@ -7,26 +7,31 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Transparent
-  m_Shader: {fileID: -6465566751694194690, guid: a21e71747d1468f4aa821952bef7c932, type: 3}
+  m_Name: Square_Doted
+  m_Shader: {fileID: -6465566751694194690, guid: 4be467129d1b37b41aef608e3ab954d1, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - _SURFACE_TYPE_TRANSPARENT
+  m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 4
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Transparent
+  stringTagMap: {}
   disabledShaderPasses:
-  - DepthOnly
   - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _SampleTexture2D_93d8417a266242deadd245b63d0261b2_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: fef62c4d455bb9740bf19a65d270fde6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_d585e69475db43329959502bc85eca69_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: d520926381b2dde43bedf5a8efa0df43, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -41,35 +46,25 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AlphaClip: 0
-    - _AlphaToMask: 0
-    - _Blend: 0
-    - _BlendModePreserveSpecular: 1
-    - _CastShadows: 1
-    - _Cull: 2
-    - _DstBlend: 10
-    - _Opacity: 0.12
-    - _Outline_Hue: 0
-    - _Outline_intensity: 1.71
-    - _Outline_max: 1.96
-    - _Outline_min: 0.76
-    - _Outline_radius: 2.93
+    - _Albedo_Scale_noise: 10
+    - _Albedo_Time_speed: 3
+    - _Displace_General_Multiplier: 0.1
+    - _Displace_Scale_noise: 7
+    - _Displace_Time_speed: 2
+    - _DotNumber: 9
+    - _Hard_edges_Albeldo_1: 0
+    - _Opacity: 0.29
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _ReceiveShadows: 1
-    - _SrcBlend: 5
-    - _Surface: 1
-    - _WorkflowMode: 1
-    - _ZTest: 4
-    - _ZWrite: 0
-    - _ZWriteControl: 0
+    - _speed: 0.64
     m_Colors:
-    - _Inner_Color: {r: 1, g: 1, b: 1, a: 0}
-    - _Outline_Color: {r: 0.7340198, g: 0.9471697, b: 0.33419007, a: 0}
-    - _Vector2: {r: 0, g: 0, b: 0, a: 0}
+    - _Albedo_Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _Color_A: {r: 0.9058824, g: 0.7882353, b: 0.41176468, a: 0}
+    - _Color_B: {r: 0.8792453, g: 0.23390597, b: 0.17750797, a: 0}
+    - _Displace_Tiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &4056685209263247727
+--- !u!114 &7678055863496800089
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

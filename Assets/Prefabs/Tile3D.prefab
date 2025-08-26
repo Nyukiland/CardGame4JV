@@ -494,8 +494,8 @@ MonoBehaviour:
   _water: {fileID: 2100000, guid: 003ca149f94018748b41fde1489c2b9a, type: 2}
   _fields: {fileID: 2100000, guid: 799cf63a8ab3c3c498a9cd34fd902fd6, type: 2}
   _terrain: {fileID: 2100000, guid: 622711da566916644bf3f8e0a1e75bf2, type: 2}
-  _greyBase: {fileID: 2100000, guid: a8578e2706427634695b9a515d13d174, type: 2}
-  _validTile: {fileID: 2100000, guid: 67b5e6bdd4cc4ea48ae99904210ff376, type: 2}
+  _greyBase: {fileID: 2100000, guid: 7cc7d0af4de5a2842b42b037b8c7a5f1, type: 2}
+  _validTile: {fileID: 2100000, guid: eca71481bc1526b4e8d39eab02c8b3c6, type: 2}
   _ownerTextMeshPro: {fileID: 3264921891419928780}
   _meshesPresetList:
   - {fileID: 7654788531814112361, guid: 32ff365726a0d584d99012981af0737c, type: 3}
