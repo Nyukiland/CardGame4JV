@@ -62,15 +62,6 @@ namespace CardGame.Turns
 			Timer = 0;
 
 			TempPlacedTile = null;
-		}
-
-		public override void OnDisable()
-		{
-			base.OnDisable();
-			ReleaseTile(new(10000, 10000));
-
-			int nextTurn = GameManager.Instance.LocalPlayerTurn + 1;
-			bool willBeFlagTurn = (nextTurn % 3 == 0);
 
 			foreach (GameObject tileObj in _zoneHolder.TileInHand)
 			{
@@ -79,7 +70,24 @@ namespace CardGame.Turns
 				TileVisu tileVisu = tileObj.GetComponent<TileVisu>();
 				if (tileVisu != null)
 				{
-					tileVisu.ShowFlagPreviewVisual(willBeFlagTurn);
+					tileVisu.ShowFlagPreviewVisual(GameManager.Instance.LocalPlayerTurn % 3 == 0);
+				}
+			}
+		}
+
+		public override void OnDisable()
+		{
+			base.OnDisable();
+			ReleaseTile(new(10000, 10000));
+
+			foreach (GameObject tileObj in _zoneHolder.TileInHand)
+			{
+				if (tileObj == null) continue;
+
+				TileVisu tileVisu = tileObj.GetComponent<TileVisu>();
+				if (tileVisu != null)
+				{
+					tileVisu.ShowFlagPreviewVisual(false);
 				}
 			}
 		}

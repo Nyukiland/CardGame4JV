@@ -41,12 +41,14 @@ namespace CardGame.UI
 		[SerializeField] private List<GameObject> _meshesPresetList = new();
 		private GameObject _currentVisualMesh;
 		[SerializeField] private GameObject _baseVisualMesh; // La tile grise de base
-		[SerializeField] private GameObject _flagPrefab; // La tile grise de base
+		[SerializeField] private GameObject _flagPrefabP1;
+		[SerializeField] private GameObject _flagPrefabP2;
 		[SerializeField] private GameObject _pawnP1;
 		[SerializeField] private GameObject _pawnP2;
 		private bool _spawnedPawn = false;
 		[SerializeField] private GameObject _wrongRotationFeedback;
-		[SerializeField] private GameObject _flagPreviewMesh;
+		[SerializeField] private GameObject _flagPreviewMeshP1;
+		[SerializeField] private GameObject _flagPreviewMeshP2;
 
 		public TileData TileData { get; set; }
 
@@ -231,7 +233,14 @@ namespace CardGame.UI
 
 			if (TileData.HasFlag) // On spawn le flag if needed
 			{
-				GameObject flag = Instantiate(_flagPrefab, transform);
+				if (TileData.OwnerPlayerIndex == 0)
+				{
+					Instantiate(_flagPrefabP1, transform);
+				}
+				else if (TileData.OwnerPlayerIndex == 1)
+				{
+					Instantiate(_flagPrefabP2, transform);
+				}
 			}
 		}
 
@@ -263,7 +272,10 @@ namespace CardGame.UI
 
 		public void ShowFlagPreviewVisual(bool mustShow)
 		{
-			_flagPreviewMesh?.SetActive(mustShow);
+			int currentPlayer = GameManager.Instance.PlayerIndex;
+
+			if (currentPlayer == 0) _flagPreviewMeshP1.SetActive(mustShow);
+			else					_flagPreviewMeshP2.SetActive(mustShow);
 		}
 
 		public string GetInfo()
