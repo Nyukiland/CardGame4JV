@@ -54,8 +54,8 @@ MonoBehaviour:
   _scoreText: {fileID: 3610844055378225493}
   _profilePictureImage: {fileID: 3370781650415324731}
   _scoreButton: {fileID: 1855370695580743827}
-  _colorPlayer1: {r: 0.59608555, g: 0, b: 1, a: 1}
-  _colorPlayer2: {r: 1, g: 0, b: 0, a: 1}
+  _colorPlayer1: {r: 0.5666775, g: 0.17466003, b: 0.83396226, a: 1}
+  _colorPlayer2: {r: 0.87169814, g: 0.18914193, b: 0.18914193, a: 1}
   _background: {fileID: 547747419949536425}
   _baseColor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 0.8}
   _notMyTurnColor: {r: 0.5471698, g: 0.5471698, b: 0.5471698, a: 0.5019608}

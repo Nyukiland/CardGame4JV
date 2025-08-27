@@ -64,7 +64,7 @@ Material:
     - _Color_water_foam: {r: 1, g: 1, b: 1, a: 0}
     - _Displace_Tiling: {r: 1, g: 1, b: 0, a: 0}
     - _Foam_center: {r: 16.36, g: 0.5, b: 0, a: 0}
-    - _Foam_color: {r: 1, g: 1, b: 1, a: 0}
+    - _Foam_color: {r: 0.6773585, g: 1, b: 0.9760331, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &8119799446477659813
