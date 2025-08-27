@@ -1102,7 +1102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.5019608}
+  m_Color: {r: 0.7921569, g: 0.34509805, b: 0.34509805, a: 0.5019608}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2155,7 +2155,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 80, y: 50}
+  m_AnchoredPosition: {x: 49, y: 50}
   m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &636266352
@@ -4303,7 +4303,7 @@ RectTransform:
   m_GameObject: {fileID: 1222368561}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.03, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2013116586}
@@ -6569,7 +6569,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 10
   m_ChildAlignment: 4
-  m_Spacing: 10
+  m_Spacing: 30
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -6967,7 +6967,7 @@ MonoBehaviour:
       data:
         Enabled: 0
         _handZone: {fileID: 1222368562}
-        _sizeInHand: 1.25
+        _sizeInHand: 1.4
         TileInHand: []
     - rid: 542522248351187035
       type: {class: CreateHandAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
@@ -7020,9 +7020,9 @@ MonoBehaviour:
         _nextTurnMaskImage: {fileID: 1052737382}
         _startSliderColor: {r: 1, g: 1, b: 1, a: 1}
         _endSliderColor: {r: 1, g: 0.3820755, b: 0.3820755, a: 1}
-        _alphaValidOrNot: {x: 0.75, y: 1}
-        _pulseSpeed: 2
-        _pulseSize: 0.04
+        _alphaValidOrNot: {x: 0.34, y: 1}
+        _pulseSpeed: 3
+        _pulseSize: 0.1
         _tauntVisualContainer: {fileID: 1786460447}
         _tauntButtonParent: {fileID: 1819443043}
         _tauntButtonPrefab: {fileID: 7658766867752466395, guid: 3d40413ce3f757343a66a6c02fcad4ed, type: 3}
@@ -7102,16 +7102,12 @@ MonoBehaviour:
         Enabled: 0
         _taunts:
         - {fileID: 11400000, guid: df10671e00fc3f449b76ee504a7fe4ca, type: 2}
-        - {fileID: 11400000, guid: 1cb70185037ee874ba1ea2ee6d21cd3b, type: 2}
         - {fileID: 11400000, guid: 639a1d8685b23e14a97fa818554f99e4, type: 2}
         - {fileID: 11400000, guid: e9b12b50a9883604abab4c6432194b93, type: 2}
         - {fileID: 11400000, guid: dc1409a01074f244397d940f9fd15fd2, type: 2}
         - {fileID: 11400000, guid: eec88e697a83a574fba8771a6cc21ee4, type: 2}
         - {fileID: 11400000, guid: 0481925af765c894f8dfc29081a0c5b0, type: 2}
-        - {fileID: 11400000, guid: ba57041fba74cb24887c6164c2efd33c, type: 2}
         - {fileID: 11400000, guid: 599000950190fa44086167c370a3121b, type: 2}
-        - {fileID: 11400000, guid: a99956d3bd469c6479ba59dfa1e3d31e, type: 2}
-        - {fileID: 11400000, guid: bfb88eb264a97eb41ac9c96923b4b644, type: 2}
     - rid: 4835484058177241183
       type: {class: GridManagerResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
@@ -7343,7 +7339,7 @@ RectTransform:
   m_GameObject: {fileID: 2013116585}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.28, y: 1.1, z: 1.12}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1222368562}
