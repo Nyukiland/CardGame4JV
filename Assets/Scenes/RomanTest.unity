@@ -1360,7 +1360,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 25}
+  m_AnchoredPosition: {x: 0, y: 25.00003}
   m_SizeDelta: {x: 350, y: 150}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!225 &433070835
@@ -6369,7 +6369,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -25}
+  m_AnchoredPosition: {x: 0, y: -25.00003}
   m_SizeDelta: {x: 0, y: -100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1819443044
@@ -6874,6 +6874,8 @@ MonoBehaviour:
         _scoringTurnColor: {r: 0.7830189, g: 0.64670783, b: 0.12927197, a: 0.14901961}
         _waitingScreen: {fileID: 433070835}
         _scoringScreen: {fileID: 2073530452}
+        _moveAmount: 1
+        _moveDuration: 0.2
         SceneName: RomanTest
     - rid: 542522587139801178
       type: {class: PlaceTileOnGridAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
@@ -6905,7 +6907,7 @@ MonoBehaviour:
         _shakeIntensity: 20
         _shakeIntensitySpecial: 20
         _scaleDown: {x: -0.4, y: -0.4}
-        _probaSpecial: 0.155
+        _probaSpecial: 1
     - rid: 1922521404052602971
       type: {class: ZoomAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
@@ -6922,6 +6924,9 @@ MonoBehaviour:
       data:
         Enabled: 0
         _alphaFeature: {fileID: -5067301079555538214, guid: d7c4100296bce2b4fad900e303ad8761, type: 2}
+        _interval: 2
+        _moveAmount: 1
+        _moveDuration: 1
     - rid: 2810552454761414749
       type: {class: TauntButtonAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
@@ -6947,9 +6952,6 @@ MonoBehaviour:
         _gridContainer: {fileID: 1714262388}
         _tilePrefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
         _startingTileSettings: {fileID: 11400000, guid: d3b09ec51731b2646976bc7aca021007, type: 2}
-        _interval: 8
-        _moveAmount: 0.2
-        _moveDuration: 0.6
     - rid: 4835484058177241186
       type: {class: AutoPlayAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
@@ -7508,7 +7510,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 25}
+  m_AnchoredPosition: {x: 0, y: 25.00003}
   m_SizeDelta: {x: 350, y: 150}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!225 &2073530452
