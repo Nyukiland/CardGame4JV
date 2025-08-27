@@ -48,8 +48,10 @@ namespace CardGame.Turns
 		[SerializeField] private Slider _nextTurnSlider;
 		[SerializeField] private Button _nextTurnButton;
 		[SerializeField] private Image _nextTurnFillImage;
+		[SerializeField] private Image _nextTurnMaskImage;
 		[SerializeField] private Color _startSliderColor;
 		[SerializeField] private Color _endSliderColor;
+		[SerializeField] private Vector2 _alphaValidOrNot;
 		[SerializeField] private float _pulseSpeed = 2f;
 		[SerializeField] private float _pulseSize = 0.025f;
 		[Space(10)]
@@ -79,6 +81,7 @@ namespace CardGame.Turns
 		[SerializeField] private Color _scoringTurnColor;
 		[SerializeField] private CanvasGroup _waitingScreen;
 		[SerializeField] private CanvasGroup _scoringScreen;
+		[SerializeField] private CanvasGroup _discardScreen;
 		[Space(10)]
 		[Header("LastPlacedTile")]
 		[SerializeField] private float _moveAmount = 1f;
@@ -99,6 +102,9 @@ namespace CardGame.Turns
 
 		private TauntButtonAbility _tauntAbility;
 		private bool _tauntOpen;
+
+		private float _nextButtonAlpha => _placeTileOnGrid.TempPlacedTile != null && _placeTileOnGrid.TempPlacedTile.IsTileValid ?
+			_alphaValidOrNot.y : _alphaValidOrNot.x;
 
 		#region Unity Methods
 
@@ -123,6 +129,7 @@ namespace CardGame.Turns
 			_nextTurnSlider.maxValue = _placeTileOnGrid.MaxTimeTurn;
 			_waitingScreen.alpha = 0;
 			_scoringScreen.alpha = 0;
+			_discardScreen.alpha = 0;
 
 			_tauntVisualContainer.position = _tauntOutTransform.position;
 		}
@@ -172,15 +179,24 @@ namespace CardGame.Turns
 
 			float percent = _nextTurnSlider.value / _nextTurnSlider.maxValue;
 
+			_nextTurnMaskImage.color = new(_nextTurnMaskImage.color.r, 
+				_nextTurnMaskImage.color.g, 
+				_nextTurnMaskImage.color.b, 
+				_nextButtonAlpha);
+
 			if (percent > 0.8f)
 			{
-				if (_nextTurnFillImage.color != _endSliderColor)
-					_nextTurnFillImage.color = _endSliderColor;
+				_nextTurnFillImage.color = new(_endSliderColor.r, 
+					_endSliderColor.g, 
+					_endSliderColor.b, 
+					_nextButtonAlpha);
 			}
 			else
 			{
-				if (_nextTurnFillImage.color != _startSliderColor)
-					_nextTurnFillImage.color = _startSliderColor;
+				_nextTurnFillImage.color = new(_startSliderColor.r, 
+					_startSliderColor.g, 
+					_startSliderColor.b, 
+					_nextButtonAlpha);
 			}
 
 			if (_placeTileOnGrid.TempPlacedTile != null && _placeTileOnGrid.TempPlacedTile.IsTileValid)
@@ -191,8 +207,7 @@ namespace CardGame.Turns
 			else
 			{
 				_nextTurnButton.transform.localScale = Vector3.Lerp(_nextTurnButton.transform.localScale,
-					Vector3.one, deltaTime * 5f
-				);
+					Vector3.one, deltaTime * 5f);
 			}
 		}
 
@@ -304,6 +319,7 @@ namespace CardGame.Turns
 			//Temporairement retir� pcq il r�apparaissait pas
 			//_waitingScreen.SetActive(false); 
 			_scoringScreen.alpha = 0;
+			_discardScreen.alpha = 0;
 		}
 
 		#endregion
@@ -430,8 +446,8 @@ namespace CardGame.Turns
 			if (tileVisu == null)
 				return;
 
-			if (DOTween.IsTweening(tileVisu.transform)) 
-					return;
+			if (DOTween.IsTweening(tileVisu.transform))
+				return;
 
 			tileVisu.transform.DOLocalMoveZ(tileVisu.transform.localPosition.z - _moveAmount, _moveDuration)
 					.SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutSine);
@@ -486,6 +502,7 @@ namespace CardGame.Turns
 			_blurImage.DOKill();
 			_scoringScreen.DOKill();
 			_waitingScreen.DOKill();
+			_discardScreen.DOKill();
 
 			Color colorToGo = Color.white;
 			CanvasGroup toLerp = null;
@@ -498,6 +515,7 @@ namespace CardGame.Turns
 					break;
 				case TurnState.Discard:
 					colorToGo = _discardTurnColor;
+					toLerp = _discardScreen;
 					break;
 				case TurnState.Scoring:
 					colorToGo = _scoringTurnColor;
@@ -514,9 +532,10 @@ namespace CardGame.Turns
 				_scoringScreen.DOFade(0, 0.1f);
 			if (toLerp != _waitingScreen)
 				_waitingScreen.DOFade(0, 0.1f);
+			if (toLerp != _discardScreen)
+				_discardScreen.DOFade(0, 0.1f);
 
 			toLerp.DOFade(1, 0.5f);
-
 
 			_blurImage.DOColor(colorToGo, 0.5f);
 		}

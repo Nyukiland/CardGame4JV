@@ -61,7 +61,12 @@ namespace CardGame.Turns
 
 		public void ShakeTileVisu(TileVisu tile, bool special)
 		{
+			if (tile.TileData == null)
+				return;
+
 			Sequence seq = DOTween.Sequence();
+
+			Vector3 tilePos = tile.transform.position;
 
 			if (!special)
 			{
@@ -82,7 +87,7 @@ namespace CardGame.Turns
 
 			seq.Play().OnComplete(() =>
 			{
-				tile.transform.SetPositionAndRotation(tile.PositionOnGrid, Quaternion.identity);
+				tile.transform.SetPositionAndRotation(tilePos, Quaternion.identity);
 				tile.transform.localScale = Vector3.one;
 			});
 		}

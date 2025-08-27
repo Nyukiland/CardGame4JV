@@ -33,6 +33,8 @@ namespace CardGame.Turns
 			await UniTask.WaitUntil(() => _net.IsWaitNetComplete);
 			await UniTask.WaitUntil(() => Storage.Instance.GetElement<DrawPile>().AllTileSettings.Count != 0);
 
+			Controller.GetStateComponent<ZoneHolderResource>().UpdatePlacementInHand();
+
 			if (_net.IsNetActive())
 			{
 				await UniTask.DelayFrame(5);

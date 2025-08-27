@@ -13,6 +13,9 @@ namespace CardGame.Turns
 		[SerializeField]
 		private RectTransform _handZone;
 
+		[SerializeField]
+		private float _sizeInHand = 1;
+
 		[Disable]
 		public List<GameObject> TileInHand;
 
@@ -29,7 +32,7 @@ namespace CardGame.Turns
 		{
 			_hudResource = owner.GetStateComponent<HUDResource>();
 			_defaultCamSize = Camera.main.orthographicSize;
-			_tileSize = 1;
+			_tileSize = _sizeInHand;
 		}
 
 		public override void Update(float deltaTime)
@@ -51,6 +54,11 @@ namespace CardGame.Turns
 				}
 
 				Owner.GetStateComponent<CreateHandAbility>().GenerateTiles(numberOfTile);
+			}
+
+			if (Keyboard.current.tKey.wasPressedThisFrame)
+			{
+				Owner.GetStateComponent<CreateHandAbility>().GenerateTiles(1);
 			}
 		}
 
@@ -140,7 +148,7 @@ namespace CardGame.Turns
 
 		public void UpdateTileInHandSize()
 		{
-			_tileSize = Camera.main.orthographicSize / _defaultCamSize;
+			_tileSize = _sizeInHand * (Camera.main.orthographicSize / _defaultCamSize);
 		}
 
 		public void HideMyHand(bool isHidden)
