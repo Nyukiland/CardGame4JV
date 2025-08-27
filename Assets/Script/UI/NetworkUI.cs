@@ -80,6 +80,9 @@ namespace CardGame.UI
 		[SerializeField] private RectTransform _popUpRectTransform;
 		[SerializeField] private TextMeshProUGUI _popUpTMP;
 
+		[Header("Pc")]
+		[SerializeField] private Button _quitButton;
+		
 		// public variables
 		public GameObject PublicHostsContainer => _publicHostsContainer;
 		public const string NONE_BASE_VALUE = "- None -";
@@ -143,6 +146,7 @@ namespace CardGame.UI
 			_hostLocalButton.onClick.AddListener(() => ToggleDistant(false));
 			_clientDistantButton.onClick.AddListener(() => ToggleDistant(true));
 			_clientLocalButton.onClick.AddListener(() => ToggleDistant(false));
+			_quitButton.onClick.AddListener(QuitGame);
 
 			// Inputs fields
 			_sessionNameInput.onEndEdit.AddListener(UpdateHostInputs);
@@ -157,6 +161,11 @@ namespace CardGame.UI
 			_publicFindToggle.onValueChanged.AddListener(TogglePublicGames);
 
 			_transitionScreenCanvasGroup.alpha = 1f;
+
+			if (Application.isMobilePlatform)
+			{
+				_quitButton.gameObject.SetActive(false);
+			}
 
 			OpenMainMenu().Forget();
 		}
@@ -179,6 +188,7 @@ namespace CardGame.UI
 			_hostLocalButton.onClick.RemoveListener(() => ToggleDistant(false));
 			_clientDistantButton.onClick.RemoveListener(() => ToggleDistant(true));
 			_clientLocalButton.onClick.RemoveListener(() => ToggleDistant(false));
+			_quitButton.onClick.RemoveListener(QuitGame);
 
 			// Inputs fields
 			_sessionNameInput.onEndEdit.RemoveListener(UpdateHostInputs);
@@ -499,6 +509,11 @@ namespace CardGame.UI
 
 			await UniTask.WaitForSeconds(duration);
 			_popUpContainer.SetActive(false);
+		}
+
+		public void QuitGame()
+		{
+			Application.Quit();
 		}
 
 		#endregion
