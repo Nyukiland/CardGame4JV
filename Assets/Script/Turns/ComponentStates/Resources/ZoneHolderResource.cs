@@ -138,11 +138,8 @@ namespace CardGame.Turns
 
 		public void UpdatePlacementInHand(bool force = false)
 		{
-			Vector3[] worldCorners = new Vector3[4];
-			_handZone.GetWorldCorners(worldCorners);
-
 			float canvasWidth = _canvas.GetComponent<RectTransform>().rect.width;
-			float margin = (canvasWidth - Mathf.Lerp(_targetWidth3, _targetWidth10, Mathf.Clamp01(TileInHandCount/10f))) / 2f;
+			float margin = (canvasWidth - Mathf.Lerp(_targetWidth3, _targetWidth10, Mathf.Clamp01((TileInHandCount-1)/10f))) / 2f;
 
 			_visualHandArea.anchorMin = new Vector2(0, 0);
 			_visualHandArea.anchorMax = new Vector2(1, 0);
@@ -152,6 +149,8 @@ namespace CardGame.Turns
 			_visualHandArea.offsetMin = new Vector2(margin, _visualHandArea.offsetMin.y);
 			_visualHandArea.offsetMax = new Vector2(-margin, _visualHandArea.offsetMax.y);
 
+			Vector3[] worldCorners = new Vector3[4];
+			_handZone.GetWorldCorners(worldCorners);
 
 			Vector3 pos1 = (worldCorners[0] + worldCorners[1]) / 2;
 			Vector3 pos2 = (worldCorners[2] + worldCorners[3]) / 2;
