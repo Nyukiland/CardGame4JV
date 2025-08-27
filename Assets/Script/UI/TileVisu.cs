@@ -21,15 +21,7 @@ namespace CardGame.UI
 		[SerializeField]
 		private MeshRenderer _visuValidity;
 		[SerializeField]
-		private MeshRenderer _visuNorth;
-		[SerializeField]
-		private MeshRenderer _visuSouth;
-		[SerializeField]
-		private MeshRenderer _visuEast;
-		[SerializeField]
-		private MeshRenderer _visuWest;
-		[SerializeField]
-		private MeshRenderer _visuCenter;
+		private MeshRenderer[] _visuPart = new MeshRenderer[4];
 
 		[Space(10)]
 
@@ -62,10 +54,13 @@ namespace CardGame.UI
 
 		public bool IsLinked = true; // Sert pour la preview des placements possibles
 
-		public MeshRenderer VisuNorth => _visuNorth;
-		public MeshRenderer VisuSouth => _visuSouth;
-		public MeshRenderer VisuEast => _visuEast;
-		public MeshRenderer VisuWest => _visuWest;
+		public MeshRenderer VisuNorth => _visuPart[RotIndex(0)];
+		public MeshRenderer VisuEast => _visuPart[RotIndex(1)];
+		public MeshRenderer VisuSouth => _visuPart[RotIndex(2)];
+		public MeshRenderer VisuWest => _visuPart[RotIndex(3)];
+
+		private int RotIndex(int baseIndex) => (baseIndex - TileData.TileRotationCount + 4) % 4;
+
 
 		public bool IsTileValid { get; private set; }
 
@@ -195,10 +190,10 @@ namespace CardGame.UI
 			GameObject visualPrefab = _meshesPresetList[(int)preset]; // Recup le bon prefab
 			_currentVisualMesh = Instantiate(visualPrefab, transform); // Spawn en enfant
 			TileVisualSorter sorter = _currentVisualMesh.GetComponent<TileVisualSorter>();
-			_visuEast = sorter.VisuEast;
-			_visuNorth = sorter.VisuNorth;
-			_visuSouth = sorter.VisuSouth;
-			_visuWest = sorter.VisuWest;
+			_visuPart[0] = sorter.VisuEast;
+			_visuPart[1] = sorter.VisuNorth;
+			_visuPart[2] = sorter.VisuSouth;
+			_visuPart[3] = sorter.VisuWest;
 
 			var renderers = _currentVisualMesh.GetComponentsInChildren<MeshRenderer>(); // On recup les renderer, pour set materials
 			ZoneData[] zones = TileData.GetUnrotatedZones();
