@@ -61,7 +61,6 @@ namespace CardGame.UI
 
 		private int RotIndex(int baseIndex) => (baseIndex - TileData.TileRotationCount + 4) % 4;
 
-
 		public bool IsTileValid { get; private set; }
 
 		private void Start()
@@ -190,8 +189,8 @@ namespace CardGame.UI
 			GameObject visualPrefab = _meshesPresetList[(int)preset]; // Recup le bon prefab
 			_currentVisualMesh = Instantiate(visualPrefab, transform); // Spawn en enfant
 			TileVisualSorter sorter = _currentVisualMesh.GetComponent<TileVisualSorter>();
-			_visuPart[0] = sorter.VisuEast;
-			_visuPart[1] = sorter.VisuNorth;
+			_visuPart[0] = sorter.VisuNorth;
+			_visuPart[1] = sorter.VisuEast;
 			_visuPart[2] = sorter.VisuSouth;
 			_visuPart[3] = sorter.VisuWest;
 
