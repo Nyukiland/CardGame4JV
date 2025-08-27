@@ -3,6 +3,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
 using System.Collections.Generic;
+using UnityEngine.Experimental.Rendering;
 
 public class MeshOverlapAlphaFeature : ScriptableRendererFeature
 {
@@ -43,20 +44,28 @@ public class MeshOverlapAlphaFeature : ScriptableRendererFeature
 			desc.msaaSamples = 1;
 			desc.graphicsFormat = UnityEngine.Experimental.Rendering.GraphicsFormat.R8_UNorm; // single-channel
 
+			UniversalResourceData resourceData = frameData.Get<UniversalResourceData>();
+			TextureDesc depthDesc = renderGraph.GetTextureDesc(resourceData.activeDepthTexture);
+
 			TextureHandle accumulationTex = renderGraph.CreateTexture(
-				new TextureDesc(desc.width, desc.height)
+				new TextureDesc(depthDesc.width, depthDesc.height)
 				{
-					colorFormat = desc.graphicsFormat,
+					colorFormat = GraphicsFormat.R8_UNorm,
 					depthBufferBits = DepthBits.None,
+					msaaSamples = depthDesc.msaaSamples,
 					name = _settings.TextureName,
 					clearBuffer = true,
 					clearColor = Color.clear
 				});
 
+
 			using (IRasterRenderGraphBuilder builder = renderGraph.AddRasterRenderPass<PassData>(
 				"Mesh Overlap Accumulation", out PassData passData))
 			{
 				builder.SetRenderAttachment(accumulationTex, 0);
+
+				builder.SetRenderAttachmentDepth(resourceData.activeDepthTexture, AccessFlags.Read);
+
 				builder.AllowPassCulling(false);
 
 				builder.SetRenderFunc((PassData data, RasterGraphContext ctx) =>

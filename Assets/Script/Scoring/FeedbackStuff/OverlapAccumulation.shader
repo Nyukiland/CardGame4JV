@@ -6,8 +6,8 @@ Shader "Hidden/OverlapAccumulation"
         Pass
         {
             ZWrite Off
-            ZTest LEqual
-            Blend One One // additive
+			ZTest LEqual
+			Blend One Zero
 
             HLSLPROGRAM
             #pragma vertex vert
