@@ -11,7 +11,19 @@ namespace CardGame.Turns
 	public class ZoneHolderResource : Resource
 	{
 		[SerializeField]
+		private Canvas _canvas;
+
+		[SerializeField]
+		private RectTransform _visualHandArea;
+
+		[SerializeField]
 		private RectTransform _handZone;
+
+		[SerializeField]
+		private float _targetWidth3 = 500f;
+
+		[SerializeField]
+		private float _targetWidth10 = 1000f;
 
 		[SerializeField]
 		private float _sizeInHand = 1;
@@ -59,6 +71,17 @@ namespace CardGame.Turns
 			if (Keyboard.current.tKey.wasPressedThisFrame)
 			{
 				Owner.GetStateComponent<CreateHandAbility>().GenerateTiles(1);
+			}
+
+			if (Keyboard.current.gKey.wasPressedThisFrame)
+			{
+				if (TileInHandCount == 0)
+					return;
+
+				GameObject temp = TileInHand[0];
+				RemoveTileFromHand(temp);
+				Storage.Instance.GetElement<DrawPile>().DiscardTile(temp.GetComponent<TileVisu>().TileData.TileSettings.IdCode);
+				GameObject.Destroy(temp.gameObject);
 			}
 		}
 
@@ -117,6 +140,18 @@ namespace CardGame.Turns
 		{
 			Vector3[] worldCorners = new Vector3[4];
 			_handZone.GetWorldCorners(worldCorners);
+
+			float canvasWidth = _canvas.GetComponent<RectTransform>().rect.width;
+			float margin = (canvasWidth - Mathf.Lerp(_targetWidth3, _targetWidth10, Mathf.Clamp01(TileInHandCount/10f))) / 2f;
+
+			_visualHandArea.anchorMin = new Vector2(0, 0);
+			_visualHandArea.anchorMax = new Vector2(1, 0);
+
+			_visualHandArea.anchoredPosition = new Vector2(0, _visualHandArea.anchoredPosition.y);
+
+			_visualHandArea.offsetMin = new Vector2(margin, _visualHandArea.offsetMin.y);
+			_visualHandArea.offsetMax = new Vector2(-margin, _visualHandArea.offsetMax.y);
+
 
 			Vector3 pos1 = (worldCorners[0] + worldCorners[1]) / 2;
 			Vector3 pos2 = (worldCorners[2] + worldCorners[3]) / 2;

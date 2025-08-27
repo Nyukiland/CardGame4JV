@@ -6966,7 +6966,11 @@ MonoBehaviour:
       type: {class: ZoneHolderResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
+        _canvas: {fileID: 906184098}
+        _visualHandArea: {fileID: 2013116586}
         _handZone: {fileID: 1222368562}
+        _targetWidth3: 500
+        _targetWidth10: 1000
         _sizeInHand: 1.4
         TileInHand: []
     - rid: 542522248351187035
