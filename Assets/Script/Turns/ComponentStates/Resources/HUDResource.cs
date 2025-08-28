@@ -90,6 +90,12 @@ namespace CardGame.Turns
 		[Header("Scene")]
 		public string SceneName;
 
+		[Header("Bot taunt")]
+		[SerializeField] private float _tauntChance = 0.075f;
+		[SerializeField] private float _tauntMinDelay = 2f;
+		[SerializeField] private float _tauntMaxDelay = 10f;
+		private bool _isBotTauntPending = false;
+
 		private PlaceTileOnGridAbility _placeTileOnGrid;
 		private GridManagerResource _gridManager;
 		private ZoneHolderResource _zoneHolder;
@@ -457,7 +463,48 @@ namespace CardGame.Turns
 		{
 			int round = (GameManager.Instance.LocalPlayerTurn - 1) / 3 + 1;
 			_turnCounter.text = $"{round}/4";
+
+			if (!_networkResource.IsNetActive())
+			{
+				TryPlayBotTaunt().Forget();
+			}
 		}
+
+		private async UniTaskVoid TryPlayBotTaunt()
+		{
+			if (_isBotTauntPending)
+			{
+				Debug.Log("[BotTaunt] Abort: déjà en attente.");
+				return;
+			}
+
+			if (UnityEngine.Random.value > _tauntChance)
+			{
+				Debug.Log("[BotTaunt] Abort: chance failed.");
+				return;
+			}
+
+			if (_tauntAbility.Taunts.Count == 0)
+			{
+				Debug.Log("[BotTaunt] Abort: pas de taunts.");
+				return;
+			}
+
+			float delay = UnityEngine.Random.Range(_tauntMinDelay, _tauntMaxDelay);
+			Debug.Log($"[BotTaunt] Tentative dans {delay:0.0}s...");
+
+			_isBotTauntPending = true;
+			await UniTask.Delay((int)(delay * 1000), ignoreTimeScale: false); // 👈 pas de TimeSpan ici
+			_isBotTauntPending = false;
+
+			int index = UnityEngine.Random.Range(0, _tauntAbility.Taunts.Count);
+			var line = _tauntAbility.Taunts[index];
+			_tauntAbility.CallEvent(line);
+
+			Debug.Log($"[BotTaunt] TAUNT lancé : \"{line.Text}\"");
+		}
+
+
 
 		public void ToggleNextTurnButton(bool toggle)
 		{
