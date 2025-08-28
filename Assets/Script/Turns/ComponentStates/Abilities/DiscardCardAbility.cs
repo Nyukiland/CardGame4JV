@@ -1,7 +1,9 @@
 using CardGame.StateMachine;
 using CardGame.UI;
 using DG.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CardGame.Turns
 {
@@ -15,6 +17,8 @@ namespace CardGame.Turns
 
 		[SerializeField]
 		private RectTransform _discardArea;
+		[SerializeField]
+		private VerticalLayoutGroup _discardVerticalLayout;
 
 		[SerializeField]
 		private Transform _discardIn;
@@ -22,12 +26,16 @@ namespace CardGame.Turns
 		[SerializeField]
 		private Transform _discardOut;
 
+		[SerializeField]
+		private GameObject _discardIcone;
+
 		private MoveTileAbility _moveTile;
 		private SendInfoAbility _sendInfo;
 		private ZoneHolderResource _holderResource;
 		private NetworkResource _networkResource;
 
 		private bool _isIn;
+		private List<GameObject> _discardItems = new();
 
 		public override void Init(Controller owner)
 		{
@@ -68,6 +76,20 @@ namespace CardGame.Turns
 			_isIn = display;
 			_discardArea.transform.DOKill();
 
+			if (_isIn)
+			{
+				if (_networkResource.IsNetActive())
+				{
+					for (int i = 0; i < _networkResource.TileToReceive; i++)
+						_discardItems.Add(GameObject.Instantiate(_discardIcone, _discardVerticalLayout.transform));
+				}
+				else
+				{
+					for (int i = 0; i < _holderResource.TileInHandCount - _maxTileInHand; i++) 
+						_discardItems.Add(GameObject.Instantiate(_discardIcone, _discardVerticalLayout.transform)); 
+				}
+			}
+
 			Vector3 posToGo = display ? _discardIn.position : _discardOut.position;
 			posToGo = _discardArea.parent.InverseTransformPoint(posToGo);
 
@@ -76,7 +98,6 @@ namespace CardGame.Turns
 
 		public void ReleaseCard(Vector2 pos)
 		{
-			UnityEngine.Debug.Log(_moveTile.CurrentTile);
 			if (_moveTile.CurrentTile == null)
 				return;
 
@@ -95,6 +116,10 @@ namespace CardGame.Turns
 			{
 				_drawPile.DiscardTile(tile.TileData.TileSettings.IdCode);
 			}
+
+			GameObject temp = _discardItems[0];
+			_discardItems.RemoveAt(0);
+			GameObject.Destroy(temp);
 
 			GameObject.Destroy(tile.gameObject);
 		}
