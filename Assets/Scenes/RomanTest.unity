@@ -2499,7 +2499,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -30, y: 0}
+  m_AnchoredPosition: {x: -29.999939, y: 0}
   m_SizeDelta: {x: 400, y: -100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &821306027
@@ -6421,7 +6421,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -30, y: 0}
+  m_AnchoredPosition: {x: -29.999939, y: 0}
   m_SizeDelta: {x: 400, y: -40}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1786460448
@@ -7132,32 +7132,32 @@ MonoBehaviour:
         Enabled: 0
         _tilePlaced:
           Guid:
-            Data1: 928880032
-            Data2: 1329536262
-            Data3: 1727721372
-            Data4: 667984720
-          Path: event:/Tile/TilePlacedSelf
+            Data1: 931844039
+            Data2: 1242717473
+            Data3: -1877875522
+            Data4: -651486883
+          Path: event:/UI/Tiles/Placement_Tiles_Self
         _tilePlacedOther:
           Guid:
-            Data1: 1861623851
-            Data2: 1139118754
-            Data3: 387442835
-            Data4: -75222371
-          Path: event:/Tile/TilePlacedOther
+            Data1: 1279304934
+            Data2: 1288548336
+            Data3: 2022278561
+            Data4: -2100645532
+          Path: event:/UI/Tiles/Placement_Tiles_Ennemy
         _scoring:
           Guid:
-            Data1: 1016800151
-            Data2: 1259287606
-            Data3: 71462057
-            Data4: 1983089793
-          Path: event:/Scoring/AddScoreSelf
+            Data1: -1736823113
+            Data2: 1199750649
+            Data3: -948093249
+            Data4: -386671749
+          Path: event:/UI/Scoring/S_Self
         _scoringOther:
           Guid:
-            Data1: -496835798
-            Data2: 1328684044
-            Data3: 883112841
-            Data4: -905525644
-          Path: event:/Scoring/AddScoreOther
+            Data1: 539607732
+            Data2: 1155731114
+            Data3: 327638667
+            Data4: -577454964
+          Path: event:/UI/Scoring/S_Ennemy
     - rid: 7534538971935670362
       type: {class: RotateTileAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
