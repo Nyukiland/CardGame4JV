@@ -16,15 +16,15 @@ namespace CardGame.Card
 		public int OwnerPlayerIndex { get; set; } = -1; // C'est l'index du joueur dans la liste de OnlinePlayersID 
 		public bool HasFlag { get; set; } = false;
 
-        // Bonus tile 
-        public int MultiplicativeBonus = 1;
-        public int AdditiveBonus = 0;
+		// Bonus tile 
+		public int MultiplicativeBonus = 1;
+		public int AdditiveBonus = 0;
 
 		public event System.Action OnTileRotated;
 
 		public void InitTile(TileSettings tileSettingsRef)
-        {
-            TileSettings = tileSettingsRef;
+		{
+			TileSettings = tileSettingsRef;
 
 			Zones = new ZoneData[4];
 			Zones[0] = TileSettings.NorthZone;
@@ -32,9 +32,9 @@ namespace CardGame.Card
 			Zones[2] = TileSettings.SouthZone;
 			Zones[3] = TileSettings.WestZone;
 
-            OwnerPlayerIndex = -1;
-            HasFlag = false;
-        }
+			OwnerPlayerIndex = -1;
+			HasFlag = false;
+		}
 
 		public void RotateTile()
 		{
@@ -46,7 +46,8 @@ namespace CardGame.Card
 			}
 			Zones[0] = copiedZone;
 
-            TileRotationCount += 1;
+			TileRotationCount += 1;
+			TileRotationCount = TileRotationCount % 4;
 			OnTileRotated?.Invoke(); // Tile visu va rotate son visuel
 
 		}
@@ -60,6 +61,6 @@ namespace CardGame.Card
 			zones[3] = TileSettings.WestZone;
 			return zones;
 		}
-		
+
 	}
 }
