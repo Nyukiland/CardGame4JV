@@ -15,5 +15,22 @@
 		<property name="initialValue">
 			<value>0.5</value>
 		</property>
+		<relationship name="modulators">
+			<destination>{26da375d-56f0-48b0-bdfc-f6726997ec2d}</destination>
+		</relationship>
+	</object>
+	<object class="LFOModulator" id="{26da375d-56f0-48b0-bdfc-f6726997ec2d}">
+		<property name="nameOfPropertyBeingModulated">
+			<value>cursorPosition</value>
+		</property>
+		<property name="isTempoSync">
+			<value>true</value>
+		</property>
+		<property name="beats">
+			<value>50</value>
+		</property>
+		<property name="depth">
+			<value>100</value>
+		</property>
 	</object>
 </objects>
