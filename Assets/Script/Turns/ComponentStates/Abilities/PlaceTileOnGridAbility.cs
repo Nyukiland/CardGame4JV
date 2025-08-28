@@ -2,6 +2,7 @@ using CardGame.StateMachine;
 using CardGame.Card;
 using CardGame.UI;
 using UnityEngine;
+using DG.Tweening;
 
 namespace CardGame.Turns
 {
@@ -115,12 +116,16 @@ namespace CardGame.Turns
 
 			Ray ray = Camera.main.ScreenPointToRay(position);
 			_planeForCast.Raycast(ray, out float dist);
-			Vector2Int pos = Vector2Int.RoundToInt(ray.GetPoint(dist));
+			Vector3Int pos3 = Vector3Int.RoundToInt(ray.GetPoint(dist));
+			tempTile.transform.DOMove(pos3, 0.1f);
+
+			Vector2Int pos = new (pos3.x, pos3.y);
 
 			TileVisu targetTile = _gridManager.GetTile(pos);
 
 			if (targetTile != null && targetTile.TileData == null)
 			{
+
 				int neighborCount = _gridManager.CheckNeighborTileLinked(pos);
 
 				if (neighborCount == 0) // Si pas de connection valide, ou que si mais pas de voisin valide (cas d'une tileObject bonus isol�e)
