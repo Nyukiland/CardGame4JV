@@ -32,11 +32,15 @@ namespace CardGame.Turns
 		private float _probaSpecial;
 
 		private SendInfoAbility _sendInfo;
+		private GridManagerResource _gridManager;
+
+		public int MiddleTileCounter {  get; private set; }
 
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
 			_sendInfo = owner.GetStateComponent<SendInfoAbility>();
+			_gridManager = owner.GetStateComponent<GridManagerResource>();
 		}
 
 		public bool QuickCheckRay(Vector2 position)
@@ -50,6 +54,11 @@ namespace CardGame.Turns
 			{
 				if (hit.collider.GetComponentInParent<TileVisu>() is TileVisu visu)
 				{
+					if (visu.PositionOnGrid == _gridManager.Center)
+						MiddleTileCounter++;
+					else
+						MiddleTileCounter = 0;
+
 					bool special = Random.Range(0f, 1f) < _probaSpecial;
 
 					_sendInfo.SendTauntShake(visu.PositionOnGrid, special);

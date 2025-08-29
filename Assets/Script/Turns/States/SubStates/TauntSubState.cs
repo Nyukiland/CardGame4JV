@@ -9,6 +9,7 @@ namespace CardGame.Turns
 		private TauntShakeTileAbility _tauntShakeTile;
 		private HUDResource _hudResource;
 		private MoveTileAbility _moveTile;
+		private TauntButtonAbility _tauntButton;
 
 		public override void OnEnter()
 		{
@@ -16,6 +17,7 @@ namespace CardGame.Turns
 			GetStateComponent(ref _tauntShakeTile);
 			GetStateComponent(ref _hudResource);
 			GetStateComponent(ref _moveTile);
+			GetStateComponent(ref _tauntButton);
 		}
 
 		public override void OnActionTriggered(InputAction.CallbackContext context)

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35d08b699998c7a49a8cac0d3ffc3f6f, type: 3}
+  m_Name: Viskeu
+  m_EditorClassIdentifier: 
+  Text: Viskeu
+  FmodEvent:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  WaitTime: 1
+  Anim:
+  - {fileID: 1462084627, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: 1383573996, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: 2121890407, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: 1824415339, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: -1103177478, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: -1513542820, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: -818418307, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: -110847036, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: -804027729, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: -540540657, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: 17223241, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: -461475475, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}
+  - {fileID: -2030292088, guid: 4884bfcee0e7dd34e8d2d7be0536854c, type: 3}

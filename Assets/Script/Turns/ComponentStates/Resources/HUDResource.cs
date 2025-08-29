@@ -241,6 +241,26 @@ namespace CardGame.Turns
 			_enemyTaunt.HidePopUp();
 		}
 
+		public void AddTaunt(List<TauntScriptableObject> taunts)
+		{
+			int prevCount = _tauntButtonsList.Count;
+
+			for (int i = 0; i < taunts.Count; i++)
+			{
+				int index = i + prevCount;
+				Button tauntButton = Object.Instantiate(_tauntButtonPrefab, _tauntButtonParent);
+				_tauntButtonsList.Add(tauntButton);
+				TextMeshProUGUI tauntText = tauntButton.GetComponentInChildren<TextMeshProUGUI>();
+				_tauntTMPList.Add(tauntText);
+				tauntText.text = taunts[i].Text;
+				tauntButton.onClick.AddListener(() =>
+				{
+					_tauntAbility.CallEvent(_tauntAbility.Taunts[index]);
+					OpenTauntMenu(false);
+				});
+			}
+		}
+
 		#endregion
 
 		#region Panels

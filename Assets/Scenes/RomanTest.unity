@@ -7122,7 +7122,8 @@ MonoBehaviour:
       type: {class: MoveCameraAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
-        _moveFactor: 1
+        _moveFactorX: 1
+        _moveFactorY: 2
         _limitCamMove: {x: 1, y: 5}
         _maxDistanceConsidered: 10
     - rid: 2787434653344333914
@@ -7145,6 +7146,11 @@ MonoBehaviour:
         - {fileID: 11400000, guid: eec88e697a83a574fba8771a6cc21ee4, type: 2}
         - {fileID: 11400000, guid: 0481925af765c894f8dfc29081a0c5b0, type: 2}
         - {fileID: 11400000, guid: 599000950190fa44086167c370a3121b, type: 2}
+        _extraTaunts:
+        - {fileID: 11400000, guid: a99956d3bd469c6479ba59dfa1e3d31e, type: 2}
+        - {fileID: 11400000, guid: 97664900d9e1516429ac34d35d739277, type: 2}
+        - {fileID: 11400000, guid: affd73e900c946847a8091f00efd4d55, type: 2}
+        - {fileID: 11400000, guid: bfb88eb264a97eb41ac9c96923b4b644, type: 2}
     - rid: 4835484058177241183
       type: {class: GridManagerResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
