@@ -48,9 +48,17 @@ namespace CardGame.Turns
 			float currentDist = Vector2.Distance(posTouch1, posTouch2);
 			float zoomFactor = _startdist / currentDist;
 
-			_cam.orthographicSize = Mathf.Clamp(_startZoom * zoomFactor, _minZoom, _maxZoom); // Half size, d'ou le *.5 sur maxzoom
+			_cam.orthographicSize = Mathf.Clamp(_startZoom * zoomFactor, _minZoom, _maxZoom); 
 
 			_zoneHolder.UpdatePlacementInHand(true);
+		}
+
+		public void ZoomInProcess(float value)
+		{
+			_cam.orthographicSize = Mathf.Clamp(_cam.orthographicSize + (value), _minZoom, _maxZoom); 
+
+			_zoneHolder.UpdatePlacementInHand(true);
+			_zoneHolder.UpdateTileInHandSize();
 		}
 
 		public void StopZoom()

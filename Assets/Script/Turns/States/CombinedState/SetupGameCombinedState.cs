@@ -1,6 +1,7 @@
 using CardGame.StateMachine;
 using CardGame.Utility;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace CardGame.Turns
 {
@@ -12,6 +13,7 @@ namespace CardGame.Turns
 		private AutoPlayAbility _autoPlay;
 		private GridManagerResource _gridManager;
 		private HUDResource _hudResource;
+		private ZoomAbility _zoomAbility;
 
 		public override void OnEnter()
 		{
@@ -23,6 +25,7 @@ namespace CardGame.Turns
 			GetStateComponent(ref _autoPlay, false);
 			GetStateComponent(ref _gridManager);
 			GetStateComponent(ref _hudResource);
+			GetStateComponent(ref _zoomAbility);
 
 			WaitStart().Forget();
 		}
@@ -59,6 +62,13 @@ namespace CardGame.Turns
 
 				Controller.SetState<PlaceTileCombinedState>();
 				_hudResource.CloseLoadingScreen();
+			}
+
+			while (Camera.main.orthographicSize > 3.5f)
+			{
+				UnityEngine.Debug.Log("t");
+				_zoomAbility.ZoomInProcess(-0.01f);
+				await UniTask.Yield();
 			}
 		}
 	}
