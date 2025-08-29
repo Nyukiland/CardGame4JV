@@ -14,6 +14,7 @@ namespace CardGame.Turns
 		private GridManagerResource _grid;
 		private ScoringAbility _scoring;
 		private DrawPile _drawPile;
+		private SoundResource _sound;
 
 		[SerializeField]
 		private float _waitSec = 2f;
@@ -28,6 +29,7 @@ namespace CardGame.Turns
 			base.Init(owner);
 			_grid = owner.GetStateComponent<GridManagerResource>();
 			_scoring = owner.GetStateComponent<ScoringAbility>();
+			_sound = owner.GetStateComponent<SoundResource>();
 		}
 
 		public override void LateInit()
@@ -83,6 +85,7 @@ namespace CardGame.Turns
 			{
 				tile.HasFlag = GameManager.Instance.FlagTurn;
 				_grid.SetTile(tile, pos);
+				_sound.PlayTilePlaced(false);
 				_tilesInHand.Remove(tile);
 				_scoring.SetScoringPos(pos);
 				GenerateTheoreticalHand(connection);

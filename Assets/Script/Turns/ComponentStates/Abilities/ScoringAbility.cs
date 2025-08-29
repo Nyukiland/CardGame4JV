@@ -79,6 +79,7 @@ namespace CardGame.Turns
 			_closedRegionsInTurn = new();
 
 			_alphaFeature.settings.TargetMeshes.Clear();
+			FMODUnity.RuntimeManager.StudioSystem.setParameterByName("ACTION", GameManager.Instance.AmIWinning() ? 1 : 0);
 		}
 
 		public async void CallScoring()
@@ -211,6 +212,11 @@ namespace CardGame.Turns
 					//Debug.Log("Shake tile : " + tileVisu.PositionOnGrid.x + " - " + tileVisu.PositionOnGrid.y);
 
 					// TODO : remettre au bon endroit
+					if (tileVisu.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex)
+						FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Self_Score_Info", 1); //1 = big score, 0 = small score
+					else
+						FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Ennemy_Score_Info", 1); //1 = big score, 0 = small score
+
 					_sound.PlayScoring(tileVisu.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex);
 
 					// Move up the closed regions tiles : 

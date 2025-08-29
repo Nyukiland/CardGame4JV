@@ -11,6 +11,7 @@ namespace CardGame.Turns
 
 		private PlaceTileOnGridAbility _tileOnGrid;
 		private GridManagerResource _gridManager;
+		private SoundResource _sound;
 
 		public override void Init(Controller owner)
 		{
@@ -18,6 +19,7 @@ namespace CardGame.Turns
 			
 			_tileOnGrid = owner.GetStateComponent<PlaceTileOnGridAbility>();
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
+			_sound = owner.GetStateComponent<SoundResource>();
 		}
 
 		public void RotateCard(Vector2 position)
@@ -28,6 +30,7 @@ namespace CardGame.Turns
 				{
 					visu.TileData.RotateTile();
 					visu.UpdateTile(visu.TileData);
+					_sound.PlayTileRotate();
 
 					if (_tileOnGrid.TempPlacedTile == visu)
 					{

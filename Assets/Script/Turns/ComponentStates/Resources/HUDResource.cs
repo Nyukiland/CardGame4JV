@@ -100,6 +100,7 @@ namespace CardGame.Turns
 		private GridManagerResource _gridManager;
 		private ZoneHolderResource _zoneHolder;
 		private NetworkResource _networkResource;
+		private SoundResource _sound;
 
 		private readonly List<ScoreUI> _scoreList = new();
 
@@ -131,6 +132,7 @@ namespace CardGame.Turns
 			_zoneHolder = owner.GetStateComponent<ZoneHolderResource>();
 			_networkResource = owner.GetStateComponent<NetworkResource>();
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
+			_sound = owner.GetStateComponent<SoundResource>();
 
 			_nextTurnSlider.maxValue = _placeTileOnGrid.MaxTimeTurn;
 			_waitingScreen.alpha = 0;
@@ -170,6 +172,7 @@ namespace CardGame.Turns
 				int index = i;
 				_tauntButtonsList[i].onClick.RemoveListener(() =>
 				{
+					_sound.PlayClickButton();
 					_tauntAbility.CallEvent(_tauntAbility.Taunts[index]);
 					OpenTauntMenu(false);
 				});
@@ -185,23 +188,23 @@ namespace CardGame.Turns
 
 			float percent = _nextTurnSlider.value / _nextTurnSlider.maxValue;
 
-			_nextTurnMaskImage.color = new(_nextTurnMaskImage.color.r, 
-				_nextTurnMaskImage.color.g, 
-				_nextTurnMaskImage.color.b, 
+			_nextTurnMaskImage.color = new(_nextTurnMaskImage.color.r,
+				_nextTurnMaskImage.color.g,
+				_nextTurnMaskImage.color.b,
 				_nextButtonAlpha);
 
 			if (percent > 0.8f)
 			{
-				_nextTurnFillImage.color = new(_endSliderColor.r, 
-					_endSliderColor.g, 
-					_endSliderColor.b, 
+				_nextTurnFillImage.color = new(_endSliderColor.r,
+					_endSliderColor.g,
+					_endSliderColor.b,
 					_nextButtonAlpha);
 			}
 			else
 			{
-				_nextTurnFillImage.color = new(_startSliderColor.r, 
-					_startSliderColor.g, 
-					_startSliderColor.b, 
+				_nextTurnFillImage.color = new(_startSliderColor.r,
+					_startSliderColor.g,
+					_startSliderColor.b,
 					_nextButtonAlpha);
 			}
 
@@ -232,6 +235,7 @@ namespace CardGame.Turns
 				tauntText.text = tauntList[i].Text;
 				tauntButton.onClick.AddListener(() =>
 				{
+					_sound.PlayClickButton();
 					_tauntAbility.CallEvent(_tauntAbility.Taunts[index]);
 					OpenTauntMenu(false);
 				});
@@ -255,6 +259,7 @@ namespace CardGame.Turns
 				tauntText.text = taunts[i].Text;
 				tauntButton.onClick.AddListener(() =>
 				{
+					_sound.PlayClickButton();
 					_tauntAbility.CallEvent(_tauntAbility.Taunts[index]);
 					OpenTauntMenu(false);
 				});
@@ -307,6 +312,7 @@ namespace CardGame.Turns
 
 		private void OpenLobby()
 		{
+			_sound.PlayClickButton();
 			CloseAllScreens();
 
 			GameManager.Instance.ResetManager();
@@ -321,6 +327,7 @@ namespace CardGame.Turns
 		public void OpenPauseScreen()
 		{
 			CloseAllScreens();
+			_sound.PlayOpenMenu();
 			_pauseScreen.SetActive(true);
 			_zoneHolder.HideMyHand(true);
 
@@ -331,6 +338,7 @@ namespace CardGame.Turns
 		public void ClosePauseScreen()
 		{
 			CloseAllScreens();
+			_sound.PlayCloseMenu();
 			OpenHud();
 			_zoneHolder.HideMyHand(false);
 			Time.timeScale = 1f;
@@ -412,6 +420,8 @@ namespace CardGame.Turns
 			if (_tauntOpen == open)
 				return;
 
+			if (open) _sound.PlayClickButton();
+
 			_tauntOpen = open;
 			_tauntVisualContainer.DOKill();
 
@@ -441,9 +451,17 @@ namespace CardGame.Turns
 					playerScore.Setup(i, i == manager.PlayerIndex);
 
 					if (i == manager.PlayerIndex)
-						playerScore.ScoreButton.onClick.AddListener(() => MoveLastPlacedTile(_gridManager.LastPlacedTileYou));
+						playerScore.ScoreButton.onClick.AddListener(() =>
+						{
+							MoveLastPlacedTile(_gridManager.LastPlacedTileYou);
+							_sound.PlayClickButton();
+						});
 					else
-						playerScore.ScoreButton.onClick.AddListener(() => MoveLastPlacedTile(_gridManager.LastPlacedTileOther));
+						playerScore.ScoreButton.onClick.AddListener(() =>
+						{
+							MoveLastPlacedTile(_gridManager.LastPlacedTileOther);
+							_sound.PlayClickButton();
+						});
 
 					_scoreList.Add(playerScore);
 				}
@@ -456,9 +474,17 @@ namespace CardGame.Turns
 					playerScore.Setup(i, i == 0);
 
 					if (i == 0)
-						playerScore.ScoreButton.onClick.AddListener(() => MoveLastPlacedTile(_gridManager.LastPlacedTileYou));
+						playerScore.ScoreButton.onClick.AddListener(() =>
+						{
+							MoveLastPlacedTile(_gridManager.LastPlacedTileYou);
+							_sound.PlayClickButton();
+						});
 					else
-						playerScore.ScoreButton.onClick.AddListener(() => MoveLastPlacedTile(_gridManager.LastPlacedTileOther));
+						playerScore.ScoreButton.onClick.AddListener(() =>
+						{
+							MoveLastPlacedTile(_gridManager.LastPlacedTileOther);
+							_sound.PlayClickButton();
+						});
 
 					_scoreList.Add(playerScore);
 				}
@@ -533,6 +559,7 @@ namespace CardGame.Turns
 
 		private void NextTurn()
 		{
+			_sound.PlayClickButton();
 			_placeTileOnGrid.CallEndTurn();
 		}
 

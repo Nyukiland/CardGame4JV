@@ -7183,6 +7183,20 @@ MonoBehaviour:
             Data3: 2022278561
             Data4: -2100645532
           Path: event:/UI/Tiles/Placement_Tiles_Ennemy
+        _tileSelect:
+          Guid:
+            Data1: 296398551
+            Data2: 1215950506
+            Data3: 1162002318
+            Data4: 1446439314
+          Path: event:/UI/Tiles/Tile_Select
+        _tileRotate:
+          Guid:
+            Data1: -661619354
+            Data2: 1232356954
+            Data3: -1430205550
+            Data4: 860513415
+          Path: event:/UI/Tiles/Turn_Tiles
         _scoring:
           Guid:
             Data1: -1736823113
@@ -7197,6 +7211,69 @@ MonoBehaviour:
             Data3: 327638667
             Data4: -577454964
           Path: event:/UI/Scoring/S_Ennemy
+        _desert:
+          Guid:
+            Data1: 914236614
+            Data2: 1300445432
+            Data3: 2023278736
+            Data4: -504132240
+          Path: event:/Amb/Desert
+        _forest:
+          Guid:
+            Data1: 423317269
+            Data2: 1334264526
+            Data3: -33521478
+            Data4: 494945826
+          Path: event:/Amb/Forest
+        _field:
+          Guid:
+            Data1: 1566464211
+            Data2: 1284611786
+            Data3: -1646780230
+            Data4: 617671830
+          Path: event:/Amb/Field
+        _sea:
+          Guid:
+            Data1: -855052874
+            Data2: 1182278957
+            Data3: -2076150605
+            Data4: -1928232684
+          Path: event:/Amb/Sea
+        _music:
+          Guid:
+            Data1: 2121652619
+            Data2: 1206875310
+            Data3: -1071858040
+            Data4: 1738983364
+          Path: event:/Music/Main Music
+        _myTurnSound:
+          Guid:
+            Data1: -1814164918
+            Data2: 1192470284
+            Data3: -1242854512
+            Data4: -1496439244
+          Path: event:/UI/Turn/T_Self
+        _openMenu:
+          Guid:
+            Data1: 778143958
+            Data2: 1270358843
+            Data3: -555326309
+            Data4: -1647887015
+          Path: event:/UI/Menu/Open_M
+        _closeMenu:
+          Guid:
+            Data1: -1034752065
+            Data2: 1149024677
+            Data3: 32922028
+            Data4: -1199632800
+          Path: event:/UI/Menu/Close_M
+        _clickButton:
+          Guid:
+            Data1: -783257531
+            Data2: 1220813194
+            Data3: 1433212057
+            Data4: 1227621269
+          Path: event:/UI/Menu/Button
     - rid: 7534538971935670362
       type: {class: RotateTileAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:

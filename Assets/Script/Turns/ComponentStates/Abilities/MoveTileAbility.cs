@@ -18,6 +18,7 @@ namespace CardGame.Turns
 		private GridManagerResource _gridManager;
 		private ZoneHolderResource _holder;
 		private PlaceTileOnGridAbility _placeTileOnGrid;
+		private SoundResource _sound;
 
 		private Vector2Int _prevPos = new(-100, -100);
 		private bool _prevActivity = false;
@@ -44,6 +45,7 @@ namespace CardGame.Turns
 			_holder = owner.GetStateComponent<ZoneHolderResource>();
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
 			_placeTileOnGrid = owner.GetStateComponent<PlaceTileOnGridAbility>();
+			_sound = owner.GetStateComponent<SoundResource>();
 		}
 
 		public bool QuickCheckRay(Vector2 position)
@@ -74,6 +76,8 @@ namespace CardGame.Turns
 
 					CurrentTile = visu;
 					CurrentTile.SetWrongRotationFeedbackActive(false);
+
+					_sound.PlayTileSelect();
 
 					OnCardPicked?.Invoke();
 

@@ -16,6 +16,7 @@ namespace CardGame.Turns
 
 		private List<TileVisu> _previewTiles;
 		private HUDResource _hudResource;
+		private SoundResource _sound;
 
 		public PlaceTileCombinedState()
 		{
@@ -31,6 +32,8 @@ namespace CardGame.Turns
 			GetStateComponent(ref _zoneResource);
 			GetStateComponent(ref _placeTileOnGrid);
 			GetStateComponent(ref _gridManagerRessource);
+			GetStateComponent(ref _sound);
+
 
 			_moveTile.OnCardPicked += HandleCardPicked;
 			_placeTileOnGrid.OnCardReleased += HandleCardReleased;
@@ -43,6 +46,7 @@ namespace CardGame.Turns
 			_hudResource.ToggleNextTurnButton(true);
 			_hudResource.UpdateTurnValue();
 			_hudResource.ChangeTurnFeedback(HUDResource.TurnState.Playing);
+			_sound.PlayMyTurn();
 		}
 
 		public override void OnExit()
