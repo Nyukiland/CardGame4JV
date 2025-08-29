@@ -464,7 +464,7 @@ namespace CardGame.Turns
 			int round = (GameManager.Instance.LocalPlayerTurn - 1) / 3 + 1;
 			_turnCounter.text = $"{round}/4";
 
-			if (!_networkResource.IsNetActive())
+			if (!_networkResource.IsNetActive() && GameManager.Instance.LocalPlayerTurn > 2)
 			{
 				TryPlayBotTaunt().Forget();
 			}
@@ -478,7 +478,7 @@ namespace CardGame.Turns
 				return;
 			}
 
-			if (UnityEngine.Random.value > _tauntChance)
+			if (Random.value > _tauntChance)
 			{
 				Debug.Log("[BotTaunt] Abort: chance failed.");
 				return;
@@ -490,16 +490,16 @@ namespace CardGame.Turns
 				return;
 			}
 
-			float delay = UnityEngine.Random.Range(_tauntMinDelay, _tauntMaxDelay);
+			float delay = Random.Range(_tauntMinDelay, _tauntMaxDelay);
 			Debug.Log($"[BotTaunt] Tentative dans {delay:0.0}s...");
 
 			_isBotTauntPending = true;
-			await UniTask.Delay((int)(delay * 1000), ignoreTimeScale: false); // 👈 pas de TimeSpan ici
+			await UniTask.Delay((int)(delay * 1000), ignoreTimeScale: false);
 			_isBotTauntPending = false;
 
-			int index = UnityEngine.Random.Range(0, _tauntAbility.Taunts.Count);
+			int index = Random.Range(0, _tauntAbility.Taunts.Count);
 			var line = _tauntAbility.Taunts[index];
-			_tauntAbility.CallEvent(line);
+			_tauntAbility.CallEvent(line, false);
 
 			Debug.Log($"[BotTaunt] TAUNT lancé : \"{line.Text}\"");
 		}

@@ -7077,6 +7077,9 @@ MonoBehaviour:
         _moveAmount: 1
         _moveDuration: 0.2
         SceneName: RomanTest
+        _tauntChance: 0.075
+        _tauntMinDelay: 2
+        _tauntMaxDelay: 10
     - rid: 542522587139801178
       type: {class: PlaceTileOnGridAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
@@ -7120,7 +7123,8 @@ MonoBehaviour:
       data:
         Enabled: 0
         _moveFactor: 1
-        _limitCamMove: 0
+        _limitCamMove: {x: 1, y: 5}
+        _maxDistanceConsidered: 10
     - rid: 2787434653344333914
       type: {class: ScoringAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:

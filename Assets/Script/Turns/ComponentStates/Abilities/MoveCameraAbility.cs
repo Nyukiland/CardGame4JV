@@ -7,10 +7,16 @@ namespace CardGame.Turns
 	public class MoveCameraAbility : Ability
 	{
 		[SerializeField]
-		private float _moveFactor;
+		private float _moveFactorX = 1;
 
 		[SerializeField]
-		private float _limitCamMove;
+		private float _moveFactorY = 2;
+
+		[SerializeField]
+		private Vector2 _limitCamMove = new(1, 10);
+
+		[SerializeField]
+		private float _maxDistanceConsidered = 10f;
 
 		private Vector2 _startPos;
 		private Vector3 _camPos;
@@ -50,33 +56,30 @@ namespace CardGame.Turns
 		{
 			if (!_inUse) return;
 
-			Vector3 move = _cam.ScreenToWorldPoint(_startPos) - _cam.ScreenToWorldPoint(pos);
-			Vector3 targetPos = _camPos + move * _moveFactor;
+			Vector3 dir = _cam.ScreenToWorldPoint(_startPos) - _cam.ScreenToWorldPoint(pos);
+			dir.x *= _moveFactorX;
+			dir.y *= _moveFactorY;
+			dir.z = 0;
+
+			Vector3 gridCenter = new(_gridManager.Center.x, _gridManager.Center.y - 10, 0);
+
+			float distBL = Vector3.Distance(gridCenter, _gridManager.BottomLeftMostTile);
+			float distTR = Vector3.Distance(gridCenter, _gridManager.TopRightMostTile);
+			float furthestDist = Mathf.Max(distBL, distTR);
+
+			float t = Mathf.Clamp01(furthestDist / _maxDistanceConsidered);
+
+			Vector3 tempPos = _camPos + dir;
+			tempPos.z = 0;
+			dir = tempPos - gridCenter;
+
+			dir = Vector3.ClampMagnitude(dir, Mathf.Lerp(_limitCamMove.x, _limitCamMove.y, t));
+
+			Vector3 targetPos = gridCenter + dir;
 			targetPos.z = _cam.transform.position.z;
 
-			Vector3 camShift = _cam.transform.position - targetPos;
-
-			// Shifted world positions of corners
-			Vector3 shiftedBL = _gridManager.BottomLeftMostTile + camShift;
-			Vector3 shiftedTR = _gridManager.TopRightMostTile + camShift;
-
-			// Viewport space
-			Vector3 viewBL = _cam.WorldToViewportPoint(shiftedBL);
-			Vector3 viewTR = _cam.WorldToViewportPoint(shiftedTR);
-
-			// Check if either corner is still visible
-			bool topRightVisible = viewTR.x >= 0.01f && viewTR.x <= 0.99f &&
-								   viewTR.y >= 0.01f && viewTR.y <= 0.99f;
-
-			bool bottomLeftVisible = viewBL.x >= 0.01f && viewBL.x <= 0.99f &&
-									 viewBL.y >= 0.01f && viewBL.y <= 0.99f;
-
-			if (topRightVisible || bottomLeftVisible)
-			{
-				_cam.transform.DOMove(targetPos, 0.1f);
-			}
+			_cam.transform.DOMove(targetPos, 0.1f);
 		}
-
 
 		public void StopMoving()
 		{

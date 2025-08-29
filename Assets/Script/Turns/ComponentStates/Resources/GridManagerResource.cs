@@ -22,6 +22,8 @@ namespace CardGame.Turns
 		public int Width => _width;
 		public int Height => _height;
 
+		public Vector2Int Center => new(_width / 2, _height / 2);
+
 		private TileVisu[,] _grid;
 
 		public List<Vector2Int> SurroundingTilePos { get; private set; } = new();
@@ -32,8 +34,8 @@ namespace CardGame.Turns
 
 		private Vector3 _topRightMostTile = new(0, 0, 0);
 		private Vector3 _bottomLeftMostTile = new(100, 100, 0);
-		public Vector3 TopRightMostTile { get => _topRightMostTile; private set => _topRightMostTile = value; }
-		public Vector3 BottomLeftMostTile { get => _bottomLeftMostTile; private set => _bottomLeftMostTile = value; }
+		public Vector3 TopRightMostTile => _topRightMostTile;
+		public Vector3 BottomLeftMostTile => _bottomLeftMostTile;
 
 		public TileVisu LastPlacedTileYou { get; private set; }
 		public TileVisu LastPlacedTileOther { get; private set; }
