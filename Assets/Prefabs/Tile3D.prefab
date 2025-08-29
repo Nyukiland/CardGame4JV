@@ -591,10 +591,10 @@ MonoBehaviour:
   - {fileID: 5871376803430326747, guid: 1cb95dfa36c5c6a4395375b1ff8e6c6b, type: 3}
   - {fileID: 4191913911310541570, guid: bf3d29a3290d09f4cbbaafb7d8c8a282, type: 3}
   _baseVisualMesh: {fileID: 4247688979300106799}
-  _flagPrefabP1: {fileID: 5358640875542046940, guid: f530d70d00d3e004aa077eceabdad95e, type: 3}
-  _flagPrefabP2: {fileID: 53082435901491350, guid: 8ad0cbaab960b084ea132a3d979f87ce, type: 3}
-  _pawnP1: {fileID: 8385548815837168397, guid: 0006d10b7deeb3c4ca7e389f6d5b157b, type: 3}
-  _pawnP2: {fileID: 4201102741200537037, guid: c5e2ef27a5895ab44b8b668bdee6d2a1, type: 3}
+  _flagPrefabP1: {fileID: 3336862574161196343, guid: 500717cc8f2970e4b8db3f6c572db643, type: 3}
+  _flagPrefabP2: {fileID: 3336862574161196343, guid: 6bcac2653bd52ba41a5bd5ad3a1f87c7, type: 3}
+  _pawnP1: {fileID: 7888436516675913956, guid: 02a730b0a68447d4b8f7e044bef07e40, type: 3}
+  _pawnP2: {fileID: 8029505975399055769, guid: cb3f77fb3b45c6d438aefdf2104dcbd0, type: 3}
   _wrongRotationFeedback: {fileID: 8162164599379639732}
   _flagPreviewMeshP1: {fileID: 4647688128402039974}
   _flagPreviewMeshP2: {fileID: 4172252398795456561}
