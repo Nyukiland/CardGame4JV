@@ -129,7 +129,20 @@ namespace CardGame.Turns
 			await VisualFeedbackAllRegionsScoredAsync();
 
 			_currentScoringPlayer = _tilePlaced.OwnerPlayerIndex;
-			for (int i = 0; i <= 1; i++)
+
+			int playersNumber = 0;
+			GameManager manager = GameManager.Instance;
+			if (manager.IsNetCurrentlyActive())
+			{
+				playersNumber = manager.OnlinePlayersID.Count;
+			}
+			else
+			{
+				playersNumber = manager.SoloNames.Count;
+			}
+
+			// for each player :
+			for (int i = 0; i < playersNumber; i++)
 			{
 				foreach (KeyValuePair<Region, int> closedRegion in _closedRegionsInTurn)
 				{
@@ -227,7 +240,7 @@ namespace CardGame.Turns
 				await UniTask.WaitForSeconds(0.2f); // for the end of the animation
 			}
 
-			
+
 		}
 
 		private async UniTask VisualFeedbackFlagScoringAsync(Region Region)
@@ -243,7 +256,7 @@ namespace CardGame.Turns
 				tileVisu.transform.DOLocalMoveZ(tileVisu.transform.localPosition.z - _moveAmount, _moveDuration)
 						.SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutCubic);
 			}
-			await UniTask.WaitForSeconds(_moveDuration*2); // for the end of the animation
+			await UniTask.WaitForSeconds(_moveDuration * 2); // for the end of the animation
 
 			// count for each tile of the 
 			foreach (TileVisu tileVisu in Region.Tiles)
