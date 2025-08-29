@@ -91,7 +91,7 @@ namespace CardGame.Turns
 		public string SceneName;
 
 		[Header("Bot taunt")]
-		[SerializeField] private float _tauntChance = 0.075f;
+		[SerializeField] private float _tauntChance = 1f;
 		[SerializeField] private float _tauntMinDelay = 2f;
 		[SerializeField] private float _tauntMaxDelay = 10f;
 		private bool _isBotTauntPending = false;
@@ -510,7 +510,7 @@ namespace CardGame.Turns
 			int round = (GameManager.Instance.LocalPlayerTurn - 1) / 3 + 1;
 			_turnCounter.text = $"{round}/4";
 
-			if (!_networkResource.IsNetActive() && GameManager.Instance.LocalPlayerTurn > 2)
+			if (!_networkResource.IsNetActive() && GameManager.Instance.LocalPlayerTurn >= 1)
 			{
 				TryPlayBotTaunt().Forget();
 			}
