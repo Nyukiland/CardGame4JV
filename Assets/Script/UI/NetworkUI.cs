@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CardGame.Utility;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using FMODUnity;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -83,6 +84,9 @@ namespace CardGame.UI
 		[Header("Pc")]
 		[SerializeField] private Button _quitButton;
 		
+		[Header("Sound")]
+		[SerializeField] private EventReference _clickButton;
+		
 		// public variables
 		public GameObject PublicHostsContainer => _publicHostsContainer;
 		public const string NONE_BASE_VALUE = "- None -";
@@ -142,10 +146,10 @@ namespace CardGame.UI
 			_connectButton.onClick.AddListener(CallJoinGameEvent);
 			_quitGameButton.onClick.AddListener(QuitClientGame);
 			_clientBackButton.onClick.AddListener(() => OpenMainMenu().Forget());
-			_hostDistantButton.onClick.AddListener(() => ToggleDistant(true));
-			_hostLocalButton.onClick.AddListener(() => ToggleDistant(false));
-			_clientDistantButton.onClick.AddListener(() => ToggleDistant(true));
-			_clientLocalButton.onClick.AddListener(() => ToggleDistant(false));
+			_hostDistantButton.onClick.AddListener(() => ToggleDistant(true, true));
+			_hostLocalButton.onClick.AddListener(() => ToggleDistant(false, true));
+			_clientDistantButton.onClick.AddListener(() => ToggleDistant(true, true));
+			_clientLocalButton.onClick.AddListener(() => ToggleDistant(false, true));
 			_quitButton.onClick.AddListener(QuitGame);
 
 			// Inputs fields
@@ -184,10 +188,10 @@ namespace CardGame.UI
 			_connectButton.onClick.RemoveListener(CallJoinGameEvent);
 			_quitGameButton.onClick.RemoveListener(QuitClientGame);
 			_clientBackButton.onClick.RemoveListener(() => OpenMainMenu().Forget());
-			_hostDistantButton.onClick.RemoveListener(() => ToggleDistant(true));
-			_hostLocalButton.onClick.RemoveListener(() => ToggleDistant(false));
-			_clientDistantButton.onClick.RemoveListener(() => ToggleDistant(true));
-			_clientLocalButton.onClick.RemoveListener(() => ToggleDistant(false));
+			_hostDistantButton.onClick.RemoveListener(() => ToggleDistant(true, true));
+			_hostLocalButton.onClick.RemoveListener(() => ToggleDistant(false, true));
+			_clientDistantButton.onClick.RemoveListener(() => ToggleDistant(true, true));
+			_clientLocalButton.onClick.RemoveListener(() => ToggleDistant(false, true));
 			_quitButton.onClick.RemoveListener(QuitGame);
 
 			// Inputs fields
@@ -270,8 +274,10 @@ namespace CardGame.UI
 			}
 		}
 
-		private void ToggleDistant(bool isDistant)
+		private void ToggleDistant(bool isDistant, bool playSound = false)
 		{
+			if (playSound) PlayClickButton();
+			
 			_isDistant = isDistant;
 			ToggleDistantEvent?.Invoke(isDistant);
 
@@ -299,6 +305,8 @@ namespace CardGame.UI
 
 		public async UniTask OpenMainMenu()
 		{
+			PlayClickButton();
+
 			await UniTask.Yield(); //idk just warning shut up
 
 			QuitGameEvent?.Invoke();
@@ -312,6 +320,8 @@ namespace CardGame.UI
 
 		private void OpenBeforeHost()
 		{
+			PlayClickButton();
+			
 			OpenPanel(_beforeHostGameObject, CurrentScreen.BeforeHost);
 
 			UpdateBeforeHost();
@@ -336,6 +346,8 @@ namespace CardGame.UI
 
 		public void OpenBeforeClient()
 		{
+			PlayClickButton();
+			
 			OpenPanel(_beforeClientGameObject, CurrentScreen.BeforeClient);
 
 			UpdateBeforeClient();
@@ -392,6 +404,8 @@ namespace CardGame.UI
 		#endregion
 
 		#region Methods
+		
+		public void PlayClickButton() => FMODUnity.RuntimeManager.PlayOneShot(_clickButton);
 
 		private void OpenPanel(GameObject panel, CurrentScreen nextScreen, bool closeAll = false)
 		{
@@ -466,12 +480,16 @@ namespace CardGame.UI
 
 		private void StartMultiGame()
 		{
+			PlayClickButton();
+
 			PlayGameEvent?.Invoke();
 			_backgroundImage.gameObject.SetActive(false);
 		}
 
 		private void StartSoloGame()
 		{
+			PlayClickButton();
+
 			if (NetworkManager.Singleton.ConnectedClients.Count <= 1)
 			{
 				LoadSceneAndCloseMenu(_sceneName).Forget();
@@ -486,6 +504,8 @@ namespace CardGame.UI
 
 		public void QuitClientGame()
 		{
+			PlayClickButton();
+
 			QuitGameEvent?.Invoke();
 
 			OpenBeforeClient();
@@ -513,6 +533,8 @@ namespace CardGame.UI
 
 		public void QuitGame()
 		{
+			PlayClickButton();
+
 			Application.Quit();
 		}
 
@@ -522,12 +544,16 @@ namespace CardGame.UI
 
 		private void CallStartHostEvent()
 		{
+			PlayClickButton();
+
 			StartHostEvent?.Invoke();
 			OpenAfterHost();
 		}
 
 		private void CallJoinGameEvent()
 		{
+			PlayClickButton();
+
 			Code = _codeInput.text;
 			if (!string.IsNullOrEmpty(_passwordInputClient.text))
 				Password = _passwordInputClient.text;
@@ -538,12 +564,16 @@ namespace CardGame.UI
 
 		private void CallUnhostEvent()
 		{
+			PlayClickButton();
+
 			UnhostEvent?.Invoke();
 			OpenBeforeHost();
 		}
 
 		private void CallCopyEvent()
 		{
+			PlayClickButton();
+	
 			CopyCodeEvent?.Invoke(Code);
 		}
 

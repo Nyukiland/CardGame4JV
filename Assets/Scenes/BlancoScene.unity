@@ -9996,6 +9996,13 @@ MonoBehaviour:
   _popUpRectTransform: {fileID: 353501144}
   _popUpTMP: {fileID: 2075612032}
   _quitButton: {fileID: 1537372590}
+  _clickButton:
+    Guid:
+      Data1: -783257531
+      Data2: 1220813194
+      Data3: 1433212057
+      Data4: 1227621269
+    Path: event:/UI/Menu/Button
 --- !u!114 &1914167661
 MonoBehaviour:
   m_ObjectHideFlags: 0
