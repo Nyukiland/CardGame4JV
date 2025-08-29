@@ -66,7 +66,6 @@ namespace CardGame.Turns
 
 			while (Camera.main.orthographicSize > 3.5f)
 			{
-				UnityEngine.Debug.Log("t");
 				_zoomAbility.ZoomInProcess(-0.01f);
 				await UniTask.Yield();
 			}
