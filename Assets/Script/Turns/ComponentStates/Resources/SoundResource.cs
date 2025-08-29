@@ -21,6 +21,9 @@ namespace CardGame.Turns
 		[SerializeField]
 		private EventReference _tileRotate;
 
+		[SerializeField]
+		private EventReference _shakeTile;
+
 		[Space(5)]
 		[Header("Scoring")]
 
@@ -107,6 +110,7 @@ namespace CardGame.Turns
 
 		public void PlayTileSelect() => FMODUnity.RuntimeManager.PlayOneShot(_tileSelect);
 		public void PlayTileRotate() => FMODUnity.RuntimeManager.PlayOneShot(_tileRotate);
+		public void PlayShakeTile() => FMODUnity.RuntimeManager.PlayOneShot(_shakeTile);
 		public void PlayMyTurn() => FMODUnity.RuntimeManager.PlayOneShot(_myTurnSound);
 		public void PlayClickButton() => FMODUnity.RuntimeManager.PlayOneShot(_clickButton);
 		public void PlayOpenMenu() => FMODUnity.RuntimeManager.PlayOneShot(_openMenu);

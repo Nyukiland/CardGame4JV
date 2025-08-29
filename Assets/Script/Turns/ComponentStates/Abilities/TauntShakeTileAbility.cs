@@ -33,6 +33,7 @@ namespace CardGame.Turns
 
 		private SendInfoAbility _sendInfo;
 		private GridManagerResource _gridManager;
+		private SoundResource _sound;
 
 		public int MiddleTileCounter {  get; private set; }
 
@@ -41,6 +42,7 @@ namespace CardGame.Turns
 			base.Init(owner);
 			_sendInfo = owner.GetStateComponent<SendInfoAbility>();
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
+			_sound = owner.GetStateComponent<SoundResource>();
 		}
 
 		public bool QuickCheckRay(Vector2 position)
@@ -72,6 +74,8 @@ namespace CardGame.Turns
 		{
 			if (tile.TileData == null)
 				return;
+
+			_sound.PlayShakeTile();
 
 			Sequence seq = DOTween.Sequence();
 

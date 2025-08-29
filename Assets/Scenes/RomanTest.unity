@@ -7197,6 +7197,13 @@ MonoBehaviour:
             Data3: -1430205550
             Data4: 860513415
           Path: event:/UI/Tiles/Turn_Tiles
+        _shakeTile:
+          Guid:
+            Data1: 2051117751
+            Data2: 1235236854
+            Data3: 1677030307
+            Data4: -1069134531
+          Path: event:/UI/Tiles/Tile_PickUp
         _scoring:
           Guid:
             Data1: -1736823113
