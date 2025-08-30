@@ -19,6 +19,8 @@ namespace CardGame.Turns
 
 		public bool InZoom => _inZoom;
 
+		public bool _manualZoomDoOnce;
+
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
@@ -48,14 +50,25 @@ namespace CardGame.Turns
 			float currentDist = Vector2.Distance(posTouch1, posTouch2);
 			float zoomFactor = _startdist / currentDist;
 
-			_cam.orthographicSize = Mathf.Clamp(_startZoom * zoomFactor, _minZoom, _maxZoom); 
+			_cam.orthographicSize = Mathf.Clamp(_startZoom * zoomFactor, _minZoom, _maxZoom);
 
 			_zoneHolder.UpdatePlacementInHand(true);
 		}
 
 		public void ZoomInProcess(float value)
 		{
-			_cam.orthographicSize = Mathf.Clamp(_cam.orthographicSize + (value), _minZoom, _maxZoom); 
+			if (value == 0 && _manualZoomDoOnce)
+			{
+				_manualZoomDoOnce = false;
+				_zoneHolder.HideMyHand(false);
+			}
+			else if (value != 0 && !_manualZoomDoOnce)
+			{
+				_manualZoomDoOnce = true;
+				_zoneHolder.HideMyHand(true);
+			}
+
+			_cam.orthographicSize = Mathf.Clamp(_cam.orthographicSize + (value), _minZoom, _maxZoom);
 
 			_zoneHolder.UpdatePlacementInHand(true);
 			_zoneHolder.UpdateTileInHandSize();
