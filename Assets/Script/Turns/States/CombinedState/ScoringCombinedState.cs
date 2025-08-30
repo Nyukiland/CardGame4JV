@@ -9,6 +9,11 @@ namespace CardGame.Turns
 		private ScoringAbility _scoring;
 		private HUDResource _hud;
 
+		public ScoringCombinedState()
+		{
+			AddSubState(new MoveTileSubState(false));
+		}
+
 		public override void OnEnter()
 		{
 			base.OnEnter();

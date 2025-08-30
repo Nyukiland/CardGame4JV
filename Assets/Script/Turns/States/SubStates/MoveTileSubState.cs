@@ -28,11 +28,6 @@ namespace CardGame.Turns
 
 		private readonly bool MoveCam;
 
-		public MoveTileSubState()
-		{
-			MoveCam = false;
-		}
-
 		public MoveTileSubState(bool canMoveCam)
 		{
 			MoveCam = canMoveCam;
@@ -144,6 +139,9 @@ namespace CardGame.Turns
 		public override void Update(float deltaTime)
 		{
 			base.Update(deltaTime);
+
+			if (!MoveCam)
+				return;
 
 			Vector2 currentPos = Controller.GetActionValue<Vector2>("TouchPos");
 

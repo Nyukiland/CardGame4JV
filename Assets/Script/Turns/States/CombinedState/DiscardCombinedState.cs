@@ -14,7 +14,7 @@ namespace CardGame.Turns
 
 		public DiscardCombinedState()
 		{
-			AddSubState(new MoveTileSubState());
+			AddSubState(new MoveTileSubState(true));
 		}
 
 		public override void OnEnter()
