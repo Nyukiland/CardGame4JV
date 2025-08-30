@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: a9a560b7bc05a6a46978b53fe4b40f49
-timeCreated: 1504768177
+guid: 34dfeb3f659c70946a7698f1846d752b
+timeCreated: 1504768173
 licenseType: Store
 ModelImporter:
   serializedVersion: 21
@@ -9,7 +9,7 @@ ModelImporter:
     400000: //RootNode
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Environment_1
+    4300000: Grass_1
   materials:
     importMaterials: 1
     materialName: 0
@@ -90,5 +90,5 @@ AssetOrigin:
   productId: 99479
   packageName: LowPoly Environment Pack
   packageVersion: 1.0
-  assetPath: Assets/Art/Hoang/mesh/Environment_1.fbx
+  assetPath: Assets/LowPoly Environment Pack/FBX/Grass_1.fbx
   uploadId: 200756
