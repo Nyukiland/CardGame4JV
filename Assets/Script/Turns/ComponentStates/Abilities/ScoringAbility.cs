@@ -105,8 +105,6 @@ namespace CardGame.Turns
 
 			_tilePlaced = _gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).TileData;
 
-			Vector3 posCam = new(0, 10, 0);
-
 			foreach (ZoneData zone in _tilePlaced.Zones)
 			{
 				if (
@@ -123,6 +121,7 @@ namespace CardGame.Turns
 					//ScoreFlagTiles(zone.Region);
 
 					//Debug.Log("-------------------------");
+
 					zone.Region.AlreadyScored = true;
 				}
 			}
@@ -271,6 +270,9 @@ namespace CardGame.Turns
 		{
 			await UniTask.WaitForSeconds(1f); //wait a little for tile placement feedback
 
+			Vector3 center = new(0, 0, 0);
+			int count = 0;
+
 			//foreach (Region closedRegion in _closedRegionsInTurn)
 			foreach (KeyValuePair<Region, int> closedRegion in _closedRegionsInTurn)
 			{
@@ -282,11 +284,23 @@ namespace CardGame.Turns
 					// Move up the closed regions tiles : 
 					// if the tile is already moving (because it is the last placed tile for instance),
 					// reset the movement before begining the new one 
+
+					center += new Vector3(tileVisu.transform.position.x, tileVisu.transform.position.y, 0);
+					count++;
+
 					tileVisu.transform.DOKill();
 					tileVisu.transform.DOLocalMoveZ(tileVisu.transform.localPosition.z - _moveAmount, _moveDuration)
 						.SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutCubic);
 				}
 			}
+
+			center /= count;
+			center.y -= 10;
+
+			center.z = Camera.main.transform.position.z;
+
+			Camera.main.transform.DOKill();
+			Camera.main.transform.DOMove(center, 1).SetEase(Ease.InOutQuad);
 
 			await UniTask.WaitForSeconds(_moveDuration * 2); // for the end of the animation
 		}
