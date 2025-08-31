@@ -148,7 +148,7 @@ namespace CardGame.Turns
 			if (IsPlaying(_forestInstance) && instance.handle != _forestInstance.handle)
 				_forestInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
 
-			if (IsPlaying(instance))
+			if (!IsPlaying(instance))
 				instance.start();
 		}
 
