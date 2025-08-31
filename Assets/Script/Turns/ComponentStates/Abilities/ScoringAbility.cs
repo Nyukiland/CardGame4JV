@@ -389,6 +389,7 @@ namespace CardGame.Turns
 
 				_sound.PlayScoring(tileVisu.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex);
 
+				tileVisu.VisualScoringTileFeedback(tileScoreAmount);
 				await UniTask.WaitForSeconds(0.2f); // for the end of the animation
 
 				if (firstScoreToDisplay)

@@ -201,6 +201,10 @@ namespace CardGame.UI
 
 		private void SetLayerRecursively(Transform target, int layer)
 		{
+			if (_scoreCanvas.transform == target
+				|| _scoreText.transform == target)
+				return;
+
 			target.gameObject.layer = layer;
 
 			foreach (Transform child in target)
