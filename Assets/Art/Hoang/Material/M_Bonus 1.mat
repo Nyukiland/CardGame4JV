@@ -46,15 +46,22 @@ Material:
     - _DisplaceZ_General_Multiplier: 0
     - _Displace_Scale_noise: 1.38
     - _Displace_Time_speed: 2
+    - _Foam_Rotation: 2.9
+    - _Foam_tile: 1.58
+    - _Foam_x_scale: 1.04
+    - _Foam_y_scale: 1.28
     - _Glow: 1.71
     - _Hard_edges_Albeldo_1: 0
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _Water: 0
     m_Colors:
     - _Albedo_Tiling: {r: 1, g: 1, b: 0, a: 0}
-    - _Color_A: {r: 1, g: 1, b: 1, a: 0}
-    - _Color_B: {r: 0.9622642, g: 0.9622642, b: 0.9622642, a: 0}
+    - _Color_A: {r: 0.683026, g: 0.78867924, b: 0.7811326, a: 0}
+    - _Color_B: {r: 0.71082234, g: 0.7735849, b: 0.7694007, a: 0}
     - _Displace_Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _Foam_center: {r: 16.36, g: 0.5, b: 0, a: 0}
+    - _Foam_color: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &8119799446477659813
