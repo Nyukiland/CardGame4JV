@@ -3705,7 +3705,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -30}
+  m_AnchoredPosition: {x: 230, y: -20}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1040421719
@@ -7198,6 +7198,7 @@ MonoBehaviour:
       data:
         Enabled: 0
         _minZoom: 2
+        _manualZoomDoOnce: 0
     - rid: 1922521404052602972
       type: {class: MoveCameraAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
