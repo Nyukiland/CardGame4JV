@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3942903643060617222}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.690656, y: -0, z: -0, w: 0.7231835}
+  m_LocalRotation: {x: 0.6906552, y: 0, z: 0, w: 0.7231842}
   m_LocalPosition: {x: 6.57, y: 0.55, z: 8.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -41,7 +41,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3942903643060617222}
   serializedVersion: 8
-  lengthInSec: 1.2
+  lengthInSec: 0.76
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -116,7 +116,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.25
+      scalar: 1.07
       minScalar: 0.45
       maxCurve:
         serializedVersion: 2
@@ -287,8 +287,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 3.5
-      minScalar: 2.5
+      scalar: 4.45
+      minScalar: 3.53
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -749,7 +749,7 @@ ParticleSystem:
     m_TextureBilinearFiltering: 0
     randomDirectionAmount: 0.08
     sphericalDirectionAmount: 0
-    randomPositionAmount: 0.03
+    randomPositionAmount: 0.01
     radius:
       value: 1
       mode: 0
@@ -870,7 +870,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2
+      scalar: 3
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -980,8 +980,8 @@ ParticleSystem:
     curve:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.1
-      minScalar: 1.2
+      scalar: 1.3
+      minScalar: 0.9
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -1371,7 +1371,7 @@ ParticleSystem:
     enabled: 1
     mode: 0
     timeMode: 2
-    fps: 12
+    fps: 5
     frameOverTime:
       serializedVersion: 2
       minMaxState: 0
