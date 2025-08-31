@@ -8,6 +8,7 @@ namespace CardGame.UI
 	{
 		[SerializeField] private TextMeshProUGUI _scoreText;
 		[SerializeField] private Image _profilePictureImage;
+		[SerializeField] private Image _crownImage;
 		[SerializeField] private Button _scoreButton;
 
 		[SerializeField] private Color _colorPlayer1;
@@ -28,6 +29,7 @@ namespace CardGame.UI
 			PlayerIndex = playerIndex;
 
 			_profilePictureImage.color = playerIndex == 0 ? _colorPlayer1 : _colorPlayer2;
+			_crownImage.enabled = false;
 
 			// _profilePictureImage.sprite = ????
 
@@ -40,6 +42,8 @@ namespace CardGame.UI
 			if (_isYou) text += " (You)";
 			_scoreText.text = text;
 		}
+
+		public void SetCrown(bool amIWinning) => _crownImage.enabled = amIWinning;
 
 		public void IsMyTurn(bool isIt)
 		{

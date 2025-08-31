@@ -360,9 +360,17 @@ namespace CardGame.Turns
 
 		private void UpdateScore(int playerIndex, float score)
 		{
+			bool isThisPlayerWinning = GameManager.Instance.IsThisPlayerWinning(playerIndex);
+
 			foreach (ScoreUI scoreUI in _scoreList)
 			{
-				if (scoreUI.PlayerIndex != playerIndex) continue;
+				if (scoreUI.PlayerIndex != playerIndex)
+				{
+					scoreUI.SetCrown(!isThisPlayerWinning);
+					continue;
+				}
+
+				scoreUI.SetCrown(isThisPlayerWinning);
 				scoreUI.SetScore(score);
 			}
 		}

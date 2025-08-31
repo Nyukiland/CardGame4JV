@@ -269,6 +269,40 @@ public class GameManager : NetworkBehaviour, ISelectableInfo
 		return isHigher;
 	}
 
+	public bool IsThisPlayerWinning(int playerIndex)
+	{
+		bool isWinning = true;
+
+		if (IsNetCurrentlyActive())
+		{
+			int playerScore = OnlineScores[playerIndex];
+
+			foreach (int score in OnlineScores)
+			{
+				if (score > playerScore)
+				{
+					isWinning = false;
+					break;
+				}
+
+			}
+		}
+		else
+		{
+			int playerScore = SoloScores[playerIndex];
+			foreach (int score in SoloScores)
+			{
+				if (score > playerScore)
+				{
+					isWinning = false;
+					break;
+				}
+			}
+		}
+
+		return isWinning;
+	}
+
 	public void ResetManager()
 	{
 		if (IsNetCurrentlyActive())
