@@ -93,8 +93,6 @@ namespace CardGame.Turns
 			}
 		}
 
-
-
 		public void ReleaseTile(Vector2 position)
 		{
 			if (_moveTile.CurrentTile == null)
@@ -270,6 +268,12 @@ namespace CardGame.Turns
 				}
 
 				if (tilePlaced != new Vector2Int(-100, -100)) break;
+			}
+
+			if (tilePlaced == new Vector2Int(-100, -100))
+			{
+				TilePlaced = true;
+				return;
 			}
 
 			TempPlacedTile = tileVisu;
