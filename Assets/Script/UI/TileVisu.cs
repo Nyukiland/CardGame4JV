@@ -38,6 +38,9 @@ namespace CardGame.UI
 
 		[SerializeField] private TMPro.TextMeshPro _scoreText;
 		[SerializeField] private Canvas _scoreCanvas;
+		[SerializeField] private Material _textMatPlayer1;
+		[SerializeField] private Material _textMatPlayer2;
+		[Space(10)]
 
 		[SerializeField] private List<GameObject> _meshesPresetList = new();
 		private GameObject _currentVisualMesh;
@@ -128,6 +131,7 @@ namespace CardGame.UI
 
 		public void VisualScoringTileFeedback(float score)
 		{
+			_scoreText.material = TileData.OwnerPlayerIndex == 0 ? _textMatPlayer1 : _textMatPlayer2;
 			_scoreText.text = "+ " + score;
 
 			Sequence seq = DOTween.Sequence();

@@ -19,6 +19,9 @@ namespace CardGame.UI
 		[SerializeField] private Color _baseColor;
 		[SerializeField] private Color _notMyTurnColor;
 
+		[SerializeField] private Material _textMatPlayer1;
+		[SerializeField] private Material _textMatPlayer2;
+
 		private bool _isYou;
 
 		public int PlayerIndex { get; private set; }
@@ -30,6 +33,7 @@ namespace CardGame.UI
 			PlayerIndex = playerIndex;
 
 			_profilePictureImage.color = playerIndex == 0 ? _colorPlayer1 : _colorPlayer2;
+			_scoreAdd.material = playerIndex == 0 ? _textMatPlayer1 : _textMatPlayer2;
 			_crownImage.enabled = false;
 
 			// _profilePictureImage.sprite = ????
