@@ -21,7 +21,6 @@ namespace CardGame.Turns
 			GetStateComponent(ref _hud);
 
 			_scoring.CallScoring();
-			_hud.ChangeTurnFeedback(HUDResource.TurnState.Scoring);
 		}
 
 		public override void OnExit()

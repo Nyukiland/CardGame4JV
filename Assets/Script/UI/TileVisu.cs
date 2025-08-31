@@ -36,7 +36,8 @@ namespace CardGame.UI
 
 		[Space(10)]
 
-		[SerializeField] private TMPro.TextMeshPro _ownerTextMeshPro;
+		[SerializeField] private TMPro.TextMeshPro _scoreText;
+		[SerializeField] private Canvas _scoreCanvas;
 
 		[SerializeField] private List<GameObject> _meshesPresetList = new();
 		private GameObject _currentVisualMesh;
@@ -70,7 +71,8 @@ namespace CardGame.UI
 		private void Start()
 		{
 			UpdateTile(TileData);
-			_ownerTextMeshPro.text = "";
+			_scoreText.text = "";
+			_scoreText.alpha = 0;
 		}
 
 		private void OnDestroy()
@@ -126,7 +128,17 @@ namespace CardGame.UI
 
 		public void VisualScoringTileFeedback(float score)
 		{
-			_ownerTextMeshPro.text = "+ " + score;
+			_scoreText.text = "+ " + score;
+
+			Sequence seq = DOTween.Sequence();
+			seq.Append(_scoreCanvas.transform.DOLocalMoveZ(-1, 0.5f).SetEase(Ease.InOutSine));
+			seq.Join(_scoreText.DOFade(1f, 0.7f).SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutCubic));
+
+			seq.Play().OnComplete(() =>
+			{
+				_scoreCanvas.transform.localPosition = Vector3.zero;
+				_scoreText.alpha = 0;
+			});
 		}
 
 		public void ChangeValidityVisual(bool isValid)

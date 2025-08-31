@@ -117,6 +117,8 @@ namespace CardGame.Turns
 		private float _nextButtonAlpha => _placeTileOnGrid.TempPlacedTile != null && _placeTileOnGrid.TempPlacedTile.IsTileValid ?
 			_alphaValidOrNot.y : _alphaValidOrNot.x;
 
+		public List<ScoreUI> ScoreList => _scoreList;
+
 		#region Unity Methods
 
 		public override void EarlyInit()

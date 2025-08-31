@@ -6,7 +6,7 @@ using DG.Tweening;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Linq;
 using UnityEngine;
 
 namespace CardGame.Turns
@@ -16,6 +16,18 @@ namespace CardGame.Turns
 		[SerializeField]
 		[LockUser]
 		private MeshOverlapAlphaFeature _alphaFeature;
+
+		[SerializeField]
+		private Color _terrainColor;
+
+		[SerializeField]
+		private Color _fieldColor;
+
+		[SerializeField]
+		private Color _waterColor;
+
+		[SerializeField]
+		private Color _forestColor;
 
 		private GridManagerResource _gridManager;
 		private SoundResource _sound;
@@ -33,14 +45,13 @@ namespace CardGame.Turns
 		List<KeyValuePair<Region, int>> _closedRegionsInTurn = new();
 
 		[Header("ClosedRegionFeedback")]
-		[SerializeField] private float _interval = 2f;
 		[SerializeField] private float _moveAmount = 1f;
 		[SerializeField] private float _moveDuration = 1f;
 
 		private List<TileVisu> _playerClassicTiles = new();
 		private List<TileVisu> _playerFlagTiles = new();
 
-		private int _currentScoringPlayer = -1;
+		private int _cumulativeScoring;
 
 		public Type NextState
 		{
@@ -94,6 +105,8 @@ namespace CardGame.Turns
 
 			_tilePlaced = _gridManager.GetTile(TilePlacedPosition.x, TilePlacedPosition.y).TileData;
 
+			Vector3 posCam = new(0, 10, 0);
+
 			foreach (ZoneData zone in _tilePlaced.Zones)
 			{
 				if (
@@ -106,19 +119,28 @@ namespace CardGame.Turns
 					//Debug.Log("Score tile : " + TilePlacedPosition.x + " - " + TilePlacedPosition.y);
 
 					// TODO : A virer quand aura le nouveau système avec feedback
-					ScoreClassicTiles(zone.Region);
-					ScoreFlagTiles(zone.Region);
+					//ScoreClassicTiles(zone.Region);
+					//ScoreFlagTiles(zone.Region);
 
 					//Debug.Log("-------------------------");
 					zone.Region.AlreadyScored = true;
 				}
 			}
+
+			if (_closedRegionsInTurn.Count == 0)
+			{
+				IsScoringFinished = true;
+				return;
+			}
+
+			_hud.ChangeTurnFeedback(HUDResource.TurnState.Scoring);
+
 			// classe les régions de la plus petite à la plus grande
 			_closedRegionsInTurn.Sort((a, b) => a.Value.CompareTo(b.Value));
 
 			await VisualFeedbackAllRegionsScoredAsync();
 
-			_currentScoringPlayer = _tilePlaced.OwnerPlayerIndex;
+			int currentPlayerTurn = _tilePlaced.OwnerPlayerIndex;
 
 			int playersNumber = 0;
 			GameManager manager = GameManager.Instance;
@@ -131,102 +153,116 @@ namespace CardGame.Turns
 				playersNumber = manager.SoloNames.Count;
 			}
 
+			await DoScoringForPlayer(currentPlayerTurn);
 
 			// for each player :
 			for (int i = 0; i < playersNumber; i++)
 			{
-				//Debug.Log("-----------------> Player : " + i);
-				foreach (KeyValuePair<Region, int> closedRegion in _closedRegionsInTurn)
-				{
-					ColorRegion(closedRegion.Key);
+				if (i == currentPlayerTurn)
+					continue;
 
-					// Classic Tiles Scoring Phase :
-					SortClassicTilesByPlayer(i, closedRegion.Key);
-					//Debug.Log("_playersClassicTiles: " + _playerClassicTiles.Count);
-
-					if (_playerClassicTiles.Count > 0)
-					{
-						//Debug.Log("Phase classique tiles");
-						await VisualFeedbackClassicScoringAsync(i);
-					}
-
-					// Flag Tiles Scoring Phase :
-					SortFlagTilesByPlayer(i, closedRegion.Key);
-					//Debug.Log("_playersFlagTiles: " + _playerFlagTiles.Count);
-
-					if (_playerFlagTiles.Count > 0)
-					{
-						//Debug.Log("Phase flag tiles");
-						await VisualFeedbackFlagScoringAsync(closedRegion.Key, i);
-					}
-				}
-
-				// recommence la boucle de scoring si le joueur suivant :
-				_currentScoringPlayer = (_currentScoringPlayer + 1) % 2;
-				//Debug.Log("Player: " + i +"<-----------------");
+				await DoScoringForPlayer(i);
 			}
 
 			await EndScoringFeedbackAsync();
 		}
 
+		private async UniTask DoScoringForPlayer(int playerIndex)
+		{
+			_cumulativeScoring = 0;
+
+			//Debug.Log("-----------------> Player : " + i);
+			foreach (KeyValuePair<Region, int> closedRegion in _closedRegionsInTurn)
+			{
+				_alphaFeature.settings.TargetMeshes.Clear();
+
+				ColorRegion(closedRegion.Key);
+
+				// Classic Tiles Scoring Phase :
+				SortClassicTilesByPlayer(playerIndex, closedRegion.Key);
+				//Debug.Log("_playersClassicTiles: " + _playerClassicTiles.Count);
+
+				if (_playerClassicTiles.Count > 0)
+				{
+					//Debug.Log("Phase classique tiles");
+					await VisualFeedbackClassicScoringAsync(playerIndex);
+				}
+
+				// Flag Tiles Scoring Phase :
+				SortFlagTilesByPlayer(playerIndex, closedRegion.Key);
+				//Debug.Log("_playersFlagTiles: " + _playerFlagTiles.Count);
+
+				if (_playerFlagTiles.Count > 0)
+				{
+					//Debug.Log("Phase flag tiles");
+					await VisualFeedbackFlagScoringAsync(closedRegion.Key, playerIndex);
+				}
+			}
+
+			_hud.ScoreList[playerIndex].SetCummulativeScore(0);
+			GameManager.Instance.AddScore(_cumulativeScoring, playerIndex);
+		}
+
 		private void ColorRegion(Region region)
 		{
-			UnityEngine.Color color = UnityEngine.Color.blue;
+			ENVIRONEMENT_TYPE environment = ENVIRONEMENT_TYPE.None;
 
 			foreach (TileVisu tileVisu in region.Tiles)
 			{
 				for (int i = 0; i <= 3; i++)
 				{
-					if (tileVisu.TileData.Zones[i].Region == region)
+					if (tileVisu.TileData.Zones[i].Region != region)
+						continue;
+
+					switch (i)
 					{
-						switch (i)
-						{
-							case 0:
-								_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuNorth);
-								break;
-							case 1:
-								_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuEast);
-								break;
-							case 2:
-								_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuSouth);
-								break;
-							case 3:
-								_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuWest);
-								break;
+						case 0:
+							_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuNorth);
+							break;
+						case 1:
+							_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuEast);
+							break;
+						case 2:
+							_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuSouth);
+							break;
+						case 3:
+							_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuWest);
+							break;
 
-						}
-
-						switch (tileVisu.TileData.Zones[i].environment)
-						{
-							case ENVIRONEMENT_TYPE.None:
-								Debug.Log("None");
-								color = UnityEngine.Color.white;
-								break;
-							case ENVIRONEMENT_TYPE.Neutral:
-								Debug.Log("Neutral");
-								color = UnityEngine.Color.white;
-								break;
-							case ENVIRONEMENT_TYPE.Terrain:
-								Debug.Log("Terrain");
-								color = new UnityEngine.Color32(183, 82, 0, 255);
-								break;
-							case ENVIRONEMENT_TYPE.Grass:
-								Debug.Log("Grass");
-								color = new UnityEngine.Color32(107, 255, 0, 255);
-								break;
-							case ENVIRONEMENT_TYPE.Fields:
-								Debug.Log("Fields");
-								color = new UnityEngine.Color32(255, 169, 0, 255);
-								break;
-							case ENVIRONEMENT_TYPE.Water:
-								Debug.Log("Water");
-								color = new UnityEngine.Color32(0, 108, 254, 255);
-								break;
-						}
 					}
+
+					if (environment == ENVIRONEMENT_TYPE.None)
+						environment = tileVisu.TileData.Zones[i].environment;
 				}
 			}
 
+			Debug.Log(environment);
+
+			Color color = Color.black;
+
+			switch (environment)
+			{
+				case ENVIRONEMENT_TYPE.None:
+					color = Color.white;
+					break;
+				case ENVIRONEMENT_TYPE.Neutral:
+					color = Color.white;
+					break;
+				case ENVIRONEMENT_TYPE.Terrain:
+					color = _terrainColor;
+					break;
+				case ENVIRONEMENT_TYPE.Grass:
+					color = _forestColor;
+					break;
+				case ENVIRONEMENT_TYPE.Fields:
+					color = _fieldColor;
+					break;
+				case ENVIRONEMENT_TYPE.Water:
+					color = _waterColor;
+					break;
+			}
+
+			_sound.PlayZoneAmbiance(environment);
 			Shader.SetGlobalColor("_MainScoringColor", color);
 		}
 
@@ -243,16 +279,6 @@ namespace CardGame.Turns
 
 				foreach (TileVisu tileVisu in closedRegion.Key.Tiles)
 				{
-					//Debug.Log("Shake tile : " + tileVisu.PositionOnGrid.x + " - " + tileVisu.PositionOnGrid.y);
-
-					// TODO : remettre au bon endroit
-					if (tileVisu.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex)
-						FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Self_Score_Info", 1); //1 = big score, 0 = small score
-					else
-						FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Ennemy_Score_Info", 1); //1 = big score, 0 = small score
-
-					_sound.PlayScoring(tileVisu.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex);
-
 					// Move up the closed regions tiles : 
 					// if the tile is already moving (because it is the last placed tile for instance),
 					// reset the movement before begining the new one 
@@ -262,20 +288,36 @@ namespace CardGame.Turns
 				}
 			}
 
-			await UniTask.WaitForSeconds(2f); // for the end of the animation
+			await UniTask.WaitForSeconds(_moveDuration * 2); // for the end of the animation
 		}
 
 		private async UniTask VisualFeedbackClassicScoringAsync(int currentPhaseScoringPlayer)
 		{
 			await UniTask.WaitForSeconds(0.2f);
 			bool firstScoreToDisplay = true;
-			float currentTilePhaseScoreToDisplay = 0f;
-			float tileScoreAmount = 1f;
+			int currentTilePhaseScoreToDisplay = 0;
+			int tileScoreAmount = 1;
+
+			_playerClassicTiles
+				.OrderBy(x => Vector3.Distance(new(TilePlacedPosition.x, TilePlacedPosition.y, 0), x.transform.position))
+				.ToList();
 
 			foreach (TileVisu classicTile in _playerClassicTiles)
 			{
-				classicTile.transform.DOShakePosition(0.1f, 0.2f, 5);
-				classicTile.VisualScoringTileFeedback(tileScoreAmount); // MARCHE PAS maintenant que j'ai touché au Tile3D mais avant oui :/ 
+				classicTile.transform.DOShakePosition(0.1f, 0.2f, 5).OnComplete(() =>
+				{
+					classicTile.transform.position = classicTile.PositionOnGrid;
+				});
+
+				if (classicTile.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex)
+					FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Self_Score_Info", tileScoreAmount > 3 ? 1 : 0); //1 = big score, 0 = small score
+				else
+					FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Ennemy_Score_Info", tileScoreAmount > 3 ? 1 : 0); //1 = big score, 0 = small score
+
+				_sound.PlayScoring(classicTile.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex);
+
+
+				classicTile.VisualScoringTileFeedback(tileScoreAmount);
 				await UniTask.WaitForSeconds(0.2f); // for the end of the animation
 
 				if (firstScoreToDisplay)
@@ -286,36 +328,54 @@ namespace CardGame.Turns
 				}
 				currentTilePhaseScoreToDisplay += tileScoreAmount;
 				_hud.SetPhaseScore(currentTilePhaseScoreToDisplay);
+
+				_cumulativeScoring += tileScoreAmount;
+				_hud.ScoreList[currentPhaseScoringPlayer].SetCummulativeScore(_cumulativeScoring);
+
 				tileScoreAmount++;
 			}
 			await UniTask.WaitForSeconds(1f);
 			_hud.DeactivatePhaseScoreDisplay();
-
 		}
 
 		private async UniTask VisualFeedbackFlagScoringAsync(Region Region, int currentPhaseScoringPlayer)
 		{
 			await UniTask.WaitForSeconds(0.2f); //wait a little for tile placement feedback
 			bool firstScoreToDisplay = true;
-			float currentTilePhaseScoreToDisplay = 0f;
-			float tileScoreAmount = 1f;
+			int currentTilePhaseScoreToDisplay = 0;
+			int tileScoreAmount = 1;
 
 			// show the flag of the current player
 			//foreach (KeyValuePair<int, TileVisu> playerFlagTiles in _playersFlagTiles)
 			int playerFlagInRegion = 0;
 			foreach (TileVisu playerFlagTile in _playerFlagTiles)
 			{
-				playerFlagTile.transform.DOLocalMoveZ(playerFlagTile.transform.localPosition.z - _moveAmount, _moveDuration)
-						.SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutCubic);
+				//playerFlagTile.transform.DOLocalMoveZ(playerFlagTile.transform.localPosition.z - _moveAmount, _moveDuration)
+				//		.SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutCubic);
 				playerFlagInRegion++;
 			}
-			await UniTask.WaitForSeconds(_moveDuration * 2); // for the end of the animation
+			//await UniTask.WaitForSeconds(_moveDuration * 2); // for the end of the animation
+
+			List<TileVisu> reorderedTiles = Region.Tiles
+				.OrderBy(x => Vector3.Distance(new(TilePlacedPosition.x, TilePlacedPosition.y, 0), x.transform.position))
+				.ToList();
 
 			// count for each tile of the 
-			foreach (TileVisu tileVisu in Region.Tiles)
+			foreach (TileVisu tileVisu in reorderedTiles)
 			{
-				tileVisu.transform.DOShakePosition(0.1f, 0.2f, 5);
-				await UniTask.WaitForSeconds(0.3f); // for the end of the animation
+				tileVisu.transform.DOShakePosition(0.1f, 0.2f, 5).OnComplete(() =>
+				{
+					tileVisu.transform.position = tileVisu.PositionOnGrid;
+				});
+
+				if (tileVisu.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex)
+					FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Self_Score_Info", tileScoreAmount > 6 ? 1 : 0); //1 = big score, 0 = small score
+				else
+					FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Ennemy_Score_Info", tileScoreAmount > 6 ? 1 : 0); //1 = big score, 0 = small score
+
+				_sound.PlayScoring(tileVisu.TileData.OwnerPlayerIndex == GameManager.Instance.PlayerIndex);
+
+				await UniTask.WaitForSeconds(0.2f); // for the end of the animation
 
 				if (firstScoreToDisplay)
 				{
@@ -325,6 +385,10 @@ namespace CardGame.Turns
 				}
 				currentTilePhaseScoreToDisplay += tileScoreAmount;
 				_hud.SetPhaseScore(currentTilePhaseScoreToDisplay * playerFlagInRegion);
+
+				_cumulativeScoring += tileScoreAmount;
+				_hud.ScoreList[currentPhaseScoringPlayer].SetCummulativeScore(_cumulativeScoring);
+
 				tileScoreAmount++;
 			}
 
@@ -354,10 +418,27 @@ namespace CardGame.Turns
 
 				//_playersClassicTiles.Add(new KeyValuePair<int, TileVisu>(tile.OwnerPlayerIndex, tileVisu));
 				_playerClassicTiles.Add(tileVisu);
-
 			}
 		}
 
+		private void SortFlagTilesByPlayer(int playerId, Region Region)
+		{
+			_playerFlagTiles = new();
+
+			foreach (TileVisu tileVisu in Region.Tiles)
+			{
+				TileData tile = tileVisu.TileData;
+
+				// on ne veut ajouter à la liste que les tuiles avec un flag :
+				if (tile.HasFlag == false) continue;
+				if (tile.OwnerPlayerIndex != playerId) continue;
+				//_playerFlag.Add(tile.OwnerPlayerIndex, true);
+
+				_playerFlagTiles.Add(tileVisu);
+			}
+		}
+
+		#region Old
 		//Vieux système : à virer quand à fini refonte avec feedback
 		private void ScoreClassicTiles(Region Region)
 		{
@@ -384,23 +465,6 @@ namespace CardGame.Turns
 				int playerScore = CalculateScore(playerTileNumber.Value);
 				//Debug.Log("Score tuiles classiques : " + playerScore + " pour le joueur " + playerTileNumber.Key);
 				GameManager.Instance.AddScore(playerScore, playerTileNumber.Key);
-			}
-		}
-
-		private void SortFlagTilesByPlayer(int playerId, Region Region)
-		{
-			_playerFlagTiles = new();
-
-			foreach (TileVisu tileVisu in Region.Tiles)
-			{
-				TileData tile = tileVisu.TileData;
-
-				// on ne veut ajouter à la liste que les tuiles avec un flag :
-				if (tile.HasFlag == false) continue;
-				if (tile.OwnerPlayerIndex != playerId) continue;
-				//_playerFlag.Add(tile.OwnerPlayerIndex, true);
-
-				_playerFlagTiles.Add(tileVisu);
 			}
 		}
 
@@ -438,5 +502,6 @@ namespace CardGame.Turns
 		{
 			return TilesNumber * (TilesNumber + 1) / 2;
 		}
+		#endregion
 	}
 }
