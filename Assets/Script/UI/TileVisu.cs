@@ -130,9 +130,9 @@ namespace CardGame.UI
 			SetTileMesh(TileData.TileSettings.tilePreset); // Y a une sécu dedans pour eviter de tout reconfig
 		}
 
-		public void VisualScoringTileFeedback(float score)
+		public void VisualScoringTileFeedback(float score, int index)
 		{
-			_scoreText.font = TileData.OwnerPlayerIndex == 0 ? _textMatPlayer1 : _textMatPlayer2;
+			_scoreText.font = index == 0 ? _textMatPlayer1 : _textMatPlayer2;
 			_scoreText.text = "+ " + score;
 
 			Sequence seq = DOTween.Sequence();
@@ -148,12 +148,12 @@ namespace CardGame.UI
 
 		public void ChangeValidityVisual(bool isValid)
 		{
-			_baseVisualMesh.GetComponentInChildren<MeshRenderer>().material = isValid ? _validTile : _greyBase;
+			_baseVisualMesh.GetComponent<MeshRenderer>().material = isValid ? _validTile : _greyBase;
 		}
 
 		public void ResetValidityVisual()
 		{
-			_baseVisualMesh.GetComponentInChildren<MeshRenderer>().material = _greyBase;
+			_baseVisualMesh.GetComponent<MeshRenderer>().material = _greyBase;
 		}
 
 		public void CheckIfRotationIsStillValid(GridManagerResource grid, Vector2Int pos)
