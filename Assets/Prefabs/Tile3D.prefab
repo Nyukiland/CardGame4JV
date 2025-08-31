@@ -1378,22 +1378,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1716409103195779824, guid: 03330a8f9cb88ef4c8575efc0312c12b, type: 3}
-      propertyPath: ShapeModule.m_Scale.x
-      value: 0.99
-      objectReference: {fileID: 0}
-    - target: {fileID: 1716409103195779824, guid: 03330a8f9cb88ef4c8575efc0312c12b, type: 3}
-      propertyPath: ShapeModule.m_Scale.y
-      value: 1.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 1716409103195779824, guid: 03330a8f9cb88ef4c8575efc0312c12b, type: 3}
-      propertyPath: ShapeModule.randomPositionAmount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1716409103195779824, guid: 03330a8f9cb88ef4c8575efc0312c12b, type: 3}
-      propertyPath: ShapeModule.randomDirectionAmount
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3942903643060617222, guid: 03330a8f9cb88ef4c8575efc0312c12b, type: 3}
       propertyPath: m_Name
       value: FX_PlacingDust (1)
