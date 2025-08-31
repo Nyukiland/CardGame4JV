@@ -109,8 +109,6 @@ namespace CardGame.UI
 
 			if (TileData == null) return;
 
-			//_ownerTextMeshPro.text = TileData.OwnerPlayerIndex >= 0 ? $"P{TileData.OwnerPlayerIndex}" : "";
-
 			// On spawn le pion quand on pose la tile 
 			if (TileData.OwnerPlayerIndex == 0 && _spawnedPawn == false)
 			{
@@ -124,6 +122,11 @@ namespace CardGame.UI
 			}
 
 			SetTileMesh(TileData.TileSettings.tilePreset); // Y a une sécu dedans pour eviter de tout reconfig
+		}
+
+		public void VisualScoringTileFeedback(float score)
+		{
+			_ownerTextMeshPro.text = "+ " + score;
 		}
 
 		public void ChangeValidityVisual(bool isValid)

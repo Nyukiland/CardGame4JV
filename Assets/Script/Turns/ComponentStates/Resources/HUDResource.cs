@@ -7,6 +7,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
 namespace CardGame.Turns
@@ -36,6 +37,8 @@ namespace CardGame.Turns
 		[Header("Score")]
 		[SerializeField] private Transform _scoreContainer;
 		[SerializeField] private ScoreUI _scorePrefab;
+		[SerializeField] private Transform _phaseScoreContainer;
+		[SerializeField] private PhaseScoreUI  _phaseScorePrefab;
 		[Space(10)]
 		[Header("FlagCounter")]
 		[SerializeField] private Image _actualArrow;
@@ -103,6 +106,7 @@ namespace CardGame.Turns
 		private SoundResource _sound;
 
 		private readonly List<ScoreUI> _scoreList = new();
+		private PhaseScoreUI _phaseScore;
 
 		private bool _isHudOpen;
 		private Tween _lastHudTween;
@@ -499,7 +503,36 @@ namespace CardGame.Turns
 			}
 
 			_scoreList[0].IsMyTurn(true);
+
+			// To display when scoring Ability is on
+			_phaseScore = Object.Instantiate(_phaseScorePrefab, _phaseScoreContainer);
+			DeactivatePhaseScoreDisplay();
+
 		}
+
+		public void ActivatePhaseScoreDisplay()
+		{
+			_phaseScore.gameObject.SetActive(true);
+		}
+
+		public void DeactivatePhaseScoreDisplay()
+		{
+			_phaseScore.gameObject.SetActive(false);
+		}
+
+		public void SetupPhaseScore(int playerIndex, bool isFlagPhase)
+		{
+			Debug.Log("playerID : " +playerIndex);
+			_phaseScore.Setup(playerIndex, isFlagPhase);
+		}
+
+
+		public void SetPhaseScore(float score)
+		{
+			_phaseScore.SetScore(score);
+		}
+
+		
 
 		private void MoveLastPlacedTile(TileVisu tileVisu)
 		{
