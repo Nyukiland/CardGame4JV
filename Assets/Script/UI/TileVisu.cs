@@ -3,6 +3,7 @@ using CardGame.Turns;
 using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 namespace CardGame.UI
@@ -38,8 +39,8 @@ namespace CardGame.UI
 
 		[SerializeField] private TMPro.TextMeshPro _scoreText;
 		[SerializeField] private Canvas _scoreCanvas;
-		[SerializeField] private Material _textMatPlayer1;
-		[SerializeField] private Material _textMatPlayer2;
+		[SerializeField] private TMP_FontAsset _textMatPlayer1;
+		[SerializeField] private TMP_FontAsset _textMatPlayer2;
 		[Space(10)]
 
 		[SerializeField] private List<GameObject> _meshesPresetList = new();
@@ -131,7 +132,7 @@ namespace CardGame.UI
 
 		public void VisualScoringTileFeedback(float score)
 		{
-			_scoreText.material = TileData.OwnerPlayerIndex == 0 ? _textMatPlayer1 : _textMatPlayer2;
+			_scoreText.font = TileData.OwnerPlayerIndex == 0 ? _textMatPlayer1 : _textMatPlayer2;
 			_scoreText.text = "+ " + score;
 
 			Sequence seq = DOTween.Sequence();
