@@ -50,6 +50,8 @@ namespace CardGame.UI
 		[SerializeField] private GameObject _flagPreviewMeshP1;
 		[SerializeField] private GameObject _flagPreviewMeshP2;
 
+		[SerializeField] private ParticleSystem _placingDustFx;
+
 		public TileData TileData { get; set; }
 
 		public Vector2 PositionOnGrid { get; private set; }
@@ -87,6 +89,18 @@ namespace CardGame.UI
 		public void ChangeParent(Transform parent)
 		{
 			gameObject.transform.SetParent(parent);
+		}
+
+		public void PlayPlacementFX()
+		{
+			if (_placingDustFx == null)
+			{
+				Debug.LogWarning("[TileVisu] Aucun FX de pose assigné.");
+				return;
+			}
+
+			_placingDustFx.gameObject.SetActive(true);
+			_placingDustFx.Play();
 		}
 
 		private void UpdateVisu()

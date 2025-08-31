@@ -510,7 +510,7 @@ namespace CardGame.Turns
 			int round = (GameManager.Instance.LocalPlayerTurn - 1) / 3 + 1;
 			_turnCounter.text = $"{round}/4";
 
-			if (!_networkResource.IsNetActive() && GameManager.Instance.LocalPlayerTurn >= 1)
+			if (!_networkResource.IsNetActive() && GameManager.Instance.LocalPlayerTurn >= 2)
 			{
 				TryPlayBotTaunt().Forget();
 			}

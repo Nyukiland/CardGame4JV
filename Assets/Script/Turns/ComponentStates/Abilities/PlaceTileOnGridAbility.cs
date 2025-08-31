@@ -140,6 +140,7 @@ namespace CardGame.Turns
 				int connectionCount = _gridManager.GetPlacementConnectionCount(TempPlacedTile.TileData, TempPos);
 				TempPlacedTile.SetWrongRotationFeedbackActive(connectionCount == 0);
 
+				TempPlacedTile.PlayPlacementFX();
 			}
 			else
 			{
