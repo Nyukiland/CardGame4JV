@@ -198,6 +198,8 @@ MonoBehaviour:
   _background: {fileID: 547747419949536425}
   _baseColor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 0.8}
   _notMyTurnColor: {r: 0.5471698, g: 0.5471698, b: 0.5471698, a: 0.5019608}
+  _textMatPlayer1: {fileID: 11400000, guid: 04cd94ba20d915c4785e0a1b62376665, type: 2}
+  _textMatPlayer2: {fileID: 11400000, guid: 67e3546ffd4890448bfbb119641c553f, type: 2}
 --- !u!1 &1995109530966671564
 GameObject:
   m_ObjectHideFlags: 0

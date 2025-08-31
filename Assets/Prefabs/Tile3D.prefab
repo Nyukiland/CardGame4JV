@@ -673,6 +673,8 @@ MonoBehaviour:
   _validTile: {fileID: 2100000, guid: eca71481bc1526b4e8d39eab02c8b3c6, type: 2}
   _scoreText: {fileID: 3264921891419928780}
   _scoreCanvas: {fileID: 4200216443213311945}
+  _textMatPlayer1: {fileID: 11400000, guid: 04cd94ba20d915c4785e0a1b62376665, type: 2}
+  _textMatPlayer2: {fileID: 11400000, guid: 67e3546ffd4890448bfbb119641c553f, type: 2}
   _meshesPresetList:
   - {fileID: 7654788531814112361, guid: 32ff365726a0d584d99012981af0737c, type: 3}
   - {fileID: 1643511142034846453, guid: 0ef16ab1e452ad84ba8275ad815ced9f, type: 3}
