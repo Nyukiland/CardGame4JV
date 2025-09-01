@@ -3,7 +3,6 @@ using CardGame.StateMachine;
 using CardGame.UI;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,6 +85,7 @@ namespace CardGame.Turns
 		public override void OnDisable()
 		{
 			base.OnDisable();
+
 			TilePlacedPosition = new(-100, -100);
 			IsScoringFinished = false;
 			_tilePlaced = null;

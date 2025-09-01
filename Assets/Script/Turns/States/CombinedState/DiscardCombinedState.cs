@@ -13,6 +13,8 @@ namespace CardGame.Turns
 		private ZoneHolderResource _zoneHolder;
 		private NetworkResource _networkResource;
 
+		private bool _isWaitComplete = false;
+
 		public DiscardCombinedState()
 		{
 			AddSubState(new MoveTileSubState(true));
@@ -39,7 +41,7 @@ namespace CardGame.Turns
 				await UniTask.WaitUntil(() => _networkResource.TileToReceive == 0);
 			}
 
-			UnityEngine.Debug.Log("t");
+			_isWaitComplete = true;
 
 			if (_discardCard.DiscardFinished())
 			{
@@ -62,6 +64,7 @@ namespace CardGame.Turns
 			}
 
 			_networkResource.TileToReceive = 100;
+			_isWaitComplete = false;
 		}
 
 		public override void OnActionTriggered(InputAction.CallbackContext context)
@@ -81,7 +84,7 @@ namespace CardGame.Turns
 		{
 			base.Update(deltaTime);
 
-			if (_discardCard.DiscardFinished())
+			if (_discardCard.DiscardFinished() && _isWaitComplete)
 			{
 				CallEndTurn();
 			}

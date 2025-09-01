@@ -46,11 +46,6 @@ namespace CardGame.Turns
 			_networkResource = owner.GetStateComponent<NetworkResource>();
 
 			ShowDiscardArea(false);
-		}
-
-		public override void OnEnable()
-		{
-			base.OnEnable();
 			_discardArea.transform.position = _discardOut.position;
 		}
 
