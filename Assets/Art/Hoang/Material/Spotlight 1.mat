@@ -47,12 +47,12 @@ Material:
     m_Ints: []
     m_Floats:
     - _DotNumber: 10
-    - _Opacity: 2.15
+    - _Opacity: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _speed: -1.06
     m_Colors:
-    - _Color: {r: 21.361254, g: 0.12091101, b: 0.12091101, a: 0}
+    - _Color: {r: 10.169964, g: 1.3311472, b: 1.4460646, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &2157610328182530215

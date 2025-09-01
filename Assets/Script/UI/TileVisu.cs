@@ -1,5 +1,6 @@
 using CardGame.Card;
 using CardGame.Turns;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,9 @@ namespace CardGame.UI
 		[SerializeField] private Canvas _scoreCanvas;
 		[SerializeField] private TMP_FontAsset _textMatPlayer1;
 		[SerializeField] private TMP_FontAsset _textMatPlayer2;
+		[SerializeField] private GameObject _spotlight;
+		[SerializeField] private Material _spotlightP1;
+		[SerializeField] private Material _spotlightP2;
 		[Space(10)]
 
 		[SerializeField] private List<GameObject> _meshesPresetList = new();
@@ -128,6 +132,28 @@ namespace CardGame.UI
 			}
 
 			SetTileMesh(TileData.TileSettings.tilePreset); // Y a une sécu dedans pour eviter de tout reconfig
+		}
+
+		public void SpotlightFlag(int index, bool activate)
+		{
+			_spotlight.SetActive(activate);
+
+			_spotlight.GetComponent<Renderer>().material = index == 0 ? _spotlightP1 : _spotlightP2;
+			
+			SpotlightLerpOpacity(0,1).Forget();
+        }
+
+		public async UniTask SpotlightLerpOpacity(float min, float max)
+		{
+            _spotlight.GetComponent<Renderer>().material.SetFloat("_Opacity", min);
+			float t = min;
+			while(t< max)
+			{
+				t += Time.deltaTime*2;
+                _spotlight.GetComponent<Renderer>().material.SetFloat("_Opacity", t);
+				await UniTask.Yield();
+			}
+
 		}
 
 		public void VisualScoringTileFeedback(float score, int index)

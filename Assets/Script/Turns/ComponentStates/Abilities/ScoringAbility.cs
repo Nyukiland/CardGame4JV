@@ -366,6 +366,7 @@ namespace CardGame.Turns
 			{
 				//playerFlagTile.transform.DOLocalMoveZ(playerFlagTile.transform.localPosition.z - _moveAmount, _moveDuration)
 				//		.SetLoops(2, LoopType.Yoyo).SetEase(Ease.InOutCubic);
+				playerFlagTile.SpotlightFlag(currentPhaseScoringPlayer, true);
 				playerFlagInRegion++;
 			}
 			//await UniTask.WaitForSeconds(_moveDuration * 2); // for the end of the animation
@@ -407,7 +408,12 @@ namespace CardGame.Turns
 				tileScoreAmount++;
 			}
 
-			await UniTask.WaitForSeconds(1f); // Delay until next player scoring and/or next player turn
+            await UniTask.WaitForSeconds(1f); // Delay until next player scoring and/or next player turn
+
+            foreach (TileVisu playerFlagTile in _playerFlagTiles)
+            {
+                playerFlagTile.SpotlightFlag(currentPhaseScoringPlayer, false);
+            }
 			_hud.DeactivatePhaseScoreDisplay();
 		}
 
