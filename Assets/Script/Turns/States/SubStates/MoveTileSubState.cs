@@ -152,7 +152,7 @@ namespace CardGame.Turns
 			_zoomAbility.ZoomInProcess(currentPos, Controller.GetActionValue<Vector2>("TouchPos2"));
 
 			//computer
-			_zoomAbility.ZoomInProcess(Mouse.current.scroll.value.y);
+			if (Mouse.current != null) _zoomAbility.ZoomInProcess(Mouse.current.scroll.value.y);
 		}
 	}
 }

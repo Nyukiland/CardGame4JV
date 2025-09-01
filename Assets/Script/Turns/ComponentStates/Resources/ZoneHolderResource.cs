@@ -51,7 +51,7 @@ namespace CardGame.Turns
 		{
 			base.Update(deltaTime);
 
-			if (Keyboard.current.rKey.wasPressedThisFrame)
+			if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
 			{
 				int numberOfTile = TileInHandCount;
 
@@ -68,12 +68,12 @@ namespace CardGame.Turns
 				Owner.GetStateComponent<CreateHandAbility>().GenerateTiles(numberOfTile);
 			}
 
-			if (Keyboard.current.tKey.wasPressedThisFrame)
+			if (Keyboard.current != null && Keyboard.current.tKey.wasPressedThisFrame)
 			{
 				Owner.GetStateComponent<CreateHandAbility>().GenerateTiles(1);
 			}
 
-			if (Keyboard.current.gKey.wasPressedThisFrame)
+			if (Keyboard.current != null && Keyboard.current.gKey.wasPressedThisFrame)
 			{
 				if (TileInHandCount == 0)
 					return;

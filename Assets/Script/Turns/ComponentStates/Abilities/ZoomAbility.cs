@@ -31,6 +31,12 @@ namespace CardGame.Turns
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
 		}
 
+		public override void OnDisable()
+		{
+			base.OnDisable();
+			_cam.orthographicSize = _maxZoom;
+		}
+
 		public void StartZoom(Vector2 posTouch1, Vector2 posTouch2)
 		{
 			_inZoom = true;

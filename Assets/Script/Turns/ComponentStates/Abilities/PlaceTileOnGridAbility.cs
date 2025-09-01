@@ -201,7 +201,8 @@ namespace CardGame.Turns
 				return;
 
 			if (Timer > MaxTimeTurn 
-				|| UnityEngine.InputSystem.Keyboard.current.pKey.wasPressedThisFrame) //Debug feature
+				|| (UnityEngine.InputSystem.Keyboard.current != null && 
+				UnityEngine.InputSystem.Keyboard.current.pKey.wasPressedThisFrame)) //Debug feature
 			{
 				Timer = -1f;
 
