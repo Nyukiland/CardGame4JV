@@ -72,6 +72,8 @@ namespace CardGame.UI
 		public MeshRenderer VisuSouth => _visuPart[RotIndex(2)];
 		public MeshRenderer VisuWest => _visuPart[RotIndex(3)];
 
+		public TileVisualSorter CurrentVisualSorter { get; private set; }
+
 		private int RotIndex(int baseIndex) => (baseIndex - TileData.TileRotationCount + 4) % 4;
 
 		public bool IsTileValid { get; private set; }
@@ -254,11 +256,11 @@ namespace CardGame.UI
 
 			GameObject visualPrefab = _meshesPresetList[(int)preset]; // Recup le bon prefab
 			_currentVisualMesh = Instantiate(visualPrefab, transform); // Spawn en enfant
-			TileVisualSorter sorter = _currentVisualMesh.GetComponent<TileVisualSorter>();
-			_visuPart[0] = sorter.VisuNorth;
-			_visuPart[1] = sorter.VisuEast;
-			_visuPart[2] = sorter.VisuSouth;
-			_visuPart[3] = sorter.VisuWest;
+			CurrentVisualSorter = _currentVisualMesh.GetComponent<TileVisualSorter>();
+			_visuPart[0] = CurrentVisualSorter.VisuNorth;
+			_visuPart[1] = CurrentVisualSorter.VisuEast;
+			_visuPart[2] = CurrentVisualSorter.VisuSouth;
+			_visuPart[3] = CurrentVisualSorter.VisuWest;
 
 			var renderers = _currentVisualMesh.GetComponentsInChildren<MeshRenderer>(); // On recup les renderer, pour set materials
 			ZoneData[] zones = TileData.GetUnrotatedZones();

@@ -213,25 +213,29 @@ namespace CardGame.Turns
 					if (tileVisu.TileData.Zones[i].Region != region)
 						continue;
 
+					if (environment == ENVIRONEMENT_TYPE.None)
+						environment = tileVisu.TileData.Zones[i].environment;
+
 					switch (i)
 					{
 						case 0:
 							_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuNorth);
+							tileVisu.CurrentVisualSorter.AddElementToArea(environment, tileVisu.VisuNorth);
 							break;
 						case 1:
 							_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuEast);
+							tileVisu.CurrentVisualSorter.AddElementToArea(environment, tileVisu.VisuEast);
 							break;
 						case 2:
 							_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuSouth);
+							tileVisu.CurrentVisualSorter.AddElementToArea(environment, tileVisu.VisuSouth);
 							break;
 						case 3:
 							_alphaFeature.settings.TargetMeshes.Add(tileVisu.VisuWest);
+							tileVisu.CurrentVisualSorter.AddElementToArea(environment, tileVisu.VisuWest);
 							break;
 
 					}
-
-					if (environment == ENVIRONEMENT_TYPE.None)
-						environment = tileVisu.TileData.Zones[i].environment;
 				}
 			}
 
