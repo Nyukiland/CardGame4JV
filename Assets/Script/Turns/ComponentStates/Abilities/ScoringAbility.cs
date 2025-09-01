@@ -401,7 +401,7 @@ namespace CardGame.Turns
 				currentTilePhaseScoreToDisplay += tileScoreAmount;
 				_hud.SetPhaseScore(currentTilePhaseScoreToDisplay * playerFlagInRegion);
 
-				_cumulativeScoring += tileScoreAmount;
+				_cumulativeScoring += tileScoreAmount * playerFlagInRegion;
 				_hud.ScoreList[currentPhaseScoringPlayer].SetCummulativeScore(_cumulativeScoring);
 
 				tileScoreAmount++;
