@@ -140,13 +140,13 @@ namespace CardGame.Turns
 		{
 			base.Update(deltaTime);
 
-			if (!MoveCam)
-				return;
-
 			Vector2 currentPos = Controller.GetActionValue<Vector2>("TouchPos");
 
 			if (_isHolding)
 				_moveCardAbility.MoveCard(currentPos);
+
+			if (!MoveCam)
+				return;
 
 			_moveCameraAbility.MoveCamera(currentPos);
 			_zoomAbility.ZoomInProcess(currentPos, Controller.GetActionValue<Vector2>("TouchPos2"));
