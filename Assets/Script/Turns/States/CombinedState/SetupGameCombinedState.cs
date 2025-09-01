@@ -68,7 +68,6 @@ namespace CardGame.Turns
 			while (Camera.main.orthographicSize > 3.5f)
 			{
 				_zoomAbility.ZoomInProcess(-0.03f);
-				_holderResource.UpdateTileInHandSize();
 				await UniTask.Yield();
 			}
 		}

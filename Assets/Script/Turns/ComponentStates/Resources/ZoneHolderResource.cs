@@ -43,7 +43,7 @@ namespace CardGame.Turns
 		public override void Init(Controller owner)
 		{
 			_hudResource = owner.GetStateComponent<HUDResource>();
-			_defaultCamSize = Camera.main.orthographicSize;
+			_defaultCamSize = 5;
 			_tileSize = _sizeInHand;
 		}
 

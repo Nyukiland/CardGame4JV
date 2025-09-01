@@ -31,6 +31,7 @@ namespace CardGame.Turns
 			_cam.orthographicSize = 5;
 			_maxZoom = _cam.orthographicSize;
 			_zoneHolder.UpdateTileInHandSize();
+			_zoneHolder.UpdatePlacementInHand();
 		}
 
 		public void StartZoom(Vector2 posTouch1, Vector2 posTouch2)
