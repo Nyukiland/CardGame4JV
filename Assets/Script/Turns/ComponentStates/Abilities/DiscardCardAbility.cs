@@ -70,7 +70,7 @@ namespace CardGame.Turns
 
 		public void ShowDiscardArea(bool display)
 		{
-			if (_isIn == display) 
+			if (_isIn == display)
 				return;
 
 			_isIn = display;
@@ -78,16 +78,8 @@ namespace CardGame.Turns
 
 			if (_isIn)
 			{
-				if (_networkResource.IsNetActive())
-				{
-					for (int i = 0; i < _networkResource.TileToReceive; i++)
-						_discardItems.Add(GameObject.Instantiate(_discardIcone, _discardVerticalLayout.transform));
-				}
-				else
-				{
-					for (int i = 0; i < _holderResource.TileInHandCount - _maxTileInHand; i++) 
-						_discardItems.Add(GameObject.Instantiate(_discardIcone, _discardVerticalLayout.transform)); 
-				}
+				for (int i = 0; i < _holderResource.TileInHandCount - _maxTileInHand; i++)
+					_discardItems.Add(GameObject.Instantiate(_discardIcone, _discardVerticalLayout.transform));
 			}
 
 			Vector3 posToGo = display ? _discardIn.position : _discardOut.position;
@@ -126,10 +118,7 @@ namespace CardGame.Turns
 
 		public bool DiscardFinished()
 		{
-			if (_networkResource.IsNetActive())
-				return _holderResource.TileInHandCount <= _maxTileInHand && _moveTile.CurrentTile == null && _networkResource.TileToReceive == 0;
-			else
-				return _holderResource.TileInHandCount <= _maxTileInHand && _moveTile.CurrentTile == null;
+			return _holderResource.TileInHandCount <= _maxTileInHand && _moveTile.CurrentTile == null;
 		}
 	}
 }

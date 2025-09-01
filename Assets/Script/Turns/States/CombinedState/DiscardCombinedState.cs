@@ -1,4 +1,5 @@
 using CardGame.StateMachine;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -28,6 +29,25 @@ namespace CardGame.Turns
 
 			_moveTile.CanPlaceOnGrid = false;
 
+			CheckDiscardState().Forget();
+		}
+
+		private async UniTask CheckDiscardState()
+		{
+			if (_networkResource.IsNetActive())
+			{
+				await UniTask.WaitUntil(() => _networkResource.TileToReceive == 0);
+			}
+
+			UnityEngine.Debug.Log("t");
+
+			if (_discardCard.DiscardFinished())
+			{
+				CallEndTurn();
+				return;
+			}
+
+			_discardCard.ShowDiscardArea(true);
 			Controller.GetStateComponent<HUDResource>().ChangeTurnFeedback(HUDResource.TurnState.Discard);
 		}
 
@@ -65,14 +85,11 @@ namespace CardGame.Turns
 			{
 				CallEndTurn();
 			}
-			else
-			{
-				_discardCard.ShowDiscardArea(!_networkResource.IsNetActive() || _networkResource.TileToReceive != 100);
-			}
 		}
 
 		private void CallEndTurn()
 		{
+			_discardCard.ShowDiscardArea(false);
 			_sendInfo.SendTurnFinished();
 
 			Controller.GetStateComponent<ScoringAbility>().SetState(typeof(NextPlayerCombinedState));
