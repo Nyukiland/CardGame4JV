@@ -24,17 +24,13 @@ namespace CardGame.Turns
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
-			_cam = Camera.main;
-			_maxZoom = _cam.orthographicSize;
-
 			_zoneHolder = owner.GetStateComponent<ZoneHolderResource>();
 			_gridManager = owner.GetStateComponent<GridManagerResource>();
-		}
 
-		public override void OnDisable()
-		{
-			base.OnDisable();
-			_cam.orthographicSize = _maxZoom;
+			_cam = Camera.main;
+			_cam.orthographicSize = 5;
+			_maxZoom = _cam.orthographicSize;
+			_zoneHolder.UpdateTileInHandSize();
 		}
 
 		public void StartZoom(Vector2 posTouch1, Vector2 posTouch2)

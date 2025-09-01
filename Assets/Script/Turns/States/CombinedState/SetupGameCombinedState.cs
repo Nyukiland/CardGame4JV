@@ -13,6 +13,7 @@ namespace CardGame.Turns
 		private AutoPlayAbility _autoPlay;
 		private GridManagerResource _gridManager;
 		private HUDResource _hudResource;
+		private ZoneHolderResource _holderResource;
 		private ZoomAbility _zoomAbility;
 
 		public override void OnEnter()
@@ -66,7 +67,8 @@ namespace CardGame.Turns
 
 			while (Camera.main.orthographicSize > 3.5f)
 			{
-				_zoomAbility.ZoomInProcess(-0.01f);
+				_zoomAbility.ZoomInProcess(-0.03f);
+				_holderResource.UpdateTileInHandSize();
 				await UniTask.Yield();
 			}
 		}
