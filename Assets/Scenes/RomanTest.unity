@@ -7309,7 +7309,7 @@ MonoBehaviour:
       data:
         Enabled: 0
         _drawPile: {fileID: 1031992356}
-        _maxTimeTurnFirst: 30
+        _maxTimeTurnFirst: 180
         _maxTimeTurnEnd: 180
         TempPos: {x: 0, y: 0}
     - rid: 542522587139801179
