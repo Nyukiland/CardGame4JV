@@ -93,6 +93,7 @@ namespace CardGame.Turns
 
 			TileData tile = new();
 			tile.InitTile(_tileToPlay[_counter].TileSettings);
+			tile.OwnerPlayerIndex = 1;
 			for (int i = 0; i < _tileToPlay[_counter].RotationCount; i++)
 				tile.RotateTile();
 
