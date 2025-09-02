@@ -55,6 +55,9 @@ public class TileVisualSorter : MonoBehaviour
 
 				GameObject toSpawn = null;
 
+				if (0.85f < Random.Range(0f, 1f))
+					return;
+
 				switch (environment)
 				{
 					case ENVIRONEMENT_TYPE.Terrain:

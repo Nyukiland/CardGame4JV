@@ -340,12 +340,12 @@ namespace CardGame.Turns
 
 				if (firstScoreToDisplay)
 				{
-					_hud.ActivatePhaseScoreDisplay();
+					//_hud.ActivatePhaseScoreDisplay();
 					firstScoreToDisplay = false;
-					_hud.SetupPhaseScore(currentPhaseScoringPlayer, false);
+					//_hud.SetupPhaseScore(currentPhaseScoringPlayer, false);
 				}
 				currentTilePhaseScoreToDisplay += tileScoreAmount;
-				_hud.SetPhaseScore(currentTilePhaseScoreToDisplay);
+				//_hud.SetPhaseScore(currentTilePhaseScoreToDisplay);
 
 				_cumulativeScoring += tileScoreAmount;
 				_hud.ScoreList[currentPhaseScoringPlayer].SetCummulativeScore(_cumulativeScoring);
@@ -353,7 +353,7 @@ namespace CardGame.Turns
 				tileScoreAmount++;
 			}
 			await UniTask.WaitForSeconds(1f);
-			_hud.DeactivatePhaseScoreDisplay();
+			//_hud.DeactivatePhaseScoreDisplay();
 		}
 
 		private async UniTask VisualFeedbackFlagScoringAsync(Region Region, int currentPhaseScoringPlayer)
@@ -399,12 +399,12 @@ namespace CardGame.Turns
 
 				if (firstScoreToDisplay)
 				{
-					_hud.ActivatePhaseScoreDisplay();
+					//_hud.ActivatePhaseScoreDisplay();
 					firstScoreToDisplay = false;
-					_hud.SetupPhaseScore(currentPhaseScoringPlayer, true);
+					//_hud.SetupPhaseScore(currentPhaseScoringPlayer, true);
 				}
 				currentTilePhaseScoreToDisplay += tileScoreAmount;
-				_hud.SetPhaseScore(currentTilePhaseScoreToDisplay * playerFlagInRegion);
+				//_hud.SetPhaseScore(currentTilePhaseScoreToDisplay * playerFlagInRegion);
 
 				_cumulativeScoring += tileScoreAmount * playerFlagInRegion;
 				_hud.ScoreList[currentPhaseScoringPlayer].SetCummulativeScore(_cumulativeScoring);
@@ -412,13 +412,13 @@ namespace CardGame.Turns
 				tileScoreAmount++;
 			}
 
-            await UniTask.WaitForSeconds(1f); // Delay until next player scoring and/or next player turn
+			await UniTask.WaitForSeconds(1f); // Delay until next player scoring and/or next player turn
 
-            foreach (TileVisu playerFlagTile in _playerFlagTiles)
-            {
-                playerFlagTile.SpotlightFlag(currentPhaseScoringPlayer, false);
-            }
-			_hud.DeactivatePhaseScoreDisplay();
+			foreach (TileVisu playerFlagTile in _playerFlagTiles)
+			{
+				playerFlagTile.SpotlightFlag(currentPhaseScoringPlayer, false);
+			}
+			//_hud.DeactivatePhaseScoreDisplay();
 		}
 
 		private async UniTask EndScoringFeedbackAsync()
