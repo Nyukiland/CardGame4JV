@@ -11,6 +11,17 @@ namespace CardGame.Turns
 {
 	public class GridManagerResource : Resource
 	{
+		[SerializeField]
+		List<BonusTilePlacement> _bonusTile = new();
+
+		[System.Serializable]
+		public struct BonusTilePlacement
+		{
+			public Vector2Int Placement;
+			public int RotationCount;
+			public TileSettings TileSettings;
+		}
+
 		[Header("Grid")]
 		[SerializeField] private int _width;
 		[SerializeField] private int _height;
@@ -83,19 +94,18 @@ namespace CardGame.Turns
 
 		public void GenerateBonusTiles()
 		{
-			DrawPile drawPile = Storage.Instance.GetElement<DrawPile>();
-
-			for (int range = 2; range < 4; range++) // On call a range = 2 et = 3 pour les deux carrés
+			foreach (BonusTilePlacement btp in _bonusTile)
 			{
-				BonusTilePool.Clear(); // On recupere la liste des tiles bonus prévues pour ce carré
-				BonusTilePool = drawPile.GetBonusTileFromPoolIndex(range - 1); // Cringe, car en index on a 1 et 2 pour premier et 2e carré
+				TileData tileData = new();
+				tileData.InitTile(btp.TileSettings);
 
-				BonusTilePositions.Clear();
-				GetBonusTilePositionList(range); // On recup toutes les positions possibles pour ce carré
+				for (int i = 0; i < btp.RotationCount; i++)
+					tileData.RotateTile();
 
-				for (int i = 0; i < 3; i++) // On pose 3 bonus tiles
-					PlaceBonusTile();
+				SetTile(tileData, btp.Placement);
+				_grid[btp.Placement.x, btp.Placement.y].SetTileLayerGrid(LayerTile.Grid);
 			}
+
 		}
 
 		private void GetBonusTilePositionList(int range)

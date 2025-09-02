@@ -57,8 +57,8 @@ namespace CardGame.Turns
 
 				await UniTask.Yield();
 
-				_createHandAbility.GenerateTiles(_createHandAbility.CountCard);
-				_autoPlay.GenerateTheoreticalHand(_createHandAbility.CountCard);
+				_createHandAbility.GenerateTiles(_createHandAbility.CountCard, true);
+				//_autoPlay.GenerateTheoreticalHand(_createHandAbility.CountCard);
 				Controller.GetStateComponent<HUDResource>().InitScores();
 
 				Controller.SetState<PlaceTileCombinedState>();

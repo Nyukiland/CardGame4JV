@@ -800,7 +800,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 68, y: 20}
+  m_AnchoredPosition: {x: 68.00012, y: 20}
   m_SizeDelta: {x: 500, y: 500}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &232043184
@@ -2676,7 +2676,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -30, y: 0}
+  m_AnchoredPosition: {x: -30.000122, y: 0}
   m_SizeDelta: {x: 400, y: -100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &821306027
@@ -6665,7 +6665,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -30, y: 0}
+  m_AnchoredPosition: {x: -30.000122, y: 0}
   m_SizeDelta: {x: 400, y: -40}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1786460448
@@ -7221,6 +7221,11 @@ MonoBehaviour:
       type: {class: CreateHandAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
+        _tileSettings:
+        - {fileID: 11400000, guid: 59fc3985ff9f2454097acbb53a98beb5, type: 2}
+        - {fileID: 11400000, guid: 5f7645dbae6339844b10b826c9e20455, type: 2}
+        - {fileID: 11400000, guid: d5706ff3626698049982183b009f396c, type: 2}
+        - {fileID: 11400000, guid: 0ca6182ba2eaa824687698ed651e6c87, type: 2}
         _countCard: 4
         _prefab: {fileID: 3113448424307496746, guid: c043507fa7dae3e468ab02be113148cd, type: 3}
         _pile: {fileID: 1031992356}
@@ -7378,6 +7383,25 @@ MonoBehaviour:
       type: {class: GridManagerResource, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
+        _bonusTile:
+        - Placement: {x: 6, y: 12}
+          RotationCount: 2
+          TileSettings: {fileID: 11400000, guid: 99a8ec05ea52bf544b2729e6a0d9be72, type: 2}
+        - Placement: {x: 10, y: 13}
+          RotationCount: 3
+          TileSettings: {fileID: 11400000, guid: 64863cebe51999d43a33da8e965a4d9f, type: 2}
+        - Placement: {x: 13, y: 12}
+          RotationCount: 2
+          TileSettings: {fileID: 11400000, guid: 048d9ef2cd09eb34497fba4bd6d819b9, type: 2}
+        - Placement: {x: 14, y: 10}
+          RotationCount: 0
+          TileSettings: {fileID: 11400000, guid: 88b1e16ca3c3f4a49b03d4faece1742e, type: 2}
+        - Placement: {x: 8, y: 8}
+          RotationCount: 0
+          TileSettings: {fileID: 11400000, guid: 6c8ede3f1507f5744977e52de3cd1a9b, type: 2}
+        - Placement: {x: 12, y: 7}
+          RotationCount: 0
+          TileSettings: {fileID: 11400000, guid: a1ac899b0b10faa439d7b45b58014f81, type: 2}
         _width: 21
         _height: 21
         _gridContainer: {fileID: 1714262388}
@@ -7387,6 +7411,16 @@ MonoBehaviour:
       type: {class: AutoPlayAbility, ns: CardGame.Turns, asm: Assembly-CSharp}
       data:
         Enabled: 0
+        _tileToPlay:
+        - Placement: {x: 11, y: 10}
+          RotationCount: 0
+          TileSettings: {fileID: 11400000, guid: 788f131ad804fc54cae0bf4051c68e31, type: 2}
+        - Placement: {x: 12, y: 11}
+          RotationCount: 3
+          TileSettings: {fileID: 11400000, guid: cb6539daa62c8f94fb4fb9ddc8ae5881, type: 2}
+        - Placement: {x: 10, y: 9}
+          RotationCount: 0
+          TileSettings: {fileID: 11400000, guid: 824318f72c1f65647a684490ff0c9500, type: 2}
         _waitSec: 1
     - rid: 5245693158766149720
       type: {class: SoundResource, ns: CardGame.Turns, asm: Assembly-CSharp}

@@ -9,12 +9,26 @@ namespace CardGame.Turns
 {
 	public class AutoPlayAbility : Ability
 	{
+		[SerializeField]
+		List<TilePlacement> _tileToPlay = new();
+
+		[System.Serializable]
+		public struct TilePlacement
+		{
+			public Vector2Int Placement;
+			public int RotationCount;
+			public TileSettings TileSettings;
+		}
+
+		private int _counter = 0;
+
 		private readonly Vector2Int InvalidPosition = new(-100, -100);
 
 		private GridManagerResource _grid;
 		private ScoringAbility _scoring;
 		private DrawPile _drawPile;
 		private SoundResource _sound;
+		private TauntButtonAbility _taunt;
 
 		[SerializeField]
 		private float _waitSec = 2f;
@@ -30,6 +44,7 @@ namespace CardGame.Turns
 			_grid = owner.GetStateComponent<GridManagerResource>();
 			_scoring = owner.GetStateComponent<ScoringAbility>();
 			_sound = owner.GetStateComponent<SoundResource>();
+			_taunt = owner.GetStateComponent<TauntButtonAbility>();
 		}
 
 		public override void LateInit()
@@ -67,30 +82,28 @@ namespace CardGame.Turns
 
 		private async UniTask AutoPlay()
 		{
+			if (_counter == 2)
+			{
+				await UniTask.WaitUntil(() => _taunt.GoPlay);
+			}
+
 			await UniTask.WaitForSeconds(_waitSec);
 
-			if (_tilesInHand.Count == 0)
-			{
-				IsFinished = true;
-				return;
-			}
+			//(TileData tile, Vector2Int pos, int connection) = FindBestPlacement();
 
-			(TileData tile, Vector2Int pos, int connection) = FindBestPlacement();
+			TileData tile = new();
+			tile.InitTile(_tileToPlay[_counter].TileSettings);
+			for (int i = 0; i < _tileToPlay[_counter].RotationCount; i++)
+				tile.RotateTile();
 
-			if (pos == InvalidPosition)
-			{
-				UnityEngine.Debug.LogWarning($"[{nameof(AutoPlayAbility)}] Failed to place tile due to no valid placement");
-			}
-			else
-			{
-				tile.HasFlag = GameManager.Instance.FlagTurn;
-				_grid.SetTile(tile, pos);
-				_sound.PlayTilePlaced(false);
-				_tilesInHand.Remove(tile);
-				_scoring.SetScoringPos(pos);
-				GenerateTheoreticalHand(connection);
-			}
+			tile.HasFlag = GameManager.Instance.FlagTurn;
+			_grid.SetTile(tile, _tileToPlay[_counter].Placement);
+			_sound.PlayTilePlaced(false);
+			_tilesInHand.Remove(tile);
+			_scoring.SetScoringPos(_tileToPlay[_counter].Placement);
+			GenerateTheoreticalHand(_grid.GetPlacementConnectionCount(tile, _tileToPlay[_counter].Placement));
 
+			_counter++;
 			GameManager.Instance.SoloTurns++;
 			IsFinished = true;
 		}

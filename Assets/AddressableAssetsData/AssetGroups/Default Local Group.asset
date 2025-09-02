@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - TileSetting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 048d9ef2cd09eb34497fba4bd6d819b9
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 078c80ef87d9f45408ef88da69e74285
     m_Address: Assets/Script/Data\NewTile_01.asset
     m_ReadOnly: 0
@@ -35,6 +41,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0c8b6d604f6abaa44a0abc3dc7d9d77b
     m_Address: Assets/Script/Data/BonusTile_211_White_05.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0ca6182ba2eaa824687698ed651e6c87
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
     m_ReadOnly: 0
     m_SerializedLabels:
     - TileSetting
@@ -183,6 +195,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - TileSetting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 59fc3985ff9f2454097acbb53a98beb5
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5b5c01884585d42439b5fc2bb6af95ea
     m_Address: Assets/Script/Data\NewTile_01.asset
     m_ReadOnly: 0
@@ -195,6 +213,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - TileSetting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f7645dbae6339844b10b826c9e20455
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 601f022f3d510134b9ae44617b795310
     m_Address: Assets/Script/Data\NewTile_01.asset
     m_ReadOnly: 0
@@ -203,6 +227,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 612dd5ed6beadca419a36778563e7b27
     m_Address: Assets/Script/Data\NewTile_01.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 64863cebe51999d43a33da8e965a4d9f
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
     m_ReadOnly: 0
     m_SerializedLabels:
     - TileSetting
@@ -221,6 +251,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 68b112c186916e140b59fced441c5694
     m_Address: Assets/Script/Data\NewTile_01.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c8ede3f1507f5744977e52de3cd1a9b
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
     m_ReadOnly: 0
     m_SerializedLabels:
     - TileSetting
@@ -249,8 +285,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - TileSetting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 788f131ad804fc54cae0bf4051c68e31
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7db9f1080ddefed429cf90bebd269a52
     m_Address: Assets/Script/Data\NewTile_01.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 824318f72c1f65647a684490ff0c9500
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88b1e16ca3c3f4a49b03d4faece1742e
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
     m_ReadOnly: 0
     m_SerializedLabels:
     - TileSetting
@@ -309,6 +363,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - TileSetting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99a8ec05ea52bf544b2729e6a0d9be72
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9ce7239ace776584082f3d352511f7ba
     m_Address: Assets/Script/Data\NewTile_01.asset
     m_ReadOnly: 0
@@ -317,6 +377,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9faf1237e1f3d984c96d10e41beab268
     m_Address: Assets/Script/Data/BonusTile_112_White_20.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1ac899b0b10faa439d7b45b58014f81
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
     m_ReadOnly: 0
     m_SerializedLabels:
     - TileSetting
@@ -423,6 +489,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - TileSetting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb6539daa62c8f94fb4fb9ddc8ae5881
+    m_Address: Tiles/Assets/Script/Data\NewTile_02
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d1ca7bc56328eb441bbc077b3047fe56
     m_Address: Assets/Script/Data\NewTile_01.asset
     m_ReadOnly: 0
@@ -449,6 +521,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d3dba8265a9b0fe4c903dfe02b0154cb
     m_Address: Assets/Script/Data/BonusTile_112_White_18.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TileSetting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5706ff3626698049982183b009f396c
+    m_Address: Tiles/Assets/Script/Data\NewTile_01
     m_ReadOnly: 0
     m_SerializedLabels:
     - TileSetting

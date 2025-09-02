@@ -2,11 +2,15 @@ using CardGame.StateMachine;
 using CardGame.Card;
 using CardGame.UI;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace CardGame.Turns
 {
 	public class CreateHandAbility : Ability
 	{
+		[SerializeField]
+		List<TileSettings> _tileSettings = new();
+
 		[SerializeField]
 		private int _countCard;
 
@@ -31,8 +35,18 @@ namespace CardGame.Turns
 			base.OnEnable();
 		}
 
-        public void GenerateTiles(int count)
+        public void GenerateTiles(int count, bool first = false)
         {
+			if (first)
+			{
+				foreach (TileSettings tile in _tileSettings)
+				{
+					CreateTile(tile);
+				}
+
+				return;
+			}
+
             if (_pile.AllTileSettings == null || _pile.AllTileSettings.Count == 0)
             {
                 Debug.LogError("DrawPile.AllTileSettings is empty or null");

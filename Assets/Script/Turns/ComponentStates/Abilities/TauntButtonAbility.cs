@@ -21,6 +21,8 @@ namespace CardGame.Turns
 		private bool _readyUnlock = false;
 		private bool _unlocked = false;
 
+		public bool GoPlay { get; private set; }
+
 		public override void Init(Controller owner)
 		{
 			base.Init(owner);
@@ -52,6 +54,8 @@ namespace CardGame.Turns
 
 		public void CallEvent(TauntScriptableObject tauntAction, bool self = true)
 		{
+			GoPlay = true;
+
 			if (_shakeTile.MiddleTileCounter == 3 && tauntAction.Text == "Tu devrais la fermer")
 			{
 				_readyUnlock = true;
