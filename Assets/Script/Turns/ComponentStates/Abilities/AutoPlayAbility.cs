@@ -89,20 +89,30 @@ namespace CardGame.Turns
 
 			await UniTask.WaitForSeconds(_waitSec);
 
-			//(TileData tile, Vector2Int pos, int connection) = FindBestPlacement();
-
 			TileData tile = new();
-			tile.InitTile(_tileToPlay[_counter].TileSettings);
+			Vector2Int pos = default;
+			int connection = 0;
+
+			if (_counter >= _tileToPlay.Count)
+				(tile, pos, connection) = FindBestPlacement();
+			else
+			{
+				tile.InitTile(_tileToPlay[_counter].TileSettings);
+				for (int i = 0; i < _tileToPlay[_counter].RotationCount; i++)
+					tile.RotateTile();
+
+				pos = _tileToPlay[_counter].Placement;
+
+			}
+
 			tile.OwnerPlayerIndex = 1;
-			for (int i = 0; i < _tileToPlay[_counter].RotationCount; i++)
-				tile.RotateTile();
 
 			tile.HasFlag = GameManager.Instance.FlagTurn;
-			_grid.SetTile(tile, _tileToPlay[_counter].Placement);
+			_grid.SetTile(tile, pos);
 			_sound.PlayTilePlaced(false);
 			_tilesInHand.Remove(tile);
-			_scoring.SetScoringPos(_tileToPlay[_counter].Placement);
-			GenerateTheoreticalHand(_grid.GetPlacementConnectionCount(tile, _tileToPlay[_counter].Placement));
+			_scoring.SetScoringPos(pos);
+			GenerateTheoreticalHand(_grid.GetPlacementConnectionCount(tile, pos));
 
 			_counter++;
 			GameManager.Instance.SoloTurns++;

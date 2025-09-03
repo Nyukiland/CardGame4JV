@@ -555,7 +555,7 @@ namespace CardGame.Turns
 
 			if (!_networkResource.IsNetActive() && GameManager.Instance.LocalPlayerTurn >= 2)
 			{
-				TryPlayBotTaunt().Forget();
+				//TryPlayBotTaunt().Forget();
 			}
 		}
 
