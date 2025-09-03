@@ -18,13 +18,6 @@ namespace CardGame
 		[SerializeField] private Image _flagPhaseImage;
 
 		public int PlayerIndex { get; private set; }
-		//public Button ScoreButton => _scoreButton;
-
-		//private void Start()
-		//{
-		//	_classicPhaseImage.gameObject.SetActive(false);
-		//	_flagPhaseImage.gameObject.SetActive(false);
-		//}
 
 		public void Setup(int playerIndex, bool isFlagPhase)
 		{
@@ -34,13 +27,15 @@ namespace CardGame
 			{
 				_classicPhaseImage.gameObject.SetActive(false);
 				_flagPhaseImage.gameObject.SetActive(true);
+                _flagPhaseImage.color = playerIndex == 0 ? _colorPlayer1 : _colorPlayer2;
 
-			} else
+            } else
 			{
 				_flagPhaseImage.gameObject.SetActive(false);
 				_classicPhaseImage.gameObject.SetActive(true);
-			}
-			_background.color = playerIndex == 0 ? _colorPlayer1 : _colorPlayer2;
+                _classicPhaseImage.color = playerIndex == 0 ? _colorPlayer1 : _colorPlayer2;
+            }
+            _flagPhaseImage.color = playerIndex == 0 ? _colorPlayer1 : _colorPlayer2;
 
 			SetScore(0f);
 		}
